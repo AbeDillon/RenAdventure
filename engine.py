@@ -29,8 +29,7 @@ class Room:
 class Portal:
     '''
     Attributes:
-    - Name
-    - Direction (north, south, east, west, up and down)
+    - Name (north, south, east, west, up and down)
     - Description
     - Inspect Description
     - Coordinates (coordinates that the portal lead to (x,y,z))
@@ -38,17 +37,22 @@ class Portal:
     - Locked (bool)
     - Key
     - Hidden (bool)
+    - ID (ID of the portal)
     '''
-    def __init__(self, name, direction, desc, inspect_desc, coords, scripts = {}, locked = False, hidden = False, key = None):
-        self.name = name.lower()
-        self.direction = direction
+    def __init__(self, name, desc, inspect_desc, coords, scripts = {}, locked = False, key = None, hidden = False, id = None):
+        self.name = name
         self.desc = desc
         self.inspect_desc = inspect_desc
         self.coords = coords
-        self.scripts = scrub(scripts)
+        self.scripts = scripts
         self.locked = locked
-        self.hidden = hidden
         self.key = key
+        self.hidden = hidden
+        
+        if id == None:
+            self.id = unique_id('p')
+        else:
+            self.id = id
 
 class Container:
     '''
@@ -60,18 +64,24 @@ class Container:
     - Locked (bool)
     - Key
     - Hidden (bool)
+    - ID (ID of the container)
     
     Contains:
     - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, locked = False, key = None, hidden = False, items = []):
+    def __init__(self, name, desc, inspect_desc, scripts = {}, locked = False, key = None, hidden = False, items = [], id = None):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
-        self.scripts = scrub(scripts)
+        self.scripts = scripts
         self.locked = locked
-        self.hidden = hidden
         self.key = key
+        self.hidden = hidden
+        
+        if id == None:
+            self.id = unique_id('c')
+        else:
+            self.id = id
         
         self.items = {}     # Create a dictionary of items in the container
         for item in items:
@@ -83,23 +93,33 @@ class Item:
     - Name
     - Description (for printing in a room)
     - Inspect Description (for looking at the item)
+    - ID (ID of the item)
     - Action Scripts (ex. {'take': [['move', 'boulder'], ['move', 'monster']})
     - Portable (bool)
     - Hidden (bool)
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False):
+    def __init__(self, name, desc, inspect_desc, id = None, scripts = {}, portable = True, hidden = False):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
+        self.scripts = scripts
         self.portable = portable
         self.hidden = hidden
-        self.scripts = scrub(scripts)
+        
+        if id == None:
+            self.id = unique_id('i')
+        else:
+            self.id = id
 
 class Player:
     '''
     Attributes:
     - Name
     - Coordinates
+    - fih = faith in humanity
+    - ego = Ego or vanity
+    - tolerance
+    - balls - aka bravery
     
     Contains:
     - Items
@@ -107,43 +127,55 @@ class Player:
     def __init__(self, name, coords, items = []):
         self.name = name.lower()
         self.coords = coords
-        
+        self.fih = 25
+        self.ego = 25
+        self.tolerance = 25
+        self.balls = 25
         self.items = {}     # Create a dictionary of the items a player contains
         for item in items:
             self.items[item.name] = item
-            
-def scrub(scripts):
-    # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
-    valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'print_text', 'reveal']
+
+class NPC:
+    '''
+    Attributes:
+    - Name
+    - Affiliation/type
+    - Coordinates
+    - Targeted
+    - Static (bool)
+    - File (Twitter scrape generated)
+    - Birth - time
+    - Lifespan - hours/days
+    '''
+    def __init__(self, name ):
+        self.name = name.lower()
+        #self.affiliation = ""
+        #self.coords = ""(x, y, z)
+        #self.Targeted = ""(bool)
+        #self.static = ""(bool)
+        #self.file = ""(file extension/handler)
+        #self.birth = ""(system time of birth)
+        #self.lifespan = ""(int)
+        
     
-    for script in scripts.keys():
-        for action in scripts[script]:
-            verb = action[0]
-            if verb not in valid_verbs:
-                del scripts[script]
-                break
+_IDs = {}
+
+def unique_id(prefix):
+    # Creates a unique id for an object
+    global _IDs
+    suffix = 1
     
-    return scripts
-
-# Initialize the game state
-_Rooms = {}
-
-portal = Portal('door1', 'north', 'a wooden door', 'an old creaky door', (0,1,1))
-apple1 = Item('small apple', 'a small apple', 'blah', scripts={'take': (('take', 'small apple'), ('reveal', 'large apple'), ('unlock', 'chest'), ('print_text', 'You have picked up the small apple, a large sword appears in the room.'))})
-sword = Item('large sword', 'a large sword', 'blah', hidden=True)
-room = Room('You are in an empty jail cell, there is a cot bolted into the south wall.', portals=[portal], items=[apple1, sword])
-_Rooms[(0,0,1)] = room
-
-portal = Portal('door2', 'south', 'an iron door', 'an old creaky door', (0,0,1))
-apple2 = Item('large apple', 'a large apple', 'blah', hidden=True)
-chest = Container('chest', 'a small chest', 'blah', items=[], locked=True)
-room = Room('You are in a guard room, there is a table on the north end of the room.', portals=[portal], items=[apple2], containers=[chest])
-_Rooms[(0,1,1)] = room
+    while(1):
+        ID = prefix + str(suffix)
+        if ID not in _IDs:
+            _IDs[ID] = None
+            break
+        
+        suffix += 1
+    
+    return ID
   
-def get_room_text(coords):
-    global _Rooms
-    
-    room = _Rooms[coords]
+def get_room_text(room):
     text = room.desc
     
     # Add items to the text
@@ -182,11 +214,11 @@ def get_room_text(coords):
 
         for n, portal in enumerate(visible_portals):
             if len(visible_portals) == 1:
-                text += " %s to the %s." % (portal.desc, portal.direction)
+                text += " %s to the %s." % (portal.desc, portal.name)
             elif n == (len(visible_portals) - 1):
-                text += " and %s to the %s." % (portal.desc, portal.direction)
+                text += " and %s to the %s." % (portal.desc, portal.name)
             else:
-                text += " %s to the %s," % (portal.desc, portal.direction)
+                text += " %s to the %s," % (portal.desc, portal.name)
     
     return text
 
@@ -199,17 +231,14 @@ def get_visible(objects):
     
     return visible_objects
 
-def check_key(player, key):
+def check_key(player, key_id):
     for item in player.items.values():
-        if item.name == key:
+        if item.id == key_id:
             return True
     
     return False
      
-def do_command(command, player):
-    global _Rooms
-    
-    room = _Rooms[player.coords]
+def do_command(command, player, room, rooms):
     verb, nouns = parse_command(command, room)
     valid_objects = get_valid_objects(player, room, verb)   # Get all of the objects that the player can interact with
     object = get_object(nouns, valid_objects)
@@ -217,7 +246,7 @@ def do_command(command, player):
     noun_string = ' '.join(nouns)
     
     if object != None and verb in object.scripts: # Run a custom script for a verb on the object if it exists
-        script = "custom_script(room, player, object.scripts[verb])"
+        script = "custom_script(rooms, room, player, object.scripts[verb])"
     else:
         script = verb + "(room, player, object, noun_string)"
     
@@ -275,25 +304,23 @@ def parse_command(command, room):
         nouns[n] = translate_noun.get(noun, noun)
         
     return verb, nouns
-  
-'''
-Flags  'p' = portals
-       'r' = room items
-       'i' = player items
-       'c' = containers
-'''
-_ValidLookUp = {'look': ('pric', {'hidden': True}),
-                 'take': ('r', {'hidden': True, 'portable': False}),
-                 'drop': ('i', {'hidden': True}),
-                 'go': ('p', {'hidden': True}),
-                 'open': ('c', {'hidden': True}),
-                 'unlock': ('pc', {'hidden': True}),
-                 'reveal': ('prc', {'hidden': False})}
     
 def get_valid_objects(player, room, verb):
-    global _ValidLookUp
+    '''
+     Flags  'p' = portals
+            'r' = room items
+            'i' = player items
+            'c' = containers
+    '''
+    valid_look_up = {'look': ('pric', {'hidden': True}),
+                     'take': ('r', {'hidden': True, 'portable': False}),
+                     'drop': ('i', {'hidden': True}),
+                     'go': ('p', {'hidden': True}),
+                     'open': ('c', {'hidden': True}),
+                     'unlock': ('pc', {'hidden': True}),
+                     'reveal': ('prc', {'hidden': False})}
     
-    flags, cull = _ValidLookUp.get(verb, ('',{}))
+    flags, cull = valid_look_up.get(verb, ('',{}))
     valid_objects = []
     
     if 'p' in flags:
@@ -311,44 +338,6 @@ def get_valid_objects(player, room, verb):
     if 'c' in flags:
         for container in room.containers:
             valid_objects.append(room.containers[container])
-    
-    for object in valid_objects:
-        for attribute, value in enumerate(cull):
-            if isinstance(object, Item):    # Items are the only object that have all attributes
-                if attribute == 'portable' and object.portable == value:
-                    valid_objects.remove(object)
-                    break
-            
-            if attribute == 'hidden' and object.hidden == value:
-                valid_objects.remove(object)
-                break
-    
-    return valid_objects
-
-def get_all_objects(player, verb):
-    # Returns all valid objects in the game for a verb
-    global _ValidLookUp
-    global _Rooms
-    
-    flags, cull = _ValidLookUp.get(verb, ('',{}))
-    valid_objects = []
-    
-    for room in _Rooms.values():
-        if 'r' in flags:
-            for item in room.items.values():
-                valid_objects.append(item)
-        
-        if 'p' in flags:
-            for portal in room.portals.values():
-                valid_objects.append(portal)
-        
-        if 'c' in flags:
-            for container in room.containers.values():
-                valid_objects.append(container)
-    
-    if 'i' in flags:
-        for item in player.items.values():
-            valid_objects.append(item)
     
     for object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -381,10 +370,7 @@ def get_object(nouns, valid_objects):
     # break the list of valid objects into individual words
     object_bits = {}
     for object in valid_objects:
-        if isinstance(object, Portal):
-            name = object.direction
-        else:
-            name = object.name
+        name = object.name
         name = name.replace('_', ' ')
         name = name.replace('-', ' ')
         name = name.split()
@@ -401,10 +387,10 @@ def get_object(nouns, valid_objects):
                 return object_bits[bit][0]
             
 ########### ACTIONS #############
-def look(room, player, object, noun, script=False):
+def look(room, player, object, noun):
     if object == None:
         if 'room' in noun or noun == '':
-            text = get_room_text(player.coords)
+            text = get_room_text(room)
         else:
             text = "There is no %s here." % noun
     else:
@@ -412,7 +398,7 @@ def look(room, player, object, noun, script=False):
             
     return text
 
-def take(room, player, object, noun, script=False):
+def take(room, player, object, noun):
     if object == None:
         text = "There is no %s to take." % noun
     else:
@@ -423,10 +409,10 @@ def take(room, player, object, noun, script=False):
     
     return text
 
-def open(room, player, object, noun, script=False):
+def open(room, player, object, noun):
     if object == None:
         text = "There is no %s to open." % noun
-    elif object.locked and not script:
+    elif object.locked:
         text = "You can't open the %s, it is locked." % object.name
     else:
         if len(object.items) > 0:
@@ -442,10 +428,10 @@ def open(room, player, object, noun, script=False):
     
     return text
 
-def go(room, player, object, noun, script=False):
+def go(room, player, object, noun):
     if object == None:
         text = "You can't go that way."
-    elif object.locked and not script:
+    elif object.locked:
         text = "That way is locked."
     else:
         # Move player to the coordinates the portal leads to
@@ -454,7 +440,7 @@ def go(room, player, object, noun, script=False):
         
     return text
 
-def drop(room, player, object, noun, script=False):
+def drop(room, player, object, noun):
     if object == None:
         text = "You have no %s to drop." % noun
     else:
@@ -465,13 +451,13 @@ def drop(room, player, object, noun, script=False):
     
     return text
 
-def unlock(room, player, object, noun, script=False):
+def unlock(room, player, object, noun):
     if object == None:
         text = "There is no %s to unlock." % noun
     elif not object.locked:
         text = "The %s is already unlocked." % object.name
     else:
-        if check_key(player, object.key) or script:
+        if check_key(player, object.key):
             object.locked = False
             text = "You have unlocked the %s." % object.name
         else:
@@ -479,7 +465,7 @@ def unlock(room, player, object, noun, script=False):
     
     return text
 
-def inventory(room, player, object, noun, script=False):
+def inventory(room, player, object, noun):
     if len(player.items) > 0:
         text = "Inventory:"
         for item in player.items.values():
@@ -489,31 +475,32 @@ def inventory(room, player, object, noun, script=False):
         
     return text
 
-def quit(room, player, object, noun, script=False):
+def quit(room, player, object, noun):
     return 'quit'
 
-def bad_command(room, player, object, noun, script=False):
+def bad_command(room, player, object, noun):
     return "That is not a valid command."
 
 ############# CUSTOM SCRIPT METHODS ##########
-def custom_script(room, player, script):
+def custom_script(rooms, room, player, script):
     message = ''
     for verb, noun in script:
         nouns = noun.split()
-        valid_objects = get_all_objects(player, verb)
+        valid_objects = get_valid_objects(player, room, verb)
         object = get_object(nouns, valid_objects)
         
-        script = verb + "(room, player, object, noun, script=True)"
+        script = verb + "(room, player, object, noun)"
         text = eval(script)
         
         if verb == 'print_text':
             message += text
-    
+
     return message
         
-def print_text(room, player, object, noun, script=False):
+def print_text(room, player, object, noun):
     return noun
 
-def reveal(room, player, object, noun, script=False):
+def reveal(room, player, object, noun):
     # Reveals a hidden object
     object.hidden = False
+
