@@ -1,5 +1,6 @@
 from socket import *
 import thread
+import sys
 
 HOST = gethostname()
 #HOST = '172.16.248.48'
@@ -17,27 +18,29 @@ r.connect((HOST, R_PORT))
 
 # Get user info (name)
 print ""
-user = raw_input('Enter your name  >>>  ')
+user = raw_input('Enter your name >>>  ')
 # send connection string
 s.send(user + ' is now connected.')
 
 def receive_msg(r):
     # called from constantly
+    line = '<%s> says:' % user
     while True:
         data = r.recv(1024)
-        print '\n' + data + '\n'
+        if line not in data:
+            print data + '\n'
         
 def send_msg():
    
     #  might be an idea to make and create the send connection for every message sent.  ???? 
-    message = raw_input('Your Message  >>>  ')
+    message = raw_input('')
     if message == 'Quit' or message == 'quit':
         s.close()
         print 'You are no longer connected to Chat.'
     elif message.strip() == "":
         pass
     else:
-        s.send(user + ' says  "' + message + '"')
+        s.send('<'+user+'>' + ' says:  "' + message + '"')
 
 thread.start_new_thread(receive_msg, (r,))
 
