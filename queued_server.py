@@ -4,12 +4,12 @@ import socket
 import thread
 import threading
 
-action_queue = {} #Queue user actions as player.name ->[actions] (a list of lists technically)
+action_queue = {} #Queue user actions as player.name ->[[command, player]]
 return_queue = {} #Queue responses as player.name -> response
 clients_list = {} #Mapping of socket -> player.name
 client_map = {}
 
-def push_queue(): ###Error: int object has no attribute send?
+def push_queue():
     print 'Pushing response queue.'
     for client in clients_list: #For each person...
         person = clients_list[client] #Get name of person.
@@ -25,11 +25,11 @@ def run_queue():
             if command[0] == 'did_nothing':
                 response = "did_nothing_got_it"
             else:
-                response = engine.do_command(command[0], command[1], command[2], command[3])
+                response = engine.do_command(command[0], command[1])
             if response != '': #Non-blank response
                 return_queue[command[1].name] = return_queue.get(command[1].name, '') + response
             else:
-                response = engine.do_command(command[0], command[1], command[2], command[3])
+                response = engine.do_command(command[0], command[1])
                 return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
         action_queue[command[1].name] = [] #Empty the action queue for this person.
 
@@ -55,7 +55,7 @@ def room_loop(c, player):
     
     while(1):
         command = c.recv(4096)
-        action_var = [command, player, rooms[player.coords], rooms]
+        action_var = [command, player]
         action_queue[player.name].append(action_var)
         
         if (time.time() - start_time) > timeout: #more than x seconds passed
