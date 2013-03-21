@@ -116,6 +116,10 @@ class Player:
     Attributes:
     - Name
     - Coordinates
+    - fih = faith in humanity
+    - ego = Ego or vanity
+    - tolerance
+    - balls - aka bravery
     
     Contains:
     - Items
@@ -123,11 +127,37 @@ class Player:
     def __init__(self, name, coords, items = []):
         self.name = name.lower()
         self.coords = coords
-        
+        self.fih = 25
+        self.ego = 25
+        self.tolerance = 25
+        self.balls = 25
         self.items = {}     # Create a dictionary of the items a player contains
         for item in items:
             self.items[item.name] = item
 
+class NPC:
+    '''
+    Attributes:
+    - Name
+    - Affiliation/type
+    - Coordinates
+    - Targeted
+    - Static (bool)
+    - File (Twitter scrape generated)
+    - Birth - time
+    - Lifespan - hours/days
+    '''
+    def __init__(self, name ):
+        self.name = name.lower()
+        #self.affiliation = ""
+        #self.coords = ""(x, y, z)
+        #self.Targeted = ""(bool)
+        #self.static = ""(bool)
+        #self.file = ""(file extension/handler)
+        #self.birth = ""(system time of birth)
+        #self.lifespan = ""(int)
+        
+    
 _IDs = {}
 
 def unique_id(prefix):
