@@ -1,14 +1,25 @@
 import socket
 import sys
+import time
+import msvcrt
 
 def get_command():
-
+    start_time = time.time()
+    timeout = 10
     print >>sys.stdout, '> ', #sys.stdout = Wherever this is going. This will print whatever follows the , to sys.stdout
     command = ''
 
-    command = sys.stdin.readline().strip() #Get the command from stdin
-
-        
+    while(1):
+        if msvcrt.kbhit():
+            char = msvcrt.getche()
+            if ord(char) == 13: #Enter
+                break
+            elif ord(char) == 8: #Backspace
+                command = command[:-1]
+            elif ord(char) >= 32: #Space or other character
+                command += char
+        if len(command) == 0 and (time.time()-start_time) > timeout:
+            break        
     
     print >>sys.stdout, '' 
     if len(command) > 0:
