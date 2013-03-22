@@ -48,7 +48,7 @@ def client_thread(c):
 
 def room_loop(c, player):
     start_coords = player.coords
-    description = engine.get_room_text(rooms[player.coords])
+    description = engine.get_room_text(player.coords)
     c.send(description + '*')
     start_time = time.time()
     timeout = 0.01
