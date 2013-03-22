@@ -24,6 +24,8 @@ def run_queue():
             
             if command[0] == 'did_nothing':
                 response = "did_nothing_got_it"
+            elif command[0] == 'quit':
+                response = 'quit_accepted'
             else:
                 response = engine.do_command(command[0], command[1])
             if response != '': #Non-blank response
