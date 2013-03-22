@@ -29,9 +29,10 @@ def run_queue():
                 response = engine.do_command(command[0], command[1])
             if response != '': #Non-blank response
                 return_queue[command[1].name] = return_queue.get(command[1].name, '') + response
-            else:
+            else: #Response was blank?, try to get a new one.
                 response = engine.do_command(command[0], command[1])
-                return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
+                if(response != "You can't go that way."): #If this happened they didn't need to get this response.
+                    return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
         action_queue[command[1].name] = [] #Empty the action queue for this person.
 
     push_queue()
