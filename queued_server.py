@@ -1,10 +1,13 @@
+#NOTE: Presently not working properly, only accepting of a single client connection before it starts having errors.
+
 import time
 import engine
 import socket
 import thread
 import threading
+import Queue
 
-action_queue = {} #Queue user actions as player.name ->[[command, player]]
+action_queue = Queue.Queue() #Queue user actions as [command, player.name]
 return_queue = {} #Queue responses as player.name -> response
 clients_list = {} #Mapping of socket -> player.name
 client_map = {}
@@ -19,21 +22,20 @@ def push_queue():
 
 def run_queue():
     print 'Running the command queue.'
-    for command_list in action_queue.values(): #Actions
-        for command in command_list: #[command, player]
-            if command[0] == 'did_nothing':
-                response = "did_nothing_got_it"
-            elif command[0] == 'quit':
-                response = 'quit_accepted'
-            else:
-                response = engine.do_command(command[0], command[1])
-            if response != '': #Non-blank response
-                return_queue[command[1].name] = return_queue.get(command[1].name, '') + response
-            else: #Response was blank?, try to get a new one.
-                response = engine.do_command(command[0], command[1])
-                if(response != "You can't go that way."): #If this happened they didn't need to get this response.
-                    return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
-        action_queue[command[1].name] = [] #Empty the action queue for this person.
+    while not action_queue.empty():
+        command = action_queue.get()
+        if command[0] == 'did_nothing':
+            response = "did_nothing_got_it"
+        elif command[0] == 'quit':
+            response = 'quit_accepted'
+        else:
+            response = engine.do_command(command[0], command[1])
+        if response != '': #Non-blank response
+            return_queue[command[1].name] = return_queue.get(command[1].name, '') + response
+        else: #Response was blank?, try to get a new one.
+            response = engine.do_command(command[0], command[1])
+            if(response != "You can't go that way."): #If this happened they didn't need to get this response.
+                return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
 
     push_queue()
 
@@ -41,7 +43,6 @@ def client_thread(c):
     player = engine.Player('player', (0,0,1))
     player_quit = False
     clients_list[c.fileno()] = player.name
-    action_queue[player.name] = []
     return_queue[player.name] = ''
     
     while not player_quit:
@@ -58,7 +59,7 @@ def room_loop(c, player):
     while(1):
         command = c.recv(4096)
         action_var = [command, player]
-        action_queue[player.name].append(action_var)
+        action_queue.put(action_var)
         
         if (time.time() - start_time) > timeout: #more than x seconds passed
             run_queue()
