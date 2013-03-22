@@ -1,6 +1,7 @@
 #Room maker?
 
 import engine
+import loader
 
 room_desc = ''
 room_portals = []
@@ -399,6 +400,13 @@ def make_room():
 
 
     room = engine.Room(room_desc, portals = room_portals, containers = room_containers, items = room_items) #Make the room.
+    test = raw_input('Please enter the 3 parts of the tuple for the room in form "x y z":\r\n')
+
+    vals = test.split()
+
+    coords = (int(vals[0]), int(vals[1]), int(vals[2]))
+    
+    loader.save_room(room, coords)
 
     #Send the room in?
 
@@ -416,7 +424,7 @@ def make_room():
         print 'Name = %s' % room.items[item].name
 
     
-
+    
 
 initiate_maker()
 
