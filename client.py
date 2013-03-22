@@ -3,26 +3,45 @@ import sys
 import time
 import msvcrt
 
-def get_command():
-    start_time = time.time()
-    timeout = 10
-    print >>sys.stdout, '> ', #sys.stdout = Wherever this is going. This will print whatever follows the , to sys.stdout
-    command = ''
+printed = False
 
-    while(1):
-        if msvcrt.kbhit():
-            char = msvcrt.getche()
-            if ord(char) == 13: #Enter
+def get_command():
+    global printed
+    start_time = time.time()
+    timeout = 3
+    command = ''
+    if(printed): #We printed something last time.
+        printed = False
+        print >>sys.stdout, '> ', #sys.stdout = Wherever this is going. This will print whatever follows the , to sys.stdout
+
+        while(1):
+            if msvcrt.kbhit():
+                char = msvcrt.getche()
+                if ord(char) == 13: #Enter
+                    break
+                elif ord(char) == 8: #Backspace
+                    command = command[:-1]
+                elif ord(char) >= 32: #Space or other character
+                    command += char
+            if len(command) == 0 and (time.time()-start_time) > timeout:
+                break        
+        
+    else: #We haven't printed anything yet
+        while(1):
+            if msvcrt.kbhit():
+                char = msvcrt.getche()
+                if ord(char) == 13: #Enter
+                    break
+                elif ord(char) == 8: #Backspace
+                    command = command[:-1]
+                elif ord(char) >= 32: #Space or other character
+                    command += char
+            if len(command) == 0 and (time.time()-start_time) > timeout:
                 break
-            elif ord(char) == 8: #Backspace
-                command = command[:-1]
-            elif ord(char) >= 32: #Space or other character
-                command += char
-        if len(command) == 0 and (time.time()-start_time) > timeout:
-            break        
-    
-    print >>sys.stdout, '' 
-    if len(command) > 0:
+
+         
+    if len(command) > 0 and command.strip() != '':
+        print >>sys.stdout, ''
         return command
     else:
         return 'did_nothing' #Empty command
@@ -61,8 +80,9 @@ while(1):
         player_quit = True
         break
     
-    if len(msg) > 0:    
+    if len(msg) > 0 and 'did_nothing_got_it' not in msg:    
         print >>sys.stdout, msg #Print the msg to sys.stdout
+        printed = True
         
     while(1):
         command = get_command() #Call function to get user input
