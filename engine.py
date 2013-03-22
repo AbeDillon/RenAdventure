@@ -16,7 +16,7 @@ class Room:
         # Create a dictionary for each list of portals/containers/items
         self.portals = {}
         for portal in portals:
-            self.portals[portal.name] = portal
+            self.portals[portal.direction] = portal
         
         self.containers = {}
         for container in containers:
@@ -550,3 +550,7 @@ def print_text(room, player, object, noun, script=False):
 def reveal(room, player, object, noun, script=False):
     # Reveals a hidden object
     object.hidden = False
+
+def hide(room, player, object, noun, script=False):
+    # Hides an object
+    object.hidden = True
