@@ -20,8 +20,7 @@ def push_queue():
 def run_queue():
     print 'Running the command queue.'
     for command_list in action_queue.values(): #Actions
-        for command in command_list:
-            
+        for command in command_list: #[command, player]
             if command[0] == 'did_nothing':
                 response = "did_nothing_got_it"
             elif command[0] == 'quit':
