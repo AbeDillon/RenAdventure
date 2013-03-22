@@ -21,7 +21,7 @@ def room_loop(c, player):
         command = c.recv(4096)
         
         if command == 'did_nothing':
-            response = "did_nothing_got_it"
+            response = "That is not a valid command."
         else:
             response = engine.do_command(command, player)
         

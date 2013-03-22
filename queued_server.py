@@ -60,8 +60,8 @@ def room_loop(c, player):
         command = c.recv(4096)
         action_var = [command, player]
         action_queue.put(action_var)
-
-        if (time.time() - start_time) > timeout:
+        
+        if (time.time() - start_time) > timeout: #more than x seconds passed
             run_queue()
             start_time = time.time()
         
@@ -78,7 +78,6 @@ print 'Waiting for clients...'
 s.bind((host, port))
 s.listen(5)
 
-thread.start_new_thread(time_queue, (1,)) #Run a thread to handle the timing of in/out of queue.
 while(1):
     c, addr = s.accept()
     print 'Got connection from', addr
