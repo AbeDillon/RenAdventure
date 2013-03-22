@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<room>
+<desc>something</desc>
+<item>
+<name>apple</name>
+<desc>blah</desc>
+<inspect_desc>blah blah</inspect_desc>
+<portable>1</portable>
+<hidden>0</hidden>
+<take_script>
+<take>small apple</take>
+<reveal>large apple</reveal>
+<unlock>chest</unlock>
+<print_text>You have picked up the small apple, a large sword appears in the room.</print_text>
+</take_script>
+</item>
+<portal x="0" y="0" z="0">
+<name>door</name>
+<direction>north</direction>
+<desc>blah</desc>
+<inspect_desc>blah</inspect_desc>
+<locked>0</locked>
+<hidden>0</hidden>
+<key>None</key>
+</portal>
+<container>
+<name>chest</name>
+<desc>desc</desc>
+<inspect_desc>inspect</inspect_desc>
+<locked>0</locked>
+<hidden>0</hidden>
+<key>None</key>
+<item>
+<name>apple</name>
+<desc>blah</desc>
+<inspect_desc>blah blah</inspect_desc>
+<portable>1</portable>
+<hidden>0</hidden>
+<take_script>
+<take>small apple</take>
+<reveal>large apple</reveal>
+<unlock>chest</unlock>
+<print_text>You have picked up the small apple, a large sword appears in the room.</print_text>
+</take_script>
+</item>
+</container>
+</room>
