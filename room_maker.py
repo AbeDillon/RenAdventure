@@ -78,7 +78,7 @@ def make_room():
 
             inspect_desc = raw_input("What inspection description would you like this portal to have?\r\n")
 
-            loc = (-1,-1,-1) #Use for non-made room?
+            loc = (-1,-1,-1) #Use for non-made room? ###################### Needs to be an identifier for having the location presently "undefined" as where these go is unknown.
 
             print "Portals may have scripts which cause other things to happen."
 
