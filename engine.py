@@ -160,14 +160,14 @@ _IDs = {}
 # Initialize the game state
 _Rooms = {}
 
-
-portal = Portal('door1', 'north', 'a wooden door', 'an old creaky door', (0,1,1))
+portal = Portal('door1', 'north', 'a wooden door', 'an old creaky door', (0,1,1), locked=True, key='small key')
 apple1 = Item('small apple', 'a small apple', 'blah', scripts={'take': (('take', 'small apple'), ('reveal', 'large apple'), ('unlock', 'chest'), ('print_text', 'You have picked up the small apple, a large sword appears in the room.'))})
 sword = Item('large sword', 'a large sword', 'blah', hidden=True)
-room = Room('You are in an empty jail cell, there is a cot bolted into the south wall.', portals=[portal], items=[apple1, sword])
+key = Item('small key', 'a small key', 'blah')
+room = Room('You are in an empty jail cell, there is a cot bolted into the south wall.', portals=[portal], items=[apple1, sword, key])
 _Rooms[(0,0,1)] = room
 
-portal = Portal('door2', 'south', 'an iron door', 'an old creaky door', (0,0,1))
+portal = Portal('door2', 'south', 'an iron door', 'an old creaky door', (0,0,1), locked=True, key='small key')
 apple2 = Item('large apple', 'a large apple', 'blah', hidden=True)
 chest = Container('chest', 'a small chest', 'blah', items=[], locked=True)
 room = Room('You are in a guard room, there is a table on the north end of the room.', portals=[portal], items=[apple2], containers=[chest])
@@ -247,6 +247,7 @@ def do_command(command, player):
     valid_objects = get_valid_objects(player, room, verb)   # Get all of the objects that the player can interact with
     object = get_object(nouns, valid_objects)
     
+    print valid_objects
     noun_string = ' '.join(nouns)
     
     if object != None and verb in object.scripts: # Run a custom script for a verb on the object if it exists
@@ -284,6 +285,7 @@ def parse_command(command, room):
                        'walk': 'go',
                        'drop': 'drop',
                        'unlock': 'unlock',
+                       'lock': 'lock',
                        'inventory': 'inventory',
                        'quit': 'quit'}
     
@@ -321,6 +323,7 @@ _ValidLookUp = {'look': ('pric', {'hidden': True}),
                  'go': ('p', {'hidden': True}),
                  'open': ('c', {'hidden': True}),
                  'unlock': ('pc', {'hidden': True}),
+                 'lock': ('pc', {'hidden': True}),
                  'reveal': ('prc', {'hidden': False})}
     
 def get_valid_objects(player, room, verb):
@@ -415,7 +418,7 @@ def get_object(nouns, valid_objects):
     object_bits = {}
     for object in valid_objects:
         if isinstance(object, Portal):
-            name = object.direction
+            name = object.direction + ' ' + object.name # So we can detect both direction and name as an identifier for a portal
         else:
             name = object.name
         name = name.replace('_', ' ')
@@ -506,9 +509,33 @@ def unlock(room, player, object, noun, script=False):
     else:
         if check_key(player, object.key) or script:
             object.locked = False
+            
+            for portal in _Rooms[object.coords].portals.values(): # Unlock the portal from the other side as well
+                if portal.coords == player.coords:
+                    portal.locked = False
+                
             text = "You have unlocked the %s." % object.name
         else:
             text = "You don't have the key to unlock the %s." % object.name
+    
+    return text
+
+def lock(room, player, object, noun, script=False):
+    if object == None:
+        text = "There is no %s to lock." % noun
+    elif object.locked:
+        text = "The %s is already unlocked." % object.name
+    else:
+        if check_key(player, object.key) or script:
+            object.locked = True
+            
+            for portal in _Rooms[object.coords].portals.values(): # Lock the portal from the other side as well
+                if portal.coords == player.coords:
+                    portal.locked = True
+            
+            text = "You have locked the %s." % object.name
+        else:
+            text = "You don't have the key to lock the %s." % object.name
     
     return text
 
