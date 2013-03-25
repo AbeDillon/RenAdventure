@@ -41,6 +41,8 @@ def get_command():
 
          
     if len(command) > 0 and command.strip() != '':
+        if command == 'did_nothing':
+            command = 'did nothing'
         print >>sys.stdout, ''
         return command
     else:
