@@ -1,4 +1,8 @@
 __author__ = 'eking, adillon'
+from math import *
+import os
+import loader
+import random
 
 class Room:
     '''
@@ -9,8 +13,9 @@ class Room:
     - Portals
     - Containers
     - Items
+    - Players
     '''
-    def __init__(self, desc, portals = [], containers = [], items = []):
+    def __init__(self, desc, portals = [], containers = [], items = [], players = []):
         self.desc = desc
         
         # Create a dictionary for each list of portals/containers/items
@@ -25,6 +30,10 @@ class Room:
         self.items = {}
         for item in items:
             self.items[item.name] = item
+            
+        self.players = {}
+        for player in players:
+            self.players[player.name] = player
     
 class Portal:
     '''
@@ -100,25 +109,38 @@ class Player:
     Attributes:
     - Name
     - Coordinates
-    - fih = faith in humanity
-    - ego = Ego or vanity
-    - tolerance
-    - balls - aka bravery
+    - Faith in Humanity
+    - Affiliation (dictionary of opinion of each person)
     
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, items = []):
+    def __init__(self, name, coords, affiliation, items = [], fih = 30):
+        global _Rooms
+        
         self.name = name.lower()
         self.coords = coords
-        self.fih = 25
-        self.ego = 25
-        self.tolerance = 25
-        self.balls = 25
+        self.fih = fih
+        self.affiliation = affiliation
+        
+        _Rooms[self.coords].players[self.name] = self # Add player to the room's list of players
+        
         self.items = {}     # Create a dictionary of the items a player contains
         for item in items:
             self.items[item.name] = item
-            
+
+class NPC:
+    '''
+    Attributes:
+    - Name
+    - Coordinates
+    - Affiliation (dictionary of opinion of each person)
+    '''
+    def __init__(self, name, coords, affiliation):
+        self.name = name.lower()
+        self.coords = coords
+        self.affiliation = affiliation
+
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
     valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'print_text', 'reveal']
@@ -132,46 +154,15 @@ def scrub(scripts):
     
     return scripts
 
-class NPC:
-    '''
-    Attributes:
-    - Name
-    - Affiliation/type
-    - Coordinates
-    - Targeted
-    - Static (bool)
-    - File (Twitter scrape generated)
-    - Birth - time
-    - Lifespan - hours/days
-    '''
-    def __init__(self, name ):
-        self.name = name.lower()
-        #self.affiliation = ""
-        #self.coords = ""(x, y, z)
-        #self.Targeted = ""(bool)
-        #self.static = ""(bool)
-        #self.file = ""(file extension/handler)
-        #self.birth = ""(system time of birth)
-        #self.lifespan = ""(int)
-        
-    
-_IDs = {}
-
 # Initialize the game state
 _Rooms = {}
 
-portal = Portal('door1', 'north', 'a wooden door', 'an old creaky door', (0,1,1), locked=True, key='small key')
-apple1 = Item('small apple', 'a small apple', 'blah', scripts={'take': (('take', 'small apple'), ('reveal', 'large apple'), ('unlock', 'chest'), ('print_text', 'You have picked up the small apple, a large sword appears in the room.'))})
-sword = Item('large sword', 'a large sword', 'blah', hidden=True)
-key = Item('small key', 'a small key', 'blah')
-room = Room('You are in an empty jail cell, there is a cot bolted into the south wall.', portals=[portal], items=[apple1, sword, key])
-_Rooms[(0,0,1)] = room
-
-portal = Portal('door2', 'south', 'an iron door', 'an old creaky door', (0,0,1), locked=True, key='small key')
-apple2 = Item('large apple', 'a large apple', 'blah', hidden=True)
-chest = Container('chest', 'a small chest', 'blah', items=[], locked=True)
-room = Room('You are in a guard room, there is a table on the north end of the room.', portals=[portal], items=[apple2], containers=[chest])
-_Rooms[(0,1,1)] = room
+for filename in os.listdir('rooms'):
+    path = 'rooms/' + filename
+    split_name = filename.split('_')
+    coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
+    
+    _Rooms[coords] = loader.load_room(path)
   
 def get_room_text(coords):
     global _Rooms
@@ -239,7 +230,7 @@ def check_key(player, key):
     
     return False
      
-def do_command(command, player):
+def do_command(command, player, npc):
     global _Rooms
     
     room = _Rooms[player.coords]
@@ -247,7 +238,6 @@ def do_command(command, player):
     valid_objects = get_valid_objects(player, room, verb)   # Get all of the objects that the player can interact with
     object = get_object(nouns, valid_objects)
     
-    print valid_objects
     noun_string = ' '.join(nouns)
     
     if object != None and verb in object.scripts: # Run a custom script for a verb on the object if it exists
@@ -257,6 +247,7 @@ def do_command(command, player):
     
     text = eval(script)
     
+    npc_action(npc)
     return text
     
 def parse_command(command, room):
@@ -310,6 +301,65 @@ def parse_command(command, room):
         nouns[n] = translate_noun.get(noun, noun)
         
     return verb, nouns
+
+def npc_action(npc):
+    global _Rooms
+    
+    room = _Rooms[npc.coords]
+    if len(room.players) > 0: # There are players in the room, talk to them
+        print 'Found a player, talking now'
+        for player in room.players.values():
+            difference = 0
+            for person in npc.affiliation: # Calculate the total difference between the player and the npc
+                difference += -abs(npc.affiliation[person] - player.affiliation[person])
+            
+            difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
+            
+            if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
+                player.fih = 30
+            else:
+                player.fih += difference
+            print "Difference was %d" % difference
+            print player.fih
+    else: # No players in the room, walk closer to a player if there is one within 2 rooms, otherwise randomly choose a portal
+        bubble_coords = []
+        for i in range(-2,3): # Create a 5x5 bubble around the NPC that they are aware of
+            for j in range(-2,3):
+                bubble_coords.append((npc.coords[0]+i, npc.coords[1]+j, npc.coords[2]))
+        
+        trimmed_bubble = []
+        for coords in bubble_coords: # Remove coords from the bubble that don't have room with players in them
+            if coords in _Rooms and len(_Rooms[coords].players) > 0:
+                trimmed_bubble.append(coords)
+        
+        valid_portals = []
+        for portal in room.portals.values(): # Find all visible and unlocked portals
+            if not portal.locked and not portal.hidden:
+                valid_portals.append(portal)
+        
+        if len(trimmed_bubble) > 0:
+            closest = [(None, None, None), None] # (coords of room with player), distance to room from npc
+            for coords in trimmed_bubble: # Find closest room with a player
+                distance = sqrt((coords[0] - npc.coords[0])**2 + (coords[1] - npc.coords[1])**2) # Calculate distance to the coords from where the NPC is
+                if closest[1] == None or distance < closest[1]:
+                    closest = [coords, distance]
+                    
+            best_portal = [None, closest[1]] # portal, distance that portal puts NPC from the player
+            for portal in valid_portals: # Find the portal that gets the NPC closest to the player
+                coords = portal.coords
+                player_coords = closest[0]
+                
+                distance = sqrt((coords[0] - player_coords[0])**2 + (coords[1] - player_coords[1])**2)
+                if distance < best_portal[1]:
+                    best_portal = [portal, distance]
+            
+            portal = best_portal[0]  
+        else:
+            if len(valid_portals) > 0:
+                portal = random.choice(valid_portals)
+        
+        npc.coords = portal.coords
+        print "Moving to %d, %d, %d" % npc.coords
   
 '''
 Flags  'p' = portals
@@ -479,13 +529,17 @@ def open(room, player, object, noun, script=False):
     return text
 
 def go(room, player, object, noun, script=False):
+    global _Rooms
+    
     if object == None:
         text = "You can't go that way."
     elif object.locked and not script:
         text = "That way is locked."
     else:
         # Move player to the coordinates the portal leads to
+        del room.players[player.name] # Remove player from last room
         player.coords = object.coords
+        _Rooms[player.coords].players[player.name] = player # Add player to new room
         text = ''
         
     return text

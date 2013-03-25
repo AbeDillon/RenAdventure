@@ -70,8 +70,8 @@ def load_portal(root):
         else:
             text = node.text
             
-            if text.isdigit():
-                text = bool(text)
+            if text != None and text.isdigit():
+                text = bool(int(text))
         
             portal_attributes[node.tag] = text
 

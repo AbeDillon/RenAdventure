@@ -5,14 +5,21 @@ import socket
 import thread
 import threading
 
+import random
+
 def client_thread(c):
-    player = engine.Player('player', (0,0,1))
+    name = 'player' + str(random.randint(0, 1000))
+    affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}
+    player = engine.Player(name, (0,0,1), affiliation)
     player_quit = False
     
+    affiliation = {'Obama': 1, 'Kanye': 2, 'OReilly': 3, 'Gottfried': 4, 'Burbiglia': 5}
+    npc = engine.NPC('test', (3,4,1), affiliation)
+    
     while not player_quit:
-        player_quit = room_loop(c, player)
+        player_quit = room_loop(c, player, npc)
         
-def room_loop(c, player):
+def room_loop(c, player, npc):
     start_coords = player.coords
     description = engine.get_room_text(player.coords)
     c.send(description + '*')
@@ -23,7 +30,7 @@ def room_loop(c, player):
         if command == 'did_nothing':
             response = "did_nothing_got_it"
         else:
-            response = engine.do_command(command, player)
+            response = engine.do_command(command, player, npc)
         
         if len(response) > 0:
             c.send(response + '*')
