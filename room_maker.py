@@ -12,6 +12,10 @@ avail_items = {}
 
 
 def initiate_maker():
+    global room_desc
+    global room_portals
+    global room_containers
+    global room_items
 
     print "Welcome, this room is not yet built."
 
@@ -21,7 +25,11 @@ def initiate_maker():
 
         if ans == 'room' or ans == 'a room': #initiate room building.
 
-            make_room()
+            make_room() #Make the room. After that, clear out the cache of other things so another room could be made.
+            room_desc = ''
+            room_portals = []
+            room_containers = []
+            room_items = []
 
         elif ans == 'items' or ans == 'item': #Initiate item building
             make_items()
@@ -127,7 +135,16 @@ def make_portals():
 
             inspect_desc = raw_input("What inspection description would you like this portal to have?\r\n")
 
-            loc = (-1,-1,-1) #Use for non-made room? ###################### Needs to be an identifier for having the location presently "undefined" as where these go is unknown.
+            ans = raw_input('Do you know the location of the room this portal points to? (as a tuple)\r\n')
+
+            if ans == 'yes' or ans == 'y':
+                location = raw_input('Please enter the tuple in the form x y z:\r\n')
+                location = location.split()
+                loc = (location[0], location[1], location[2]) #Make a tuple from the location
+
+            else:
+
+                loc = (0,0,0) #Use for non-made room? ###################### Needs to be an identifier for having the location presently "undefined" as where these go is unknown.
 
             print "Portals may have scripts which cause other things to happen."
 
