@@ -51,7 +51,11 @@ def client_thread(c):
     while not player_quit:
         player_quit = room_loop(c, player)
     print 'Ending client thread %s' % c.fileno()
+    del return_queue[c.fileno()]
+    del client_map[c.fileno()]
+    
     return 1 #Exit code 1
+
 def room_loop(c, player):
     start_coords = player.coords
     description = engine.get_room_text(player.coords)
@@ -74,7 +78,7 @@ def room_loop(c, player):
             if start_coords != player.coords: # Player changed rooms
                 break
         except IOError, e:
-            print 'Error, could not recieve command'
+            print 'Could not recieve command, assuming connection closed.'
             return True
 
 s = socket.socket()
