@@ -7,22 +7,22 @@ import thread
 import threading
 import Queue
 
-action_queue = Queue.Queue() #Queue user actions as [command, player.name]
-return_queue = {} #Queue responses as player.name -> response
-clients_list = {} #Mapping of socket -> player.name
-client_map = {}
+action_queue = Queue.Queue() #Queue user actions as [command, player, c]
+return_queue = {} #Queue responses as c.fileno() -> response
+client_map = {} #Map of c.fileno() -> c
 
 def push_queue():
     print 'Pushing response queue.'
-    for client in clients_list: #For each person...
-        person = clients_list[client] #Get name of person.
-        client_map[client].send(return_queue[person]) #Send persons's queue to them.
-        return_queue[person] = '' #Clear queue for person.
-        client_map[client].send('*') #End of transmission
+    for client in client_map: #For each person...
+            client_map[client].send(return_queue[client]) #Send persons's queue to them.
+            return_queue[client] = '' #Clear queue for person.
+            client_map[client].send('*') #End of transmission
+
 
 def run_queue():
     print 'Running the command queue.'
-    while not action_queue.empty():
+    cnt = action_queue.qsize() #Number of items in the queue right now.
+    for i in range(0, cnt):
         command = action_queue.get()
         if command[0] == 'did_nothing':
             response = "did_nothing_got_it"
@@ -30,20 +30,19 @@ def run_queue():
             response = 'quit_accepted'
         else:
             response = engine.do_command(command[0], command[1])
-        if response != '': #Non-blank response
-            return_queue[command[1].name] = return_queue.get(command[1].name, '') + response
+        if response != '': #Non-blank response            
+            return_queue[command[2].fileno()] = return_queue.get(command[2].fileno(), '') + response
         else: #Response was blank?, try to get a new one.
             response = engine.do_command(command[0], command[1])
             if(response != "You can't go that way."): #If this happened they didn't need to get this response.
-                return_queue[command[1].name] = return_queue.get(command[1].name, '')+response
-
+                return_queue[command[2].fileno()] = return_queue.get(command[2].fileno(), '')+response
     push_queue()
 
+    
 def client_thread(c):
     player = engine.Player('player', (0,0,1))
     player_quit = False
-    clients_list[c.fileno()] = player.name
-    return_queue[player.name] = ''
+    return_queue[c.fileno()] = ''
     
     while not player_quit:
         player_quit = room_loop(c, player)
@@ -58,7 +57,7 @@ def room_loop(c, player):
     
     while(1):
         command = c.recv(4096)
-        action_var = [command, player]
+        action_var = [command, player, c]
         action_queue.put(action_var)
         
         if (time.time() - start_time) > timeout: #more than x seconds passed
@@ -82,5 +81,4 @@ while(1):
     c, addr = s.accept()
     print 'Got connection from', addr
     client_map[c.fileno()] = c
-    clients_list[c.fileno()] = '' #Add this socket to list of sockets, not presently tagged with person's name.
     thread.start_new_thread(client_thread,(c,))
