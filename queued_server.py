@@ -12,7 +12,7 @@ return_queue = {} #Queue responses as c.fileno() -> response
 client_map = {} #Map of c.fileno() -> c
 
 def push_queue():
-    print 'Pushing response queue.'
+    print 'Pushing the response queue.'
     for client in client_map: #For each person...
             client_map[client].send(return_queue[client]) #Send persons's queue to them.
             return_queue[client] = '' #Clear queue for person.
@@ -28,14 +28,18 @@ def run_queue():
             response = "did_nothing_got_it"
         elif command[0] == 'quit':
             response = 'quit_accepted'
+            
         else:
             response = engine.do_command(command[0], command[1])
         if response != '': #Non-blank response            
             return_queue[command[2].fileno()] = return_queue.get(command[2].fileno(), '') + response
+   
         else: #Response was blank?, try to get a new one.
+
             response = engine.do_command(command[0], command[1])
             if(response != "You can't go that way."): #If this happened they didn't need to get this response.
                 return_queue[command[2].fileno()] = return_queue.get(command[2].fileno(), '')+response
+
     push_queue()
 
     
@@ -46,8 +50,8 @@ def client_thread(c):
     
     while not player_quit:
         player_quit = room_loop(c, player)
-
-
+    print 'Ending client thread %s' % c.fileno()
+    return 1 #Exit code 1
 def room_loop(c, player):
     start_coords = player.coords
     description = engine.get_room_text(player.coords)
@@ -56,16 +60,22 @@ def room_loop(c, player):
     timeout = 0.01
     
     while(1):
-        command = c.recv(4096)
-        action_var = [command, player, c]
-        action_queue.put(action_var)
-        
-        if (time.time() - start_time) > timeout: #more than x seconds passed
-            run_queue()
-            start_time = time.time()
-        
-        if start_coords != player.coords: # Player changed rooms
-            break
+        try:
+            command = c.recv(4096)
+
+            action_var = [command, player, c]
+            if command != '':
+                action_queue.put(action_var)
+            
+            if (time.time() - start_time) > timeout: #more than x seconds passed
+                run_queue()
+                start_time = time.time()
+            
+            if start_coords != player.coords: # Player changed rooms
+                break
+        except IOError, e:
+            print 'Error, could not recieve command'
+            return True
 
 s = socket.socket()
 host = socket.gethostname()

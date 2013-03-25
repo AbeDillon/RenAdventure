@@ -78,7 +78,6 @@ while(1):
 
     if msg == 'quit_accepted': #This is the server response when we send it "quit"
         player_quit = True
-        s.close()
         break
     
     if len(msg) > 0 and 'did_nothing_got_it' not in msg:    
@@ -90,7 +89,6 @@ while(1):
         
         if len(command) > 0: #This is a non-empty command.
             break
-    
     s.send(command) #Send the command to the server.
     
-
+s.close()
