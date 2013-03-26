@@ -3,6 +3,7 @@ from math import *
 import os
 import loader
 import random
+import AbeServer
 
 class Room:
     '''
@@ -230,7 +231,7 @@ def check_key(player, key):
     
     return False
      
-def do_command(command, player, npc):
+def do_command(command, player):
     global _Rooms
     
     room = _Rooms[player.coords]
@@ -247,7 +248,6 @@ def do_command(command, player, npc):
     
     text = eval(script)
     
-    npc_action(npc)
     return text
     
 def parse_command(command, room):
