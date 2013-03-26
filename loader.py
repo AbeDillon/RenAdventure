@@ -104,7 +104,11 @@ def load_script(root):
     script = []
     
     for node in root:
-        script.append((node.tag, node.text))
+        delay = 0
+        if 'delay' in node.attrib:
+            delay = int(node.attrib['delay'])
+
+        script.append((node.tag, node.text, delay))
     
     return tuple(script)
 

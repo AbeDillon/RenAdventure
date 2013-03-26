@@ -19,4 +19,13 @@
 <hidden>0</hidden>
 <key>None</key>
 </portal>
+<item>
+<name>key</name>
+<desc>a key</desc>
+<inspect_desc>something</inspect_desc>
+<take_script>
+	<take>key</take>
+	<open delay="5">chest</open>
+</take_script>
+</item>
 </room>

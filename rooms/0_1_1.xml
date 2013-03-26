@@ -28,4 +28,9 @@
 <hidden>0</hidden>
 <key>None</key>
 </portal>
+<container>
+<name>chest</name>
+<desc>a chest</desc>
+<inspect_desc>blah</inspect_desc>
+</container>
 </room>

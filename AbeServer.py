@@ -8,22 +8,17 @@ import engine
 
 _Host = socket.gethostname() # replace with actual host address
 
-_Game_State = {} # (mutex controlled)
-_Game_State_Lock = threading.RLock()
-
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
 
-_Players = {} # (mutex controlled)
+_MSG_Queue = Queue.Queue()
+
+_Players = [] # (mutex controlled)
 # key = (string)Player_Name : val = (player_object)
 _Players_Lock = threading.RLock()
 
 _Player_OQueues = {} # (mutex controlled)
 # key = (string)Player_Name : val = (Queue)Output_Queue
 _Player_OQueues_Lock = threading.RLock()
-
-_Player_States = {} # (mutex controlled)
-# key = (string)Player_Name : val = (Game State)Instanced Game_State
-_Player_States_Lock = threading.RLock()
 
 # We may want to keep track of threads
 _Threads = [] # mutex controlled
@@ -33,12 +28,8 @@ def main():
     """
 
     """
-    # Load Game Files
-    print "Game loaded"
-
     # Initialize _Game_State
-    global _Game_State
-    global _Game_State_Lock
+    engine.init_game()
 
     print "Game State initialized"
 
@@ -72,29 +63,39 @@ def main():
 
     # Start Main Loop
     print "Entering main loop..."
+    #loop_cnt = 0
     while 1:
+        command = None
         try:
-            player, command = _CMD_Queue.get()
-            print "player: " + player + "\n command: " + command
-            messages = engine.do_command(player, command)
-            distribute(messages)
+            command = _CMD_Queue.get_nowait()
+            print "player: " + command[0] + "\ncommand: " + command[1]
         except:
             pass
 
+        if command != None:
+            engine.put_commands([command])
+
+        messages = engine.get_messages()
+
+        if messages != []:
+            distribute(messages)
+
+        #print "loop count = " + str(loop_cnt)
+        #loop_cnt += 1
         time.sleep(0.05)
 
 def distribute(messages):
     """
 
     """
-
     _Player_OQueues_Lock.acquire()
     for message in messages:
         player = message[0]
         text = message[1]
         if player in _Player_OQueues:
             _Player_OQueues[player].put(text)
-        _Player_OQueues_Lock.release()
+
+    _Player_OQueues_Lock.release()
 
 class Login(threading.Thread):
     """
@@ -115,7 +116,7 @@ class Login(threading.Thread):
         3) Add registration (name, password, etc.)
     """
 
-    def __init__(self, listen_port=1000, spawn_port=1001, host=''):
+    def __init__(self, listen_port=1000, spawn_port=2000, host=""):
         """
         listen_port:        the default port for logging in to the server
         spawn_port:         keeps track of ports to allocate to new players
@@ -160,7 +161,7 @@ class Login(threading.Thread):
         player_name = RAProtocol.receiveMessage(conn)
 
         # *load player object (to be added, create default player for now)
-        player_obj = []
+        engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
@@ -187,6 +188,9 @@ class Login(threading.Thread):
         _Threads.append(othread)
         _Threads_Lock.release()
 
+        ithread.start()
+        othread.start()
+
         # send new I/O ports to communicate on
         ports = str(iport) + " " + str(oport)
         message = str(ports)
@@ -194,7 +198,7 @@ class Login(threading.Thread):
 
         # add player to _Players
         _Players_Lock.acquire()
-        _Players[player_name] = player_obj
+        _Players.append(player_name)
         _Players_Lock.release()
 
         conn.close()
@@ -276,7 +280,7 @@ class PlayerOutput(threading.Thread):
         self.address = addr
         self.port = port
         self.name = player_name
-        self.host = host
+        self.host = socket.gethostname()
 
     def run(self):
         """

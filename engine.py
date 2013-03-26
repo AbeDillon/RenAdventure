@@ -3,6 +3,8 @@ from math import *
 import os
 import loader
 import random
+import Queue
+import thread
 
 class Room:
     '''
@@ -116,14 +118,10 @@ class Player:
     - Items
     '''
     def __init__(self, name, coords, affiliation, items = [], fih = 30):
-        global _Rooms
-        
         self.name = name.lower()
         self.coords = coords
         self.fih = fih
         self.affiliation = affiliation
-        
-        _Rooms[self.coords].players[self.name] = self # Add player to the room's list of players
         
         self.items = {}     # Create a dictionary of the items a player contains
         for item in items:
@@ -144,7 +142,7 @@ class NPC:
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
     valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'print_text', 'reveal']
-    
+
     for script in scripts.keys():
         for action in scripts[script]:
             verb = action[0]
@@ -154,15 +152,41 @@ def scrub(scripts):
     
     return scripts
 
-# Initialize the game state
+_CommandQueue = Queue.Queue()
+_MessageQueue = Queue.Queue()
+_Players = {}
 _Rooms = {}
 
-for filename in os.listdir('rooms'):
-    path = 'rooms/' + filename
-    split_name = filename.split('_')
-    coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
-    
-    _Rooms[coords] = loader.load_room(path)
+def init_game():
+    # Initializes the map and starts the command thread
+    global _Rooms
+
+    for filename in os.listdir('rooms'):
+        path = 'rooms/' + filename
+        split_name = filename.split('_')
+        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
+
+        _Rooms[coords] = loader.load_room(path)
+
+    thread.start_new_thread(command_thread, ())
+
+def make_player(name, coords = (0,0,1), affiliation = {}):
+    global _Rooms
+    global _Players
+
+    player = Player(name, coords, affiliation)
+
+    _Players[player.name] = player # Add to list of players in the game
+    _Rooms[player.coords].players[player.name] = player # Add player to list of players in the room they are in
+
+def remove_player(name):
+    global _Rooms
+    global _Players
+
+    player = _Players[name]
+
+    del _Rooms[player.coords] # Remove the player from the room they are in
+    del _Players[name] # Remove the player from the list of players in the game
   
 def get_room_text(coords):
     global _Rooms
@@ -229,8 +253,44 @@ def check_key(player, key):
             return True
     
     return False
-     
-def do_command(command, player):
+
+def put_commands(commands):
+    # Takes a list of commands and pushes them to the command queue
+    global _CommandQueue
+
+    for command in commands:
+        _CommandQueue.put(command)
+
+def get_messages():
+    # Returns all messages currently in the message queue
+    global _MessageQueue
+
+    messages = []
+    while not _MessageQueue.empty():
+        messages.append(_MessageQueue.get())
+
+    return messages
+
+def command_thread():
+    # Runs commands from the command queue
+    global _CommandQueue
+    global _MessageQueue
+    global _Players
+
+    while 1:
+        if not _CommandQueue.empty():
+            command = _CommandQueue.get()
+            print "running command: ", command
+            player_name = command[0]
+            command = command[1]
+            player = _Players[player_name]
+
+            messages = do_command(player, command)
+            print "results: ", messages
+            for message in messages:
+                _MessageQueue.put(message)
+
+def do_command(player, command):
     global _Rooms
     
     room = _Rooms[player.coords]
@@ -244,19 +304,22 @@ def do_command(command, player):
         script = "custom_script(room, player, object.scripts[verb])"
     else:
         script = verb + "(room, player, object, noun_string)"
-    
-    text, alt_text = eval(script)
-    
-    messages = [(player.name, text)]
 
-    if len(alt_text) > 0:
-        for alt_player in room.players.values():
-            messages.append((alt_player.name, alt_text))
-
-        if verb == 'go': # Player entered a new room pass messages to all players in the new room
-            room = _Rooms[player.coords]
+    if 'custom_script' in script:
+        messages = eval(script)
+    else:
+        text, alt_text = eval(script)
+        messages = [(player.name, text)]
+        if len(alt_text) > 0:
             for alt_player in room.players.values():
-                messages.append((alt_player.name, "%s has entered the room." % player.name))
+                if alt_player is not player:
+                    messages.append((alt_player.name, alt_text))
+
+            if verb == 'go': # Player entered a new room pass messages to all players in the new room
+                room = _Rooms[player.coords]
+                for alt_player in room.players.values():
+                    if alt_player is not player:
+                        messages.append((alt_player.name, "%s has entered the room." % player.name))
     
     return messages
     
@@ -430,7 +493,7 @@ def get_valid_objects(player, room, verb):
     return valid_objects
 
 def get_all_objects(player, verb):
-    # Returns all valid objects in the game for a verb
+    # Returns all valid objects in the game for a verb and the room they are in
     global _ValidLookUp
     global _Rooms
     
@@ -440,29 +503,29 @@ def get_all_objects(player, verb):
     for room in _Rooms.values():
         if 'r' in flags:
             for item in room.items.values():
-                valid_objects.append(item)
+                valid_objects.append((room, item))
         
         if 'p' in flags:
             for portal in room.portals.values():
-                valid_objects.append(portal)
+                valid_objects.append((room, portal))
         
         if 'c' in flags:
             for container in room.containers.values():
-                valid_objects.append(container)
+                valid_objects.append((room, container))
     
     if 'i' in flags:
         for item in player.items.values():
-            valid_objects.append(item)
+            valid_objects.append((None, item))
     
-    for object in valid_objects:
+    for room, object in valid_objects:
         for attribute, value in enumerate(cull):
             if isinstance(object, Item):    # Items are the only object that have all attributes
                 if attribute == 'portable' and object.portable == value:
-                    valid_objects.remove(object)
+                    valid_objects.remove((room, object))
                     break
             
             if attribute == 'hidden' and object.hidden == value:
-                valid_objects.remove(object)
+                valid_objects.remove((room, object))
                 break
     
     return valid_objects
@@ -567,7 +630,7 @@ def go(room, player, object, noun, script=False):
         del room.players[player.name] # Remove player from last room
         player.coords = object.coords
         _Rooms[player.coords].players[player.name] = player # Add player to new room
-        text = ''
+        text = get_room_text(player.coords)
         alt_text = "%s has left the room." % player.name
         
     return text, alt_text
@@ -647,19 +710,28 @@ def bad_command(room, player, object, noun, script=False):
     return "That is not a valid command."
 ############# CUSTOM SCRIPT METHODS ##########
 def custom_script(room, player, script):
-    message = ''
-    for verb, noun in script:
+    messages = []
+    for verb, noun, delay in script:
         nouns = noun.split()
         valid_objects = get_all_objects(player, verb)
-        object = get_object(nouns, valid_objects)
-        
+
+        objects = []
+        for object_room, object in valid_objects:
+            objects.append(object)
+
+        object = get_object(nouns, objects)
+
         script = verb + "(room, player, object, noun, script=True)"
-        text = eval(script)
-        
-        if verb == 'print_text':
-            message += text
-    
-    return message
+        text, alt_text = eval(script)
+
+        for room, new_object in valid_objects: # Find the room the object is in
+            if object is new_object:
+                break
+
+        for room_player in room.players:
+            messages.append((room_player, alt_text))
+
+    return messages
         
 def print_text(room, player, object, noun, script=False):
     return noun
@@ -667,7 +739,13 @@ def print_text(room, player, object, noun, script=False):
 def reveal(room, player, object, noun, script=False):
     # Reveals a hidden object
     object.hidden = False
+    text = "A %s appears in the room." % object.name
+
+    return text, text
 
 def hide(room, player, object, noun, script=False):
     # Hides an object
     object.hidden = True
+    text = "The %s disappears from the room." % object.name
+
+    return text, text
