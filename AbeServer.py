@@ -78,7 +78,6 @@ def main():
             print "player: " + player + "\n command: " + command
             messages = engine.do_command(player, command)
             distribute(messages)
-
         except:
             pass
 
@@ -88,13 +87,14 @@ def distribute(messages):
     """
 
     """
+
     _Player_OQueues_Lock.acquire()
     for message in messages:
         player = message[0]
         text = message[1]
         if player in _Player_OQueues:
             _Player_OQueues[player].put(text)
-    _Player_OQueues_Lock.release()
+        _Player_OQueues_Lock.release()
 
 class Login(threading.Thread):
     """
@@ -148,6 +148,7 @@ class Login(threading.Thread):
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
+
             thread.start_new_thread(self.addPlayer, (conn, addr))
             time.sleep(0.05)
 
@@ -159,8 +160,7 @@ class Login(threading.Thread):
         player_name = RAProtocol.receiveMessage(conn)
 
         # *load player object (to be added, create default player for now)
-        affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}
-        player_obj = engine.Player(player_name, (0, 0, 1), affiliation)
+        player_obj = []
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
@@ -291,7 +291,6 @@ class PlayerOutput(threading.Thread):
             except:
                 # this should handle exceptions
                 pass
-
             if message != "":
                 print message
                 # Create Socket

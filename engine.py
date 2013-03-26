@@ -3,7 +3,6 @@ from math import *
 import os
 import loader
 import random
-import AbeServer
 
 class Room:
     '''
@@ -365,12 +364,12 @@ def npc_action(npc):
         npc.coords = portal.coords
         print "Moving to %d, %d, %d" % npc.coords
   
-'''
-Flags  'p' = portals
-       'r' = room items
-       'i' = player items
-       'c' = containers
-'''
+
+#Flags  'p' = portals
+#       'r' = room items
+#       'i' = player items
+#       'c' = containers
+
 _ValidLookUp = {'look': ('pric', {'hidden': True}),
                  'take': ('r', {'hidden': True, 'portable': False}),
                  'drop': ('i', {'hidden': True}),

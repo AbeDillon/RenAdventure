@@ -61,7 +61,8 @@ def run_queue():
 
     
 def client_thread(c):
-    player = engine.Player('player', (0,0,1))
+    temp_affil = {'temp':1}
+    player = engine.Player('player', (0,0,1), temp_affil)
     player_quit = False
     #return_queue[c.fileno()] = ''
     print 'Player fileno is : %d' % c.fileno()
