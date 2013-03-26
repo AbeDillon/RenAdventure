@@ -76,9 +76,23 @@ def main():
         try:
             player, command = _CMD_Queue.get()
             print "player: " + player + "\n command: " + command
-            engine.do_command(player, command)
+            messages = engine.do_command(player, command)
+            distribute(messages)
+
         except:
             pass
+
+def distribute(messages):
+    """
+
+    """
+    _Player_OQueues_Lock.acquire()
+    for message in messages:
+        player = message[0]
+        text = message[1]
+        if player in _Player_OQueues:
+            _Player_OQueues[player].put(text)
+    _Player_OQueues_Lock.release()
 
 class Login(threading.Thread):
     """
@@ -214,7 +228,7 @@ class PlayerInput(threading.Thread):
             conn, addr = sock.accept()
             print 'got input from ' + self.name
 
-            thread.start_new_thread(self.handleInput, (self, conn))
+            thread.start_new_thread(self.handleInput, (conn, ))
 
     def handleInput(self, conn):
         """
@@ -263,9 +277,15 @@ class PlayerOutput(threading.Thread):
         """
         while 1:
             # Listen to Output Queue
+            message = ""
             try:
                 # get message
                 message = self.queue.get()
+            except:
+                # this should handle exceptions
+                pass
+
+            if message != "":
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
@@ -274,9 +294,6 @@ class PlayerOutput(threading.Thread):
                 RAProtocol.sendMessage(message, sock)
                 # close connection
                 sock.close()
-            except:
-                # this should handle exceptions
-                pass
 
 class NPCSpawnThread(threading.Thread):
     """

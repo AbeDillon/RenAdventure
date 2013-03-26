@@ -154,7 +154,7 @@ class InThread(threading.Thread):
             conn, addr = sock.accept()
             print 'got input from ' + self.name
 
-            thread.start_new_thread(self.handleInput, (self, conn))
+            thread.start_new_thread(self.handleInput, (conn, ))
 
     def handleInput(self, conn):
         """
