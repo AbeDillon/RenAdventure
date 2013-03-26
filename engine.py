@@ -280,13 +280,16 @@ def command_thread():
     while 1:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
+            print "running command: ", command
             player_name = command[0]
             command = command[1]
             player = _Players[player_name]
 
             messages = do_command(player, command)
+            print "results: ", messages
             for message in messages:
                 _MessageQueue.put(message)
+
 
 def do_command(player, command):
     global _Rooms

@@ -63,10 +63,11 @@ def main():
 
     # Start Main Loop
     print "Entering main loop..."
+    #loop_cnt = 0
     while 1:
         command = None
         try:
-            command = _CMD_Queue.get()
+            command = _CMD_Queue.get_nowait()
             print "player: " + command[0] + "\ncommand: " + command[1]
         except:
             pass
@@ -75,8 +76,12 @@ def main():
             engine.put_commands([command])
 
         messages = engine.get_messages()
-        distribute(messages)
 
+        if messages != []:
+            distribute(messages)
+
+        #print "loop count = " + str(loop_cnt)
+        #loop_cnt += 1
         time.sleep(0.05)
 
 def distribute(messages):
@@ -89,7 +94,8 @@ def distribute(messages):
         text = message[1]
         if player in _Player_OQueues:
             _Player_OQueues[player].put(text)
-        _Player_OQueues_Lock.release()
+
+    _Player_OQueues_Lock.release()
 
 class Login(threading.Thread):
     """
