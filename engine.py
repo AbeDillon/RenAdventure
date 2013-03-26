@@ -246,9 +246,13 @@ def do_command(command, player):
     else:
         script = verb + "(room, player, object, noun_string)"
     
-    text = eval(script)
+    text, alt_text = eval(script)
     
-    return text
+    messages = [(player.name, text)]
+    for alt_player in room.players.values():
+        messages.append((alt_player.name, alt_text))
+    
+    return messages
     
 def parse_command(command, room):
     # Create translation tables to make the command easier to parse
@@ -496,9 +500,11 @@ def look(room, player, object, noun, script=False):
     else:
         text = object.inspect_desc
             
-    return text
+    return text, '' # Empty string is alt_text, we don't need to tell other players about a player looking at something
 
 def take(room, player, object, noun, script=False):
+    alt_text = ''
+    
     if object == None:
         text = "There is no %s to take." % noun
     else:
@@ -506,10 +512,13 @@ def take(room, player, object, noun, script=False):
         player.items[object.name] = object
         del room.items[object.name]
         text = "You have taken the %s." % object.name
+        alt_text = "%s has taken the %s." % (player.name, object.name)
     
-    return text
+    return text, alt_text
 
 def open(room, player, object, noun, script=False):
+    alt_text = ''
+    
     if object == None:
         text = "There is no %s to open." % noun
     elif object.locked and not script:
@@ -517,19 +526,23 @@ def open(room, player, object, noun, script=False):
     else:
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
+            alt_text = "%s has opened the %s, inside there is:" % (player.name, object.name)
             
             # Open the container and move its contents to the room
             for item in object.items.keys():
                 room.items[item] = object.items[item]
                 del object.items[item]
                 text += "\n\t%s" % item
+                alt_text += "\n\t%s" % item
         else:
             text = "You have opened the %s, but there is nothing inside." % object.name
+            alt_text = "%s has opened the %s, but there is nothing inside." % (player.name, object.name)
     
-    return text
+    return text, alt_text
 
 def go(room, player, object, noun, script=False):
     global _Rooms
+    alt_text = ''
     
     if object == None:
         text = "You can't go that way."
@@ -541,21 +554,27 @@ def go(room, player, object, noun, script=False):
         player.coords = object.coords
         _Rooms[player.coords].players[player.name] = player # Add player to new room
         text = ''
+        alt_text = "%s has left the room." % player.name
         
-    return text
+    return text, alt_text
 
 def drop(room, player, object, noun, script=False):
+    alt_text = ''
+    
     if object == None:
         text = "You have no %s to drop." % noun
     else:
         # Move item from player to the room
         room.items[object.name] = object
         del player.items[object.name]
-        text = "You have taken the %s." % object.name
+        text = "You have dropped the %s." % object.name
+        alt_text = "%s has dropped a %s." % (player.name, object.name)
     
-    return text
+    return text, alt_text
 
 def unlock(room, player, object, noun, script=False):
+    alt_text = ''
+    
     if object == None:
         text = "There is no %s to unlock." % noun
     elif not object.locked:
@@ -569,12 +588,15 @@ def unlock(room, player, object, noun, script=False):
                     portal.locked = False
                 
             text = "You have unlocked the %s." % object.name
+            alt_text = "%s has unlocked the %s." % (player.name, object.name)
         else:
             text = "You don't have the key to unlock the %s." % object.name
     
-    return text
+    return text, alt_text
 
 def lock(room, player, object, noun, script=False):
+    alt_text = ''
+    
     if object == None:
         text = "There is no %s to lock." % noun
     elif object.locked:
@@ -588,10 +610,11 @@ def lock(room, player, object, noun, script=False):
                     portal.locked = True
             
             text = "You have locked the %s." % object.name
+            alt_text = "%s has locked the %s." % (player.name, object.name)
         else:
             text = "You don't have the key to lock the %s." % object.name
     
-    return text
+    return text, alt_text
 
 def inventory(room, player, object, noun, script=False):
     if len(player.items) > 0:
@@ -601,7 +624,7 @@ def inventory(room, player, object, noun, script=False):
     else:
         text = "Your inventory is empty."
         
-    return text
+    return text, '' # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
 
 def quit(room, player, object, noun, script=False):
     return 'quit'
