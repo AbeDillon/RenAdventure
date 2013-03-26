@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<room>
+<desc>something</desc>
+<portal x="1" y="1" z="1">
+<name>door</name>
+<direction>east</direction>
+<desc>a door</desc>
+<inspect_desc>blah</inspect_desc>
+<locked>0</locked>
+<hidden>0</hidden>
+<key>None</key>
+</portal>
+<portal x="0" y="2" z="1">
+<name>door</name>
+<direction>north</direction>
+<desc>a door</desc>
+<inspect_desc>blah</inspect_desc>
+<locked>0</locked>
+<hidden>0</hidden>
+<key>None</key>
+</portal>
+<portal x="0" y="0" z="1">
+<name>door</name>
+<direction>south</direction>
+<desc>a door</desc>
+<inspect_desc>blah</inspect_desc>
+<locked>0</locked>
+<hidden>0</hidden>
+<key>None</key>
+</portal>
+</room>
