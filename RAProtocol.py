@@ -24,7 +24,7 @@ def receiveMessage(conn):
         else:
             message += conn.recv(msg_len)
             msg_len = 0
-
+            
     return message
 
 def encodePrefix(message):
