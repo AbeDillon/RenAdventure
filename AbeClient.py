@@ -9,7 +9,7 @@ import string
 import Queue
 import RAProtocol
 
-_Host = socket.gethostname() # replace with actual host address
+_Host = "" #socket.gethostname() # replace with actual host address
 _Login_Port = 1000
 
 _CMD_Queue = Queue.Queue()
@@ -49,6 +49,8 @@ def main():
         _Quit_Lock.release()
         time.sleep(0.05)
 
+    sys.exit("You left the game")
+
 def LogIn():
     """
 
@@ -58,7 +60,6 @@ def LogIn():
     print >>sys.stdout, "What is your name?"
     ports = None
     while ports == None:
-        ports = None
         line = ""
         empty_queue = _CMD_Queue.empty()
 
@@ -69,13 +70,13 @@ def LogIn():
 
         if line != "":
             ports = connect_to_server(line)
-            print ports
+            #print ports
 
         if (ports == None) and not empty_queue:
 
             print >>sys.stdout, "Invalid name, try again."
 
-    print "logged in"
+    #print >>sys.stdout, "\nlogged in"
 
     return ports
 
@@ -88,7 +89,7 @@ def connect_to_server(line):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    sock.connect((_Host, _Login_Port))
+    sock.connect((socket.gethostname(), _Login_Port))
 
     RAProtocol.sendMessage(line, sock)
 
@@ -96,13 +97,7 @@ def connect_to_server(line):
 
     sock.close()
 
-    try:
-        port = int(message)
-
-    except:
-        port = None
-
-    return port
+    return message
 
 class ReadLineThread(threading.Thread):
     """
@@ -133,12 +128,14 @@ class ReadLineThread(threading.Thread):
                 elif char in string.printable:
                     line += char
 
+                time.sleep(0.01)
+
             try:
                 _CMD_Queue.put(line)
             except:
                 pass
 
-            time.sleep(0.05)
+
 
 class InThread(threading.Thread):
     """
@@ -164,7 +161,7 @@ class InThread(threading.Thread):
         sock.bind((self.host, self.port))
 
         # Listen for connection
-        sock.listen(10)
+        sock.listen(2)
 
         while 1:
             conn, addr = sock.accept()
@@ -195,7 +192,7 @@ class OutThread(threading.Thread):
         threading.Thread.__init__(self)
         global _Host
         self.port = port
-        self.host = _Host
+        self.host = socket.gethostname()
 
     def run(self):
         """
