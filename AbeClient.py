@@ -1,4 +1,4 @@
-__author__ = 'ADillon'
+__author__ = 'ADillon, MNutter'
 
 import socket
 import sys
@@ -22,7 +22,6 @@ def main():
 
     """
     # start getting keyboard input
-    global _CMD_Queue
     rlt = ReadLineThread()
     rlt.start()
 
@@ -55,7 +54,7 @@ def LogIn():
     print >>sys.stdout, "What is your name?"
     port = None
     while port == None:
-        empty_queue = _CMD_Queue.qsize()
+        empty_queue = _CMD_Queue.empty()
 
         try:
             line = _CMD_Queue.get()
@@ -63,7 +62,7 @@ def LogIn():
         except:
             port = None
 
-        if (port == None) and (empty_queue != 0):
+        if (port == None) and not empty_queue:
             print >>sys.stdout, "Invalid name, try again."
 
     return port
