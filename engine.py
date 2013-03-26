@@ -3,6 +3,8 @@ from math import *
 import os
 import loader
 import random
+import Queue
+import thread
 
 class Room:
     '''
@@ -116,14 +118,10 @@ class Player:
     - Items
     '''
     def __init__(self, name, coords, affiliation, items = [], fih = 30):
-        global _Rooms
-        
         self.name = name.lower()
         self.coords = coords
         self.fih = fih
         self.affiliation = affiliation
-        
-        _Rooms[self.coords].players[self.name] = self # Add player to the room's list of players
         
         self.items = {}     # Create a dictionary of the items a player contains
         for item in items:
@@ -154,15 +152,41 @@ def scrub(scripts):
     
     return scripts
 
-# Initialize the game state
+_CommandQueue = Queue.Queue()
+_MessageQueue = Queue.Queue()
+_Players = {}
 _Rooms = {}
 
-for filename in os.listdir('rooms'):
-    path = 'rooms/' + filename
-    split_name = filename.split('_')
-    coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
-    
-    _Rooms[coords] = loader.load_room(path)
+def init_game():
+    # Initializes the map and starts the command thread
+    global _Rooms
+
+    for filename in os.listdir('rooms'):
+        path = 'rooms/' + filename
+        split_name = filename.split('_')
+        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
+
+        _Rooms[coords] = loader.load_room(path)
+
+    thread.start_new_thread(command_thread, ())
+
+def make_player(name, coords, affiliation):
+    global _Rooms
+    global _Players
+
+    player = Player(name, coords, affiliation)
+
+    _Players[player.name] = player # Add to list of players in the game
+    _Rooms[player.coords].players[player.name] = player # Add player to list of players in the room they are in
+
+def remove_player(name):
+    global _Rooms
+    global _Players
+
+    player = _Players[name]
+
+    del _Rooms[player.coords] # Remove the player from the room they are in
+    del _Players[name] # Remove the player from the list of players in the game
   
 def get_room_text(coords):
     global _Rooms
@@ -229,8 +253,42 @@ def check_key(player, key):
             return True
     
     return False
-     
-def do_command(command, player):
+
+def put_commands(commands):
+    # Takes a list of commands and pushes them to the command queue
+    global _CommandQueue
+
+    for command in commands:
+        _CommandQueue.put(command)
+
+def get_messages():
+    # Returns all messages currently in the message queue
+    global _MessageQueue
+
+    messages = []
+    while not _MessageQueue.empty():
+        messages.append(_MessageQueue.get())
+
+    return messages
+
+def command_thread():
+    # Runs commands from the command queue
+    global _CommandQueue
+    global _MessageQueue
+    global _Players
+
+    while 1:
+        if not _CommandQueue.empty():
+            command = _CommandQueue.get()
+            player_name = command[0]
+            command = command[1]
+            player = _Players[player_name]
+
+            messages = do_command(player, command)
+            for message in messages:
+                _MessageQueue.put(message)
+
+def do_command(player, command):
     global _Rooms
     
     room = _Rooms[player.coords]
@@ -251,7 +309,8 @@ def do_command(command, player):
 
     if len(alt_text) > 0:
         for alt_player in room.players.values():
-            messages.append((alt_player.name, alt_text))
+            if alt_player is not player:
+                messages.append((alt_player.name, alt_text))
 
         if verb == 'go': # Player entered a new room pass messages to all players in the new room
             room = _Rooms[player.coords]

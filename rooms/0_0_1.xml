@@ -19,4 +19,9 @@
 <hidden>0</hidden>
 <key>None</key>
 </portal>
+<item>
+<name>key</name>
+<desc>a key</desc>
+<inspect_desc>something</inspect_desc>
+</item>
 </room>
