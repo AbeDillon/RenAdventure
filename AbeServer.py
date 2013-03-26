@@ -64,14 +64,18 @@ def main():
     # Start Main Loop
     print "Entering main loop..."
     while 1:
+        command = None
         try:
             command = _CMD_Queue.get()
             print "player: " + command[0] + "\ncommand: " + command[1]
-            engine.put_command([command])
-            messages = engine.get_messages()
-            distribute(messages)
         except:
             pass
+
+        if command != None:
+            engine.put_commands([command])
+
+        messages = engine.get_messages()
+        distribute(messages)
 
         time.sleep(0.05)
 
@@ -151,7 +155,7 @@ class Login(threading.Thread):
         player_name = RAProtocol.receiveMessage(conn)
 
         # *load player object (to be added, create default player for now)
-        engine.make_player(player_name)
+        engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
