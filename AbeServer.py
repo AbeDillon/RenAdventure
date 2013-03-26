@@ -115,7 +115,7 @@ class Login(threading.Thread):
         3) Add registration (name, password, etc.)
     """
 
-    def __init__(self, listen_port=1000, spawn_port=1001, host=''):
+    def __init__(self, listen_port=1000, spawn_port=2000, host=""):
         """
         listen_port:        the default port for logging in to the server
         spawn_port:         keeps track of ports to allocate to new players
@@ -180,8 +180,10 @@ class Login(threading.Thread):
 
         # spin off new PlayerI/O threads
         ithread = PlayerInput(iport, player_name)
+        ithread.start()
         othread = PlayerOutput(oqueue, addr, oport, player_name)
-
+        othread.start()
+        
         _Threads_Lock.acquire()
         _Threads.append(ithread)
         _Threads.append(othread)
@@ -276,7 +278,7 @@ class PlayerOutput(threading.Thread):
         self.address = addr
         self.port = port
         self.name = player_name
-        self.host = host
+        self.host = socket.gethostname()
 
     def run(self):
         """
