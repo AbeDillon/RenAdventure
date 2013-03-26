@@ -76,15 +76,9 @@ def main():
         try:
             player, command = _CMD_Queue.get()
             print "player: " + player + "\n command: " + command
-            executeCMD(player, command)
+            engine.do_command(player, command)
         except:
             pass
-
-def executeCMD(player, command):
-    """
-
-    """
-
 
 class Login(threading.Thread):
     """
@@ -150,7 +144,8 @@ class Login(threading.Thread):
         print "Adding " + player_name + " to the game."
 
         # *load player object (to be added, create default player for now)
-        player_obj = []
+        affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}
+        player_obj = engine.Player(player_name, (0, 0, 1), affiliation)
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
