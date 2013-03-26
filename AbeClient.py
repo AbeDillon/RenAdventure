@@ -27,13 +27,15 @@ def main():
     rlt.start()
 
     # try to log into the server and acquire a port
-    port = LogIn()
+    ports = LogIn()
+
+    ports = ports.split()
 
     # spin off I/O threads
-    it = InThread(port)
+    it = InThread(int(ports[1]))
     it.start()
 
-    ot = OutThread(port)
+    ot = OutThread(int(ports[0]))
     ot.start()
 
     # wait for quit
@@ -45,6 +47,7 @@ def main():
         _Quit_Lock.acquire()
         quit_game = _Quit
         _Quit_Lock.release()
+        time.sleep(0.05)
 
 def LogIn():
     """
@@ -53,20 +56,28 @@ def LogIn():
     global _CMD_Queue
 
     print >>sys.stdout, "What is your name?"
-    port = None
-    while port == None:
-        empty_queue = _CMD_Queue.qsize()
+    ports = None
+    while ports == None:
+        ports = None
+        line = ""
+        empty_queue = _CMD_Queue.empty()
 
         try:
             line = _CMD_Queue.get()
-            port = connect_to_server(line)
         except:
-            port = None
+            pass
 
-        if (port == None) and (empty_queue != 0):
+        if line != "":
+            ports = connect_to_server(line)
+            print ports
+
+        if (ports == None) and not empty_queue:
+
             print >>sys.stdout, "Invalid name, try again."
 
-    return port
+    print "logged in"
+
+    return ports
 
 def connect_to_server(line):
     """
@@ -82,6 +93,8 @@ def connect_to_server(line):
     RAProtocol.sendMessage(line, sock)
 
     message = RAProtocol.receiveMessage(sock)
+
+    sock.close()
 
     try:
         port = int(message)
@@ -125,6 +138,8 @@ class ReadLineThread(threading.Thread):
             except:
                 pass
 
+            time.sleep(0.05)
+
 class InThread(threading.Thread):
     """
 
@@ -153,9 +168,10 @@ class InThread(threading.Thread):
 
         while 1:
             conn, addr = sock.accept()
-            print 'got input from ' + self.name
+            #print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (conn, ))
+            time.sleep(0.05)
 
 
     def handleInput(self, conn):
@@ -164,7 +180,9 @@ class InThread(threading.Thread):
         """
         message = RAProtocol.receiveMessage(conn)
 
-        print >>sys.stdout, message
+        conn.close()
+
+        print >>sys.stdout, "\n" + message
 
 class OutThread(threading.Thread):
     """
@@ -185,10 +203,16 @@ class OutThread(threading.Thread):
         """
         global _CMD_Queue
         while 1:
+            message = ""
             # Listen to Output Queue
             try:
                 # get message
                 message = _CMD_Queue.get()
+
+            except:
+                pass
+
+            if message != "":
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
@@ -206,9 +230,7 @@ class OutThread(threading.Thread):
                     _Quit = True
                     _Quit_Lock.release()
 
-            except:
-                # this should handle exceptions
-                pass
+            time.sleep(0.05)
 
 if __name__ == "__main__":
     main()

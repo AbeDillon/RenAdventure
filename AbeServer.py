@@ -81,6 +81,8 @@ def main():
         except:
             pass
 
+        time.sleep(0.05)
+
 def distribute(messages):
     """
 
@@ -148,6 +150,7 @@ class Login(threading.Thread):
 
 
             thread.start_new_thread(self.addPlayer, (conn, addr))
+            time.sleep(0.05)
 
     def addPlayer(self, conn, addr):
         """
@@ -156,14 +159,13 @@ class Login(threading.Thread):
         # receive message
         player_name = RAProtocol.receiveMessage(conn)
 
-        print "Adding " + player_name + " to the game."
-
         # *load player object (to be added, create default player for now)
         player_obj = []
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
         oqueue = Queue.Queue()
+        oqueue.put(engine.get_room_text((0, 0, 1)))
 
         _Player_OQueues_Lock.acquire()
         _Player_OQueues[player_name] = oqueue
@@ -171,13 +173,14 @@ class Login(threading.Thread):
 
         # Get I/O port
         self.spawn_port_lock.acquire()
-        port = self.spawn_port
-        self.spawn_port += 1
+        iport = self.spawn_port
+        oport = self.spawn_port + 1
+        self.spawn_port += 2
         self.spawn_port_lock.release()
 
         # spin off new PlayerI/O threads
-        ithread = PlayerInput(port, player_name)
-        othread = PlayerOutput(oqueue, addr, port, player_name)
+        ithread = PlayerInput(iport, player_name)
+        othread = PlayerOutput(oqueue, addr, oport, player_name)
 
         _Threads_Lock.acquire()
         _Threads.append(ithread)
@@ -185,7 +188,8 @@ class Login(threading.Thread):
         _Threads_Lock.release()
 
         # send new I/O ports to communicate on
-        message = str(port)
+        ports = str(iport) + " " + str(oport)
+        message = str(ports)
         RAProtocol.sendMessage(message, conn)
 
         # add player to _Players
@@ -194,6 +198,8 @@ class Login(threading.Thread):
         _Players_Lock.release()
 
         conn.close()
+
+        print player_name + " added to the game."
 
 
 class PlayerInput(threading.Thread):
@@ -229,6 +235,7 @@ class PlayerInput(threading.Thread):
             print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (conn, ))
+            time.sleep(0.05)
 
     def handleInput(self, conn):
         """
@@ -285,6 +292,7 @@ class PlayerOutput(threading.Thread):
                 # this should handle exceptions
                 pass
             if message != "":
+                print message
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
@@ -294,6 +302,7 @@ class PlayerOutput(threading.Thread):
                 # close connection
                 sock.close()
 
+            time.sleep(0.05)
 
 class NPCSpawnThread(threading.Thread):
     """
