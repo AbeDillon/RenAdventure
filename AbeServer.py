@@ -138,8 +138,7 @@ class Login(threading.Thread):
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-
-            thread.start_new_thread(self.addPlayer, (conn, addr))
+            thread.start_new_thread(self.addPlayer, (self, conn, addr))
 
     def addPlayer(self, conn, addr):
         """
