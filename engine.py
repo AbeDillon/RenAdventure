@@ -234,7 +234,7 @@ def do_command(command, player):
     global _Rooms
     
     room = _Rooms[player.coords]
-    verb, nouns = parse_command(command, room)
+    verb, nouns = parse_command(command)
     valid_objects = get_valid_objects(player, room, verb)   # Get all of the objects that the player can interact with
     object = get_object(nouns, valid_objects)
     
@@ -248,12 +248,19 @@ def do_command(command, player):
     text, alt_text = eval(script)
     
     messages = [(player.name, text)]
-    for alt_player in room.players.values():
-        messages.append((alt_player.name, alt_text))
+
+    if len(alt_text) > 0:
+        for alt_player in room.players.values():
+            messages.append((alt_player.name, alt_text))
+
+        if verb == 'go': # Player entered a new room pass messages to all players in the new room
+            room = _Rooms[player.coords]
+            for alt_player in room.players.values():
+                messages.append((alt_player.name, "%s has entered the room." % player.name))
     
     return messages
     
-def parse_command(command, room):
+def parse_command(command):
     # Create translation tables to make the command easier to parse
     translate_one_word = {'i': 'inventory',
                           'l': 'look room',
@@ -309,8 +316,8 @@ def npc_action(npc):
     global _Rooms
     
     room = _Rooms[npc.coords]
+    messages = []
     if len(room.players) > 0: # There are players in the room, talk to them
-        print 'Found a player, talking now'
         for player in room.players.values():
             difference = 0
             for person in npc.affiliation: # Calculate the total difference between the player and the npc
@@ -322,8 +329,9 @@ def npc_action(npc):
                 player.fih = 30
             else:
                 player.fih += difference
-            print "Difference was %d" % difference
-            print player.fih
+
+            text = "%s says something, your Faith in Humanity is effected by %d." % (npc.name, difference)
+            messages.append((player.name, text))
     else: # No players in the room, walk closer to a player if there is one within 2 rooms, otherwise randomly choose a portal
         bubble_coords = []
         for i in range(-2,3): # Create a 5x5 bubble around the NPC that they are aware of
@@ -360,10 +368,17 @@ def npc_action(npc):
         else:
             if len(valid_portals) > 0:
                 portal = random.choice(valid_portals)
+
+        for player in room.players.coords:
+            messages.append((player.name, "%s has left the room." % npc.name))
         
         npc.coords = portal.coords
-        print "Moving to %d, %d, %d" % npc.coords
-  
+
+        room = _Rooms[npc.coords]
+        for player in room.players.values():
+            messages.append((player.name, "%s has entered the room." % npc.name))
+
+    return messages
 
 #Flags  'p' = portals
 #       'r' = room items
@@ -630,7 +645,6 @@ def quit(room, player, object, noun, script=False):
 
 def bad_command(room, player, object, noun, script=False):
     return "That is not a valid command."
-
 ############# CUSTOM SCRIPT METHODS ##########
 def custom_script(room, player, script):
     message = ''
