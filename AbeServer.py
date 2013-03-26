@@ -3,7 +3,10 @@ __author__ = 'ADillon'
 import socket, sys
 import thread, threading, Queue
 import time, random
+import RAProtocol
 import engine
+
+_Host = socket.gethostname() # replace with actual host address
 
 _Game_State = {} # (mutex controlled)
 _Game_State_Lock = threading.RLock()
@@ -31,7 +34,6 @@ def main():
 
     """
     # Load Game Files
-
     print "Game loaded"
 
     # Initialize _Game_State
@@ -59,6 +61,8 @@ def main():
     _Threads_Lock.acquire()
     _Threads.append(login_thread)
     _Threads_Lock.release()
+
+    login_thread.start()
 
     print "Log-in thread spawned"
 
@@ -90,7 +94,7 @@ class Login(threading.Thread):
         2) the player gets a copy of all the instanced objects in the Game_State
            this copy is added to the player's player_state
         3) the player gets its own output queue and I/O threads
-        4) the log-in function designates an input and output port reserved for the player
+        4) the log-in function designates an I/O  port reserved for the player
            and sends a message to the player indicating which ports to communicate on
         5) the player_object is added to _Players
 
@@ -101,7 +105,7 @@ class Login(threading.Thread):
         3) Add registration (name, password, etc.)
     """
 
-    def __init__(self, listen_port=1000, spawn_port=1002, host=''):
+    def __init__(self, listen_port=1000, spawn_port=1001, host=''):
         """
         listen_port:        the default port for logging in to the server
         spawn_port:         keeps track of ports to allocate to new players
@@ -120,30 +124,28 @@ class Login(threading.Thread):
         handles new connections
         """
         # Create a socket to listen for new connections
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
 
-        s.bind((self.host, self.listen_port))
+        sock.bind((self.host, self.listen_port))
         print "Login Socket bound"
 
         # Listen for new connections
-        s.listen(10)
+        sock.listen(10)
         print "Login socket listening"
         while 1:
             # wait to accept a connection
-            conn, addr = s.accept()
+            conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
 
-            thread.start_new_thread(self.addPlayer, (self, conn))
+            thread.start_new_thread(self.addPlayer, (self, conn, addr))
 
-    def addPlayer(self, conn):
+    def addPlayer(self, conn, addr):
         """
-        Adds a new player to the game
+        Add a new player to the game
         """
         # receive message
-        player_name = conn.recv(1024)
-        while player_name != None:
-            player_name += conn.recv(1024)
+        player_name = RAProtocol.receiveMessage(conn)
 
         print "Adding " + player_name + " to the game."
 
@@ -158,16 +160,15 @@ class Login(threading.Thread):
         _Player_OQueues[player_name] = oqueue
         _Player_OQueues_Lock.release()
 
-        # Get I/O ports
+        # Get I/O port
         self.spawn_port_lock.acquire()
-        iport = self.spawn_port
-        oport = self.spawn_port + 1
-        self.spawn_port += 2
+        port = self.spawn_port
+        self.spawn_port += 1
         self.spawn_port_lock.release()
 
         # spin off new PlayerI/O threads
-        ithread = PlayerInput(iport, player_name)
-        othread = PlayerOutput(oqueue, oport, player_name)
+        ithread = PlayerInput(port, player_name)
+        othread = PlayerOutput(oqueue, addr, port, player_name)
 
         _Threads_Lock.acquire()
         _Threads.append(ithread)
@@ -175,8 +176,8 @@ class Login(threading.Thread):
         _Threads_Lock.release()
 
         # send new I/O ports to communicate on
-        message = str(iport) + " " + str(oport)
-        conn.send(message)
+        message = str(port)
+        RAProtocol.sendMessage(message, conn)
 
         # add player to _Players
         _Players_Lock.acquire()
@@ -207,15 +208,15 @@ class PlayerInput(threading.Thread):
         Listen for player input and push it onto the queue
         """
         # Create Socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        s.bind((self.host, self.port))
+        sock.bind((self.host, self.port))
 
         # Listen for connection
-        s.listen(10)
+        sock.listen(10)
 
         while 1:
-            conn, addr = s.accept()
+            conn, addr = sock.accept()
             print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (self, conn))
@@ -229,9 +230,7 @@ class PlayerInput(threading.Thread):
         """
 
         # receive message
-        message = conn.recv(1024)
-        while message != None:
-            message += conn.recv(1024)
+        message = RAProtocol.receiveMessage(conn)
 
         # add it to the queue
         try:
@@ -250,7 +249,7 @@ class PlayerOutput(threading.Thread):
         2) time-out (?)
     """
 
-    def __init__(self, output_queue, port, player_name, host=""):
+    def __init__(self, output_queue, addr, port, player_name, host=""):
         """
         queue:  The queue of messages to be sent to the player
         port:   The port that the player is listening on
@@ -258,6 +257,7 @@ class PlayerOutput(threading.Thread):
         """
         threading.Thread.__init__(self)
         self.queue = output_queue
+        self.address = addr
         self.port = port
         self.name = player_name
         self.host = host
@@ -266,23 +266,19 @@ class PlayerOutput(threading.Thread):
         """
         poll output queue and send messages to player
         """
-        # Create Socket
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        s.bind((self.host, self.port))
-
-        s.listen(10)
         while 1:
             # Listen to Output Queue
             try:
                 # get message
                 message = self.queue.get()
+                # Create Socket
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
-                conn, addr = s.accept()
+                sock.connect((self.address[0], self.port))
                 # send message
-                conn.sendall(message)
+                RAProtocol.sendMessage(message, sock)
                 # close connection
-                conn.close()
+                sock.close()
             except:
                 # this should handle exceptions
                 pass
