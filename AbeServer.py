@@ -8,22 +8,17 @@ import engine
 
 _Host = socket.gethostname() # replace with actual host address
 
-_Game_State = {} # (mutex controlled)
-_Game_State_Lock = threading.RLock()
-
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
 
-_Players = {} # (mutex controlled)
+_MSG_Queue = Queue.Queue()
+
+_Players = [] # (mutex controlled)
 # key = (string)Player_Name : val = (player_object)
 _Players_Lock = threading.RLock()
 
 _Player_OQueues = {} # (mutex controlled)
 # key = (string)Player_Name : val = (Queue)Output_Queue
 _Player_OQueues_Lock = threading.RLock()
-
-_Player_States = {} # (mutex controlled)
-# key = (string)Player_Name : val = (Game State)Instanced Game_State
-_Player_States_Lock = threading.RLock()
 
 # We may want to keep track of threads
 _Threads = [] # mutex controlled
@@ -33,12 +28,8 @@ def main():
     """
 
     """
-    # Load Game Files
-    print "Game loaded"
-
     # Initialize _Game_State
-    global _Game_State
-    global _Game_State_Lock
+    engine.init_game()
 
     print "Game State initialized"
 
@@ -74,9 +65,10 @@ def main():
     print "Entering main loop..."
     while 1:
         try:
-            player, command = _CMD_Queue.get()
-            print "player: " + player + "\n command: " + command
-            messages = engine.do_command(player, command)
+            command = _CMD_Queue.get()
+            print "player: " + command[0] + "\ncommand: " + command[1]
+            engine.put_command([command])
+            messages = engine.get_messages()
             distribute(messages)
         except:
             pass
@@ -87,7 +79,6 @@ def distribute(messages):
     """
 
     """
-
     _Player_OQueues_Lock.acquire()
     for message in messages:
         player = message[0]
@@ -160,7 +151,7 @@ class Login(threading.Thread):
         player_name = RAProtocol.receiveMessage(conn)
 
         # *load player object (to be added, create default player for now)
-        player_obj = []
+        engine.make_player(player_name)
 
         # *create player state and add to _Player_States (to be added)
         # add new player I/O queues
@@ -180,14 +171,15 @@ class Login(threading.Thread):
 
         # spin off new PlayerI/O threads
         ithread = PlayerInput(iport, player_name)
-        ithread.start()
         othread = PlayerOutput(oqueue, addr, oport, player_name)
-        othread.start()
-        
+
         _Threads_Lock.acquire()
         _Threads.append(ithread)
         _Threads.append(othread)
         _Threads_Lock.release()
+
+        ithread.start()
+        othread.start()
 
         # send new I/O ports to communicate on
         ports = str(iport) + " " + str(oport)
@@ -196,7 +188,7 @@ class Login(threading.Thread):
 
         # add player to _Players
         _Players_Lock.acquire()
-        _Players[player_name] = player_obj
+        _Players.append(player_name)
         _Players_Lock.release()
 
         conn.close()

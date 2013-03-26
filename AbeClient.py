@@ -49,7 +49,7 @@ def main():
         _Quit_Lock.release()
         time.sleep(0.05)
 
-    sys.exit("You left the game")
+    return
 
 def LogIn():
     """
@@ -70,13 +70,12 @@ def LogIn():
 
         if line != "":
             ports = connect_to_server(line)
-            #print ports
 
         if (ports == None) and not empty_queue:
 
             print >>sys.stdout, "Invalid name, try again."
 
-    #print >>sys.stdout, "\nlogged in"
+    print >>sys.stdout, "\nlogged in"
 
     return ports
 
@@ -134,8 +133,6 @@ class ReadLineThread(threading.Thread):
                 _CMD_Queue.put(line)
             except:
                 pass
-
-
 
 class InThread(threading.Thread):
     """

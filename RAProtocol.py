@@ -17,14 +17,12 @@ def receiveMessage(conn):
     prefix = conn.recv(4)
     msg_len = decodePrefix(prefix)
     message = ""
-    while msg_len > 0:
-        if msg_len > 4096:
-            message += conn.recv(4096)
-            msg_len -= 4096
-        else:
-            message += conn.recv(msg_len)
-            msg_len = 0
-            
+    while msg_len > 4096:
+        message += conn.recv(4096)
+        msg_len -= 4096
+
+    message += conn.recv(msg_len)
+
     return message
 
 def encodePrefix(message):
