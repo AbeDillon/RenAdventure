@@ -290,7 +290,6 @@ def command_thread():
             for message in messages:
                 _MessageQueue.put(message)
 
-
 def do_command(player, command):
     global _Rooms
     
@@ -319,7 +318,8 @@ def do_command(player, command):
             if verb == 'go': # Player entered a new room pass messages to all players in the new room
                 room = _Rooms[player.coords]
                 for alt_player in room.players.values():
-                    messages.append((alt_player.name, "%s has entered the room." % player.name))
+                    if alt_player is not player:
+                        messages.append((alt_player.name, "%s has entered the room." % player.name))
     
     return messages
     
@@ -630,7 +630,7 @@ def go(room, player, object, noun, script=False):
         del room.players[player.name] # Remove player from last room
         player.coords = object.coords
         _Rooms[player.coords].players[player.name] = player # Add player to new room
-        text = ''
+        text = get_room_text(player.coords)
         alt_text = "%s has left the room." % player.name
         
     return text, alt_text
