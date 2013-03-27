@@ -123,8 +123,6 @@ class ReadLineThread(threading.Thread):
         done = _Quit
         _Quit_Lock.release()
         while not done:
-            if done:
-                break
             line = ""
             while 1:
                 char = msvcrt.getche()
