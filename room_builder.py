@@ -33,7 +33,7 @@ print textwrap.fill('In this module you will be building a "room" or "area" to y
                     'Containers, Items, and some other stuff.  So lets get started.', width=100).strip()
 
 # begin room creation
-def makeDescription():
+def makeDescription(player):
 
     print ""
     print textwrap.fill ('Your room requires a description.  This will be what the player sees when they enter your room.  '
@@ -53,9 +53,9 @@ def makeDescription():
             else:
                 print 'Enter the description you want.'
                 
-    makePortals()
+    makePortals(player)
 
-def makePortals():
+def makePortals(player):
     #  confirm they want to create portals
     print ''
     print textwrap.fill('Portals, also known as exits, need to be defined.  Do you want to create any portals?',  width=100).strip()
@@ -68,7 +68,7 @@ def makePortals():
             right_ans = True
             #  need to send to next Method later when defined pass for now.
         elif ans == 'yes' or ans == 'y':  # anything other than yes or y
-            portals = makePortals.makePortals()
+            portals = makePortals.makePortals(player)
             # get return from makePortals and do what with it...
             # return should be 
             
