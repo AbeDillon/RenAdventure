@@ -1,3 +1,0 @@
-RenAdventure is a browser-based text adventure engine.
- Testings!!
-
