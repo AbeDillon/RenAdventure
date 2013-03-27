@@ -704,7 +704,7 @@ def inventory(room, player, object, noun, script=False):
     return text, '' # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
 
 def quit(room, player, object, noun, script=False):
-    return 'quit'
+    return 'quit', '' #Empty string to homogenize return values.
 
 def bad_command(room, player, object, noun, script=False):
     return "That is not a valid command.", '' #Empty string is alt_text, we don't need to tell other players about a failed command execution.

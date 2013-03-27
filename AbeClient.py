@@ -49,7 +49,7 @@ def main():
         _Quit_Lock.release()
         time.sleep(0.05)
 
-    return
+    return True
 
 def LogIn():
     """
@@ -108,8 +108,9 @@ class ReadLineThread(threading.Thread):
 
         """
         global _CMD_Queue
-
-        while 1:
+        global _Quit
+        done = _Quit
+        while not done:
             line = ""
             while 1:
                 char = msvcrt.getche()
@@ -133,6 +134,7 @@ class ReadLineThread(threading.Thread):
                 _CMD_Queue.put(line)
             except:
                 pass
+            done = _Quit
 
 class InThread(threading.Thread):
     """
@@ -152,6 +154,7 @@ class InThread(threading.Thread):
         """
 
         """
+        global _Quit
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -159,13 +162,14 @@ class InThread(threading.Thread):
 
         # Listen for connection
         sock.listen(2)
-
-        while 1:
+        done = _Quit
+        while not done:
             conn, addr = sock.accept()
             #print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (conn, ))
             time.sleep(0.05)
+            done = _Quit
 
 
     def handleInput(self, conn):
@@ -176,7 +180,9 @@ class InThread(threading.Thread):
 
         conn.close()
 
-        print >>sys.stdout, "\n" + message
+        if message != 'quit':
+
+            print >>sys.stdout, "\n" + message
 
 class OutThread(threading.Thread):
     """
@@ -196,7 +202,10 @@ class OutThread(threading.Thread):
 
         """
         global _CMD_Queue
-        while 1:
+        global _Quit
+        global _Quit_Lock
+        done = _Quit
+        while not done:
             message = ""
             # Listen to Output Queue
             try:
@@ -217,14 +226,14 @@ class OutThread(threading.Thread):
                 sock.close()
                 # check for quit
                 if message.lower() == "quit":
-                    global _Quit
-                    global _Quit_Lock
-
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
 
+                    
+            done = _Quit
             time.sleep(0.05)
 
 if __name__ == "__main__":
     main()
+    sys.exit('Game quit. Please hit enter to exit the program')
