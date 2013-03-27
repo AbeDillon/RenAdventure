@@ -2,7 +2,7 @@ import validator
 import makeItems
 import textwrap
 
-def makePortals():
+def makePortals(player):
 ##### *******************************************TO DO*******************************************************
     #    have script creator and insert it in bottom portion
     
@@ -79,7 +79,7 @@ def makePortals():
         # ans = raw_input('\n>').lower()
         # if ans == 'no' or ans == 'n':
             #### ******************************* TO DO*******************************************
-        player_coords = (12,5,7)#engine.player.coords  # (3 part tuple format (x, y, z)
+        player_coords = engine.player.coords  # (3 part tuple format (x, y, z)
         #x = player_coords[0]
         #y = player_coords[1]
         #z = player_coords[2]
