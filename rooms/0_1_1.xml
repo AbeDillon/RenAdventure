@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <room>
-<desc>something</desc>
+<desc>An abandoned guard room.</desc>
 <portal x="1" y="1" z="1">
 <name>door</name>
 <direction>east</direction>
-<desc>a door</desc>
-<inspect_desc>blah</inspect_desc>
+<desc>a wooden door</desc>
+<inspect_desc>A splintered old wooden door</inspect_desc>
 <locked>0</locked>
 <hidden>0</hidden>
 <key>None</key>
@@ -13,8 +13,8 @@
 <portal x="0" y="2" z="1">
 <name>door</name>
 <direction>north</direction>
-<desc>a door</desc>
-<inspect_desc>blah</inspect_desc>
+<desc>an iron door</desc>
+<inspect_desc>A heavy iron door</inspect_desc>
 <locked>0</locked>
 <hidden>0</hidden>
 <key>None</key>
@@ -22,8 +22,8 @@
 <portal x="0" y="0" z="1">
 <name>door</name>
 <direction>south</direction>
-<desc>a door</desc>
-<inspect_desc>blah</inspect_desc>
+<desc>a metal door</desc>
+<inspect_desc>a rusted metal door</inspect_desc>
 <locked>0</locked>
 <hidden>0</hidden>
 <key>None</key>
@@ -31,6 +31,6 @@
 <container>
 <name>chest</name>
 <desc>a chest</desc>
-<inspect_desc>blah</inspect_desc>
+<inspect_desc>An old wooden chest</inspect_desc>
 </container>
 </room>
