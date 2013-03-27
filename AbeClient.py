@@ -109,7 +109,9 @@ class ReadLineThread(threading.Thread):
         """
         global _CMD_Queue
         global _Quit
+        _Quit_Lock.acquire()
         done = _Quit
+        _Quit_Lock.release()
         while not done:
             line = ""
             while 1:
@@ -134,7 +136,9 @@ class ReadLineThread(threading.Thread):
                 _CMD_Queue.put(line)
             except:
                 pass
+            _Quit_Lock.acquire()
             done = _Quit
+            _Quit_Lock.release()
 
 class InThread(threading.Thread):
     """
@@ -162,14 +166,18 @@ class InThread(threading.Thread):
 
         # Listen for connection
         sock.listen(2)
+        _Quit_Lock.acquire()
         done = _Quit
+        _Quit_Lock.release()
         while not done:
             conn, addr = sock.accept()
             #print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (conn, ))
             time.sleep(0.05)
+            _Quit_Lock.acquire()
             done = _Quit
+            _Quit_Lock.release()
 
 
     def handleInput(self, conn):
@@ -204,7 +212,9 @@ class OutThread(threading.Thread):
         global _CMD_Queue
         global _Quit
         global _Quit_Lock
+        _Quit_Lock.acquire()
         done = _Quit
+        _Quit_Lock.release()
         while not done:
             message = ""
             # Listen to Output Queue
