@@ -11,11 +11,11 @@
 <key>None</key>
 </portal>
 <portal x="0" y="2" z="1">
-<name>door</name>
+<name>heavy door</name>
 <direction>north</direction>
 <desc>an iron door</desc>
 <inspect_desc>A heavy iron door</inspect_desc>
-<locked>0</locked>
+<locked>1</locked>
 <hidden>0</hidden>
 <key>None</key>
 </portal>

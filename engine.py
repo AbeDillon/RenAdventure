@@ -4,7 +4,7 @@ import os
 import loader
 import random
 import Queue
-import thread
+import thread, threading
 
 class Room:
     '''
@@ -254,11 +254,41 @@ def check_key(player, key):
     
     return False
 
-def put_commands(commands):
-    # Takes a list of commands and pushes them to the command queue
+def put_commands(commands, script=False):
+    # Takes a list of commands and pushes them to the command queue (player, room, verb, object, tags)
     global _CommandQueue
+    global _Players
+    global _Rooms
 
     for command in commands:
+        tags = []
+        player = _Players[command[0]]
+        room = _Rooms[player.coords]
+        verb, nouns = parse_command(command[1])
+
+        if not script:
+            valid_objects = get_valid_objects(player, room, verb) # Find the valid objects in the room that can be acted on by the verb
+        else: # Find all valid objects in the game for the verb
+            all_objects = get_all_objects(player, verb) # tuple of all objects and the room they are in
+
+            valid_objects = []
+            for object_room, object in all_objects:
+                valid_objects.append(object)
+
+        object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
+
+        if script: # We need to find which room the object is in
+            for room, new_object in all_objects:
+                if object is new_object:
+                    break
+
+        if verb in object.scripts and not script: # Object has a script to override the verb
+            tags.append('start_script')
+
+        if script:
+            tags.append('script')
+
+        command = [player, room, verb, nouns, object, tags]
         _CommandQueue.put(command)
 
 def get_messages():
@@ -275,55 +305,67 @@ def command_thread():
     # Runs commands from the command queue
     global _CommandQueue
     global _MessageQueue
-    global _Players
 
     while 1:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
-            print "running command: ", command
-            player_name = command[0]
-            command = command[1]
-            player = _Players[player_name]
+            player = command[0]
+            room = command[1]
+            verb = command[2]
+            nouns = command[3]
+            object = command[4]
+            tags = command[5]
 
-            messages = do_command(player, command)
-            print "results: ", messages
+            messages = do_command(player, room, verb, nouns, object, tags)
             for message in messages:
                 _MessageQueue.put(message)
 
-def do_command(player, command):
-    global _Rooms
-    
-    room = _Rooms[player.coords]
-    verb, nouns = parse_command(command)
-    valid_objects = get_valid_objects(player, room, verb)   # Get all of the objects that the player can interact with
-    object = get_object(nouns, valid_objects)
-    
-    noun_string = ' '.join(nouns)
-    
-    if object != None and verb in object.scripts: # Run a custom script for a verb on the object if it exists
-        script = "custom_script(room, player, object.scripts[verb])"
-    else:
-        script = verb + "(room, player, object, noun_string)"
+def do_command(player, room, verb, nouns, object, tags):
+    global _CommandQueue
 
-    if 'custom_script' in script:
-        messages = eval(script)
+    messages = []
+    if 'start_script' in tags: # Object has a script for this verb, break it into multiple commands
+        for n, action in enumerate(object.scripts[verb]):
+            action_verb = action[0]
+            noun = action[1]
+            delay = action[2]
+
+            if delay > 0: # There is a delay for this script, spin off a timer thread
+                object.scripts[verb][n] = (object.scripts[verb][n][0], object.scripts[verb][n][1], 0) # Set delay to zero so it doesn't spin off another timer
+                timer = threading.Timer(float(delay), script_delay, args=[player, object.scripts[verb][n:]]) # Start a timer to run the remainder of the script in 'delay' seconds
+                timer.start()
+                break
+            else:
+                command = [player.name, action_verb + ' ' + noun]
+                put_commands([command], script=True) # Push the command to the command queue
     else:
+        noun_string = ' '.join(nouns)
+
+        if 'script' in tags:
+            script = verb + "(room, player, object, noun_string, script=True)"
+        else:
+            script = verb + "(room, player, object, noun_string)"
+
         text, alt_text = eval(script)
-        messages = [(player.name, text)]
+
+        if player.name in room.players:
+            messages.append((player.name, text))
 
         if len(alt_text) > 0:
             for alt_player in room.players.values():
                 if alt_player is not player:
                     messages.append((alt_player.name, alt_text))
 
-            if verb == 'go': # Player entered a new room pass messages to all players in the new room
+            if verb == 'go': # Player entered a new room, pass messages to all players in the new room
                 room = _Rooms[player.coords]
+                messages.append((player.name, text))
+
                 for alt_player in room.players.values():
                     if alt_player is not player:
                         messages.append((alt_player.name, "%s has entered the room." % player.name))
 
     return messages
-    
+
 def parse_command(command):
     # Create translation tables to make the command easier to parse
     translate_one_word = {'i': 'inventory',
@@ -605,6 +647,9 @@ def open(room, player, object, noun, script=False):
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
             alt_text = "%s has opened the %s, inside there is:" % (player.name, object.name)
+
+            if script:
+                text = alt_text = "The %s has opened, inside there is:" % object.name
             
             # Open the container and move its contents to the room
             for item in object.items.keys():
@@ -615,6 +660,9 @@ def open(room, player, object, noun, script=False):
         else:
             text = "You have opened the %s, but there is nothing inside." % object.name
             alt_text = "%s has opened the %s, but there is nothing inside." % (player.name, object.name)
+
+            if script:
+                text = alt_text = "The %s has opened, but there is nothing inside." % object.name
     
     return text, alt_text
 
@@ -667,6 +715,9 @@ def unlock(room, player, object, noun, script=False):
                 
             text = "You have unlocked the %s." % object.name
             alt_text = "%s has unlocked the %s." % (player.name, object.name)
+
+            if script:
+                text = alt_text = "The %s has unlocked." % object.name
         else:
             text = "You don't have the key to unlock the %s." % object.name
     
@@ -689,6 +740,9 @@ def lock(room, player, object, noun, script=False):
             
             text = "You have locked the %s." % object.name
             alt_text = "%s has locked the %s." % (player.name, object.name)
+
+            if script:
+                text = alt_text = "The %s has locked." % object.name
         else:
             text = "You don't have the key to lock the %s." % object.name
     
@@ -708,39 +762,23 @@ def quit(room, player, object, noun, script=False):
     return 'quit', '' #Empty string to homogenize return values.
 
 def bad_command(room, player, object, noun, script=False):
-    return "That is not a valid command.", '' #Empty string is alt_text, we don't need to tell other players about a failed command execution.
+    return "That is not a valid command.", '' # Empty string is alt_text, we don't need to tell other players about a failed command execution.
 ############# CUSTOM SCRIPT METHODS ##########
-def custom_script(room, player, script):
-    messages = []
-    for verb, noun, delay in script:
-        nouns = noun.split()
-        valid_objects = get_all_objects(player, verb)
-
-        objects = []
-        for object_room, object in valid_objects:
-            objects.append(object)
-
-        object = get_object(nouns, objects)
-
-        script = verb + "(room, player, object, noun, script=True)"
-        text, alt_text = eval(script)
-
-        for room, new_object in valid_objects: # Find the room the object is in
-            if object is new_object:
-                break
-
-        if player.name in room.players:
-            messages.append((player.name, text))
-
-        for room_player in room.players:
-            if room_player != player.name:
-                messages.append((room_player, alt_text))
-
-    return messages
-
-def script_thread(script):
+def script_delay(player, script):
     # Runs the remainder of a script after a delay
-    pass
+    for n, action in enumerate(script):
+        verb = action[0]
+        noun = action[1]
+        delay = action[2]
+
+        if delay > 0: # There is a delay for this script, spin off a timer thread
+            script[n] = (script[n][0],  script[n][1], 0) # Set delay to zero so it doesn't spin off another timer
+            timer = threading.Timer(float(delay), script_delay, args=[player, script[n:]]) # Start a timer to run the remainder of the script in 'delay' seconds
+            timer.start()
+            break
+        else:
+            command = [player.name, verb + ' ' + noun]
+            put_commands([command], script=True) # Push the command to the command queue
         
 def print_text(room, player, object, noun, script=False):
     return noun

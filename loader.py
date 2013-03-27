@@ -110,7 +110,7 @@ def load_script(root):
 
         script.append((node.tag, node.text, delay))
     
-    return tuple(script)
+    return script
 
 ############# SAVE METHODS ##############
 # Writes a player to a save file

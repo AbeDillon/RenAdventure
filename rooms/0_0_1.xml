@@ -26,6 +26,7 @@
 <take_script>
 	<take>key</take>
 	<open delay="5">chest</open>
+	<unlock delay="2">heavy door</unlock>
 </take_script>
 </item>
 </room>
