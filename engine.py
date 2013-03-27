@@ -310,7 +310,7 @@ def do_command(player, command):
     else:
         text, alt_text = eval(script)
         messages = [(player.name, text)]
-        
+
         if len(alt_text) > 0:
             for alt_player in room.players.values():
                 if alt_player is not player:
@@ -321,7 +321,7 @@ def do_command(player, command):
                 for alt_player in room.players.values():
                     if alt_player is not player:
                         messages.append((alt_player.name, "%s has entered the room." % player.name))
-    
+
     return messages
     
 def parse_command(command):
@@ -729,10 +729,18 @@ def custom_script(room, player, script):
             if object is new_object:
                 break
 
+        if player.name in room.players:
+            messages.append((player.name, text))
+
         for room_player in room.players:
-            messages.append((room_player, alt_text))
+            if room_player != player.name:
+                messages.append((room_player, alt_text))
 
     return messages
+
+def script_thread(script):
+    # Runs the remainder of a script after a delay
+    pass
         
 def print_text(room, player, object, noun, script=False):
     return noun
