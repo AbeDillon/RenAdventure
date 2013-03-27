@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <room>
-<desc>An empty jail cell</desc>
+<desc>An empty jail cell.</desc>
 <portal x="1" y="0" z="1">
 <name>door</name>
 <direction>east</direction>
