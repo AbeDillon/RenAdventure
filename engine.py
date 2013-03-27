@@ -310,6 +310,7 @@ def do_command(player, command):
     else:
         text, alt_text = eval(script)
         messages = [(player.name, text)]
+        
         if len(alt_text) > 0:
             for alt_player in room.players.values():
                 if alt_player is not player:
