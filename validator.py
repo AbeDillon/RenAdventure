@@ -1,5 +1,8 @@
 
 names = ['door', 'sword', 'key', 'piano', 'chest']
+portal_list = []
+item_list = []
+container_list = []
 
 def validate_name(name, list):  #  function to validate if name is in a given list
     if name in list:  # If the name is in list it returns False
@@ -11,10 +14,10 @@ def validate_name(name, list):  #  function to validate if name is in a given li
 def original_name(name, list):  #  Function to validate a given name against a given list/dictionary for originality.
     '''Names of things must be unique this will take a given name and validate it against a given list/dictionary '''
     if len(name) <= 0:
-        print 'Names must contain at least 1 character to be valid.'
+        print '\nNames must contain at least 1 character to be valid.'
         return False
     if name in list:
-        print 'That name has already been used.'
+        #print 'That name has already been used.'
         return False
     else:
         return True
