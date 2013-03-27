@@ -9,7 +9,8 @@ import string
 import Queue
 import RAProtocol
 
-_Host = "" #socket.gethostname() # replace with actual host address
+_Local_Host = socket.gethostname() # replace with actual host address
+_Server_Host = "172.16.248.141"
 _Login_Port = 1000
 
 _CMD_Queue = Queue.Queue()
@@ -83,12 +84,12 @@ def connect_to_server(line):
     """
 
     """
-    global _Host
+    global _Server_Host
     global _Login_Port
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    sock.connect((socket.gethostname(), _Login_Port))
+    sock.connect((_Server_Host, _Login_Port))
 
     RAProtocol.sendMessage(line, sock)
 
@@ -150,9 +151,9 @@ class InThread(threading.Thread):
 
         """
         threading.Thread.__init__(self)
-        global _Host
+        global _Local_Host
         self.port = port
-        self.host = _Host
+        self.host = _Local_Host
 
     def run(self):
         """
@@ -201,9 +202,9 @@ class OutThread(threading.Thread):
 
         """
         threading.Thread.__init__(self)
-        global _Host
+        global _Server_Host
         self.port = port
-        self.host = socket.gethostname()
+        self.host = _Server_Host
 
     def run(self):
         """
