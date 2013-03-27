@@ -707,7 +707,7 @@ def quit(room, player, object, noun, script=False):
     return 'quit'
 
 def bad_command(room, player, object, noun, script=False):
-    return "That is not a valid command."
+    return "That is not a valid command.", '' #Empty string is alt_text, we don't need to tell other players about a failed command execution.
 ############# CUSTOM SCRIPT METHODS ##########
 def custom_script(room, player, script):
     messages = []
