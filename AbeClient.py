@@ -8,9 +8,13 @@ import time
 import string
 import Queue
 import RAProtocol
+import logging
+
+logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
+
 
 _Local_Host = socket.gethostname() # replace with actual host address
-_Server_Host = "172.16.248.141"
+_Server_Host = socket.gethostname() #"172.16.248.141"
 _Login_Port = 1000
 
 _CMD_Queue = Queue.Queue()
@@ -59,6 +63,7 @@ def LogIn():
     global _CMD_Queue
 
     print >>sys.stdout, "What is your name?"
+    logging.debug('Output: What is your name?')
     ports = None
     while ports == None:
         line = ""
@@ -71,12 +76,15 @@ def LogIn():
 
         if line != "":
             ports = connect_to_server(line)
+            logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
 
         if (ports == None) and not empty_queue:
 
             print >>sys.stdout, "Invalid name, try again."
+            logging.debug('Output: Invalid name, try again')
 
     print >>sys.stdout, "\nlogged in"
+    logging.debug('Output: Logged in.')
 
     return ports
 
@@ -92,6 +100,7 @@ def connect_to_server(line):
     sock.connect((_Server_Host, _Login_Port))
 
     RAProtocol.sendMessage(line, sock)
+    logging.debug('Hidden: Making connection with remote server')
 
     message = RAProtocol.receiveMessage(sock)
 
@@ -135,6 +144,8 @@ class ReadLineThread(threading.Thread):
 
             try:
                 _CMD_Queue.put(line)
+                if line != '':
+                    logging.debug('Input from user: %s' % line)
             except:
                 pass
             _Quit_Lock.acquire()
@@ -172,6 +183,8 @@ class InThread(threading.Thread):
         _Quit_Lock.release()
         while not done:
             conn, addr = sock.accept()
+
+            logging.debug('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
 
             thread.start_new_thread(self.handleInput, (conn, ))
@@ -186,12 +199,13 @@ class InThread(threading.Thread):
 
         """
         message = RAProtocol.receiveMessage(conn)
-
+        logging.debug('Hidden: Got the following message from the server: "%s"' % message)
         conn.close()
 
         if message != 'quit':
 
             print >>sys.stdout, "\n" + message
+            logging.debug('Output: %s' % message)
 
 class OutThread(threading.Thread):
     """
@@ -233,6 +247,7 @@ class OutThread(threading.Thread):
                 sock.connect((self.host, self.port))
                 # send message
                 RAProtocol.sendMessage(message, sock)
+                logging.debug('Hidden: Sending message "%s" to server' % message)
                 # close connection
                 sock.close()
                 # check for quit
@@ -247,4 +262,5 @@ class OutThread(threading.Thread):
 
 if __name__ == "__main__":
     main()
+    logging.debug('Output: Game quit. Please hit enter to exit the program')
     sys.exit('Game quit. Please hit enter to exit the program')
