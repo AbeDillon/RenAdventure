@@ -98,8 +98,7 @@ def assignContainers():
         elif ans == 'yes' or ans == 'y':  # anything other than yes or y
             containers = containerMaker.makeContainers()
             # get return from makeContainers and do what with it...
-            
-            
+
     assignItems()
 
 def assignItems():
