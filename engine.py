@@ -6,6 +6,7 @@ import random
 import Queue
 import thread, threading
 import time
+import logging
 
 class Room:
     '''
@@ -142,7 +143,7 @@ class NPC:
 
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
-    valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'print_text', 'reveal']
+    valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
 
     for script in scripts.keys():
         for action in scripts[script]:
@@ -152,6 +153,8 @@ def scrub(scripts):
                 break
     
     return scripts
+
+logger = logging.getLogger(__name__.title())
 
 _CommandQueue = Queue.Queue()
 _MessageQueue = Queue.Queue()
@@ -165,12 +168,14 @@ def init_game():
     # Initializes the map and starts the command thread
     global _Rooms
 
+    logger.debug('Initializing game state')
     for filename in os.listdir('rooms'):
         path = 'rooms/' + filename
         split_name = filename.split('_')
         coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
 
         _Rooms[coords] = loader.load_room(path)
+        logger.debug("Loaded room at (%d,%d,%d) from '%s'" % (coords[0], coords[1], coords[2], path))
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gates': 2, 'Oreilly': 3, 'Wayne': 4, 'Kardashian': 5}
@@ -186,8 +191,13 @@ def init_game():
     _NPCBucket.append(oreilly)
 
     thread.start_new_thread(command_thread, ())
+    logger.debug("Starting command thread")
+
     thread.start_new_thread(spawn_npc_thread, (3,))
+    logger.debug("Starting spawn NPC thread")
+
     thread.start_new_thread(npc_thread, ())
+    logger.debug("Starting NPC action thread")
 
 def make_player(name, coords = (0,0,1), affiliation = {}):
     global _Rooms
@@ -199,6 +209,8 @@ def make_player(name, coords = (0,0,1), affiliation = {}):
     _Players[player.name] = player # Add to list of players in the game
     _Rooms[player.coords].players[player.name] = player # Add player to list of players in the room they are in
 
+    logger.debug("Made player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+
 def remove_player(name):
     global _Rooms
     global _Players
@@ -207,6 +219,8 @@ def remove_player(name):
 
     del _Rooms[player.coords] # Remove the player from the room they are in
     del _Players[name] # Remove the player from the list of players in the game
+
+    logger.debug("Removed player '%s'" % player.name)
   
 def get_room_text(coords):
     global _Rooms
@@ -320,13 +334,18 @@ def put_commands(commands, script=False, npc=False):
         command = [player, room, verb, nouns, object, tags]
         _CommandQueue.put(command)
 
+        logger.debug("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command))
+
 def get_messages():
     # Returns all messages currently in the message queue
     global _MessageQueue
 
     messages = []
     while not _MessageQueue.empty():
-        messages.append(_MessageQueue.get())
+        message = _MessageQueue.get()
+        messages.append(message)
+
+        logger.debug("Sending message to server: (%s, %s)" % message)
 
     return messages
 
@@ -346,6 +365,9 @@ def command_thread():
             tags = command[5]
 
             messages = do_command(player, room, verb, nouns, object, tags)
+
+            logger.debug("Running command (%s, %s)" % (verb, ' '.join(nouns)))
+
             for message in messages:
                 _MessageQueue.put(message)
 
@@ -372,6 +394,8 @@ def spawn_npc_thread(n):
             npc = random.choice(_NPCBucket)
             _NPCs[npc.name] = npc
             spawned_npc = True
+
+            logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
         elif (len(_Players) % n) != 0:
             spawned_npc = False
 
@@ -887,9 +911,6 @@ def script_delay(player, script):
         else:
             command = [player.name, verb + ' ' + noun]
             put_commands([command], script=True) # Push the command to the command queue
-        
-def print_text(room, player, object, noun, script=False, npc=False):
-    return noun
 
 def reveal(room, player, object, noun, script=False, npc=False):
     # Reveals a hidden object
