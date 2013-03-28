@@ -8,7 +8,8 @@ import engine
 import logging
 import os
 
-logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
+_Logger = logging.getLogger('Server')
 
 _Host = socket.gethostname() # replace with actual host address
 
@@ -33,15 +34,19 @@ _Threads_Lock = threading.RLock()
 _InThreads = {}
 _OutThreads = {}
 
+#Tracking players logged in
+_Logged_in = [] #List with player names
+
 def main():
     """
 
     """
+    global _Logger
     # Initialize _Game_State
     engine.init_game()
 
     print "Game State initialized"
-    logging.debug('Game State initialized')
+    _Logger.debug('Game State initialized')
 
     # Spin-off Log-in thread
     global _Threads
@@ -66,7 +71,7 @@ def main():
     login_thread.start()
 
     print "Log-in thread spawned"
-    logging.debug('Log-in thread spawned')
+    _Logger.debug('Log-in thread spawned')
 
     # Spin-off NPC Spawning thread
 
@@ -74,7 +79,7 @@ def main():
 
     # Start Main Loop
     print "Entering main loop..."
-    logging.debug('Entering main loop...')
+    _Logger.debug('Entering main loop...')
     #loop_cnt = 0
     while 1:
         command = None
@@ -82,7 +87,7 @@ def main():
             command = _CMD_Queue.get_nowait()
             print "player: " + command[0] + " command: " + command[1]
             line = '<player>: '+command[0]+' <command>: '+command[1]
-            logging.debug('Processing Command from Queue: %s' % line)
+            _Logger.debug('Processing Command from Queue: %s' % line)
         except:
             pass
 
@@ -150,24 +155,25 @@ class Login(threading.Thread):
         waits for new connections, then
         handles new connections
         """
+        global _Logger
         # Create a socket to listen for new connections
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
-        logging.debug('Login Socket created')
+        _Logger.debug('Login Socket created')
 
         sock.bind((self.host, self.listen_port))
         print "Login Socket bound"
-        logging.debug('Login Socket bound')
+        _Logger.debug('Login Socket bound')
 
         # Listen for new connections
         sock.listen(10)
         print "Login socket listening"
-        logging.debug('Login socket listening')
+        _Logger.debug('Login socket listening')
         while 1:
             # wait to accept a connection
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
-            logging.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
+            _Logger.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
 
 
             thread.start_new_thread(self.addPlayer, (conn, addr))
@@ -177,6 +183,8 @@ class Login(threading.Thread):
         """
         Add a new player to the game
         """
+        global _Logged_in
+        global _Logger
         # receive message
         logged_in = False
         input_data = RAProtocol.receiveMessage(conn)
@@ -185,80 +193,90 @@ class Login(threading.Thread):
         player_pass = a_string[1]
 
         path = 'login_file/%s.txt' % player_name
+        print "Logged in looks like this:" ###DEBUG
+        print _Logged_in ###DEBUG
 
-        if os.path.exists(path): #This file exists
-            fin = open(path)
-            pwd = fin.readline()
-            fin.close()
+        if player_name not in _Logged_in: #This person is not already logged in to the game
 
-            if player_pass == pwd: #Login successful
-                print 'User <%s> logged in' % player_name
+            if os.path.exists(path): #This file exists
+                fin = open(path)
+                pwd = fin.readline()
+                fin.close()
+
+                if player_pass == pwd: #Login successful
+                    print 'User <%s> logged in' % player_name
+                    logged_in = True
+                    _Logged_in.append(player_name)
+                    print 'Logged in now looks like this:' ###DEBUG
+                    print _Logged_in ###DEBUG
+                else:
+                    print 'User <%s> failed to authenticate.' % player_name
+                    RAProtocol.sendMessage('invalid', conn)
+            else: #File does not exist
+                fin = open(path, 'w')
+                fin.write(player_pass)
+                fin.close()
                 logged_in = True
-            else:
-                print 'User <%s> failed to authenticate.' % player_name
-                RAProtocol.sendMessage('invalid', conn)
-        else: #File does not exist
-            fin = open(path, 'w')
-            fin.write(player_pass)
-            fin.close()
-            logged_in = True
+                _Logged_in.append(player_name)
+                
+            if logged_in:
 
-        if logged_in:
+                # *load player object (to be added, create default player for now)
+                engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
 
 
+                # *create player state and add to _Player_States (to be added)
+                # add new player I/O queues
+                oqueue = Queue.Queue()
+                oqueue.put(engine.get_room_text((0, 0, 1)))
 
-            # *load player object (to be added, create default player for now)
-            engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
+                _Player_OQueues_Lock.acquire()
+                _Player_OQueues[player_name] = oqueue
+                _Player_OQueues_Lock.release()
 
+                # Get I/O port
+                self.spawn_port_lock.acquire()
+                iport = self.spawn_port
+                oport = self.spawn_port + 1
+                self.spawn_port += 2
+                self.spawn_port_lock.release()
 
-            # *create player state and add to _Player_States (to be added)
-            # add new player I/O queues
-            oqueue = Queue.Queue()
-            oqueue.put(engine.get_room_text((0, 0, 1)))
+                # spin off new PlayerI/O threads
+                ithread = PlayerInput(iport, player_name)
+                othread = PlayerOutput(oqueue, addr, oport, player_name)
+                
+                _Threads_Lock.acquire()
+                _Threads.append(ithread)
+                _Threads.append(othread)
+                _Threads_Lock.release()
 
-            _Player_OQueues_Lock.acquire()
-            _Player_OQueues[player_name] = oqueue
-            _Player_OQueues_Lock.release()
+                _InThreads[player_name] = True
+                _OutThreads[player_name] = True
 
-            # Get I/O port
-            self.spawn_port_lock.acquire()
-            iport = self.spawn_port
-            oport = self.spawn_port + 1
-            self.spawn_port += 2
-            self.spawn_port_lock.release()
-
-            # spin off new PlayerI/O threads
-            ithread = PlayerInput(iport, player_name)
-            othread = PlayerOutput(oqueue, addr, oport, player_name)
-
-            _Threads_Lock.acquire()
-            _Threads.append(ithread)
-            _Threads.append(othread)
-            _Threads_Lock.release()
-
-            _InThreads[player_name] = True
-            _OutThreads[player_name] = True
-
-            ithread.start()
-            othread.start()
+                ithread.start()
+                othread.start()
 
 
-            # send new I/O ports to communicate on
-            ports = str(iport) + " " + str(oport)
-            message = str(ports)
-            RAProtocol.sendMessage(message, conn)
+                # send new I/O ports to communicate on
+                ports = str(iport) + " " + str(oport)
+                message = str(ports)
+                RAProtocol.sendMessage(message, conn)
 
-            # add player to _Players
-            _Players_Lock.acquire()
-            _Players.append(player_name)
-            _Players_Lock.release()
+                # add player to _Players
+                _Players_Lock.acquire()
+                _Players.append(player_name)
+                _Players_Lock.release()
 
-            conn.close()
+                conn.close()
 
-            print player_name + " added to the game."
-            logging.debug('<'+player_name+'>'+" added to the game.")
+                print player_name + " added to the game."
+                _Logger.debug('<'+player_name+'>'+" added to the game.")
 
-
+        else: #Player name is in _Logged_in
+            print 'Error, attempt to log in to an account already signed on'
+            _Logger.debug('Error, attempting to log in to an account already signed on: <%s>' % player_name)
+            RAProtocol.sendMessage('already_logged_in', conn) 
+            
 class PlayerInput(threading.Thread):
     """
     Listens for player input adding any input to the local queue
@@ -280,6 +298,7 @@ class PlayerInput(threading.Thread):
         Listen for player input and push it onto the queue
         """
         global _InThreads
+        global _Logger
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -294,14 +313,15 @@ class PlayerInput(threading.Thread):
             else:
                 conn, addr = sock.accept()
                 print 'got input from ' + self.name
-
-                logging.debug('Got input from: <%s>' % self.name)
+                        
+                _Logger.debug('Got input from: <%s>' % self.name)
+                
 
                 thread.start_new_thread(self.handleInput, (conn, ))
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
             print 'Input thread for player <%s> ending' % self.name
-            logging.debug('Input thread for player <%s> ending' % self.name)
+            _Logger.debug('Input thread for player <%s> ending' % self.name)
             del _InThreads[self.name] #So we delete the tracker for it.
     def handleInput(self, conn):
         """
@@ -310,14 +330,16 @@ class PlayerInput(threading.Thread):
         * message parsing and separate queuing will be implemented if the chat
         input and game input share a port
         """
+        global _Logged_in
         global _InThreads
+        global _Logger
         # receive message
         message = RAProtocol.receiveMessage(conn)
 
         # add it to the queue
         try:
             _CMD_Queue.put((self.name, message))
-            logging.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
+            _Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
         except:
             pass
 
@@ -325,6 +347,8 @@ class PlayerInput(threading.Thread):
 
         if message == 'quit':#User is quitting, we can end this thread
             _InThreads[self.name] = False
+            _Logged_in.remove(self.name)
+            _Logger.debug('Removing <%s> from _Logged_in' % self.name)
 
 class PlayerOutput(threading.Thread):
     """
@@ -353,6 +377,7 @@ class PlayerOutput(threading.Thread):
         poll output queue and send messages to player
         """
         global _OutThreads
+        global _Logger
         while _OutThreads[self.name]:
             # Listen to Output Queue
             message = ""
@@ -364,7 +389,7 @@ class PlayerOutput(threading.Thread):
                 pass
             if message != "":
                 print message
-                logging.debug('Sending message to <%s>: "%s"' %(self.name, message))
+                _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
                 if message == 'quit': #Replying to user quit message with a quit, we can stop this thread
                     _OutThreads[self.name] = False
                     # Create Socket
@@ -378,7 +403,7 @@ class PlayerOutput(threading.Thread):
             time.sleep(0.05)
         if not _OutThreads[self.name]: #This thread will no longer be running...
             print 'Output thread for player <%s> ending.' % self.name
-            logging.debug('Output thread for player <%s> ending.'%self.name)
+            _Logger.debug('Output thread for player <%s> ending.'%self.name)
             del _OutThreads[self.name] #So we delete the tracker for it.
 
 class NPCSpawnThread(threading.Thread):
@@ -468,3 +493,4 @@ class TimedScriptThread(threading.Thread):
 
 if __name__ == "__main__":
     main()
+
