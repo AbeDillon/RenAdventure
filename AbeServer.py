@@ -6,6 +6,7 @@ import time, random
 import RAProtocol
 import engine
 import logging
+import os
 
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
@@ -109,6 +110,8 @@ def distribute(messages):
             _Player_OQueues[player].put(text)
 
     _Player_OQueues_Lock.release()
+    
+    
 
 class Login(threading.Thread):
     """
@@ -175,57 +178,85 @@ class Login(threading.Thread):
         Add a new player to the game
         """
         # receive message
-        player_name = RAProtocol.receiveMessage(conn)
+        logged_in = False
+        input_data = RAProtocol.receiveMessage(conn)
+        a_string = input_data.split() #Split on space
+        player_name = a_string[0]
+        player_pass = a_string[1]
 
-        # *load player object (to be added, create default player for now)
-        engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
+        path = 'login_file/%s.txt' % player_name
 
-        # *create player state and add to _Player_States (to be added)
-        # add new player I/O queues
-        oqueue = Queue.Queue()
-        oqueue.put(engine.get_room_text((0, 0, 1)))
+        if os.path.exists(path): #This file exists
+            fin = open(path)
+            pwd = fin.readline()
+            fin.close()
 
-        _Player_OQueues_Lock.acquire()
-        _Player_OQueues[player_name] = oqueue
-        _Player_OQueues_Lock.release()
-
-        # Get I/O port
-        self.spawn_port_lock.acquire()
-        iport = self.spawn_port
-        oport = self.spawn_port + 1
-        self.spawn_port += 2
-        self.spawn_port_lock.release()
-
-        # spin off new PlayerI/O threads
-        ithread = PlayerInput(iport, player_name)
-        othread = PlayerOutput(oqueue, addr, oport, player_name)
-        
-        _Threads_Lock.acquire()
-        _Threads.append(ithread)
-        _Threads.append(othread)
-        _Threads_Lock.release()
-
-        _InThreads[player_name] = True
-        _OutThreads[player_name] = True
-
-        ithread.start()
-        othread.start()
+            if player_pass == pwd: #Login successful
+                print 'User <%s> logged in' % player_name
+                logged_in = True
+            else:
+                print 'User <%s> failed to authenticate.' % player_name
+                RAProtocol.sendMessage('invalid', conn)
+        else: #File does not exist
+            fin = open(path, 'w')
+            fin.write(player_pass)
+            fin.close()
+            logged_in = True
+            
+        if logged_in:
+                
 
 
-        # send new I/O ports to communicate on
-        ports = str(iport) + " " + str(oport)
-        message = str(ports)
-        RAProtocol.sendMessage(message, conn)
+            # *load player object (to be added, create default player for now)
+            engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
 
-        # add player to _Players
-        _Players_Lock.acquire()
-        _Players.append(player_name)
-        _Players_Lock.release()
 
-        conn.close()
+            # *create player state and add to _Player_States (to be added)
+            # add new player I/O queues
+            oqueue = Queue.Queue()
+            oqueue.put(engine.get_room_text((0, 0, 1)))
 
-        print player_name + " added to the game."
-        logging.debug('<'+player_name+'>'+" added to the game.")
+            _Player_OQueues_Lock.acquire()
+            _Player_OQueues[player_name] = oqueue
+            _Player_OQueues_Lock.release()
+
+            # Get I/O port
+            self.spawn_port_lock.acquire()
+            iport = self.spawn_port
+            oport = self.spawn_port + 1
+            self.spawn_port += 2
+            self.spawn_port_lock.release()
+
+            # spin off new PlayerI/O threads
+            ithread = PlayerInput(iport, player_name)
+            othread = PlayerOutput(oqueue, addr, oport, player_name)
+            
+            _Threads_Lock.acquire()
+            _Threads.append(ithread)
+            _Threads.append(othread)
+            _Threads_Lock.release()
+
+            _InThreads[player_name] = True
+            _OutThreads[player_name] = True
+
+            ithread.start()
+            othread.start()
+
+
+            # send new I/O ports to communicate on
+            ports = str(iport) + " " + str(oport)
+            message = str(ports)
+            RAProtocol.sendMessage(message, conn)
+
+            # add player to _Players
+            _Players_Lock.acquire()
+            _Players.append(player_name)
+            _Players_Lock.release()
+
+            conn.close()
+
+            print player_name + " added to the game."
+            logging.debug('<'+player_name+'>'+" added to the game.")
 
 
 class PlayerInput(threading.Thread):
