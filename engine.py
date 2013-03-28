@@ -5,6 +5,7 @@ import loader
 import random
 import Queue
 import thread, threading
+import time
 
 class Room:
     '''
@@ -155,7 +156,10 @@ def scrub(scripts):
 _CommandQueue = Queue.Queue()
 _MessageQueue = Queue.Queue()
 _Players = {}
+_NPCs = {}
 _Rooms = {}
+
+_NPCBucket = [] # Bucket of NPC to pull from when spawning a new NPC
 
 def init_game():
     # Initializes the map and starts the command thread
@@ -168,12 +172,28 @@ def init_game():
 
         _Rooms[coords] = loader.load_room(path)
 
+    # Add some NPCs to the bucket
+    affiliation = {'Obama': 1, 'Gates': 2, 'Oreilly': 3, 'Wayne': 4, 'Kardashian': 5}
+    kanye = NPC('kanye', (0,2,1), affiliation)
+    _NPCBucket.append(kanye)
+
+    affiliation = {'Obama': 3, 'Gates': 2, 'Oreilly': 4, 'Wayne': 1, 'Kardashian': 5}
+    gates = NPC('bill gates', (0,2,1), affiliation)
+    _NPCBucket.append(gates)
+
+    affiliation = {'Obama': 2, 'Gates': 4, 'Oreilly': 1, 'Wayne': 5, 'Kardashian': 3}
+    oreilly = NPC('bill oreilly', (0,2,1), affiliation)
+    _NPCBucket.append(oreilly)
+
     thread.start_new_thread(command_thread, ())
+    thread.start_new_thread(spawn_npc_thread, (3,))
+    thread.start_new_thread(npc_thread, ())
 
 def make_player(name, coords = (0,0,1), affiliation = {}):
     global _Rooms
     global _Players
 
+    affiliation = {'Obama': 5, 'Gates': 4, 'Oreilly': 3, 'Wayne': 2, 'Kardashian': 1} # REMOVE, ONLY FOR TESTING
     player = Player(name, coords, affiliation)
 
     _Players[player.name] = player # Add to list of players in the game
@@ -254,7 +274,7 @@ def check_key(player, key):
     
     return False
 
-def put_commands(commands, script=False):
+def put_commands(commands, script=False, npc=False):
     # Takes a list of commands and pushes them to the command queue (player, room, verb, object, tags)
     global _CommandQueue
     global _Players
@@ -262,9 +282,16 @@ def put_commands(commands, script=False):
 
     for command in commands:
         tags = []
-        player = _Players[command[0]]
+        if npc:
+            player = _NPCs[command[0]]
+        else:
+            player = _Players[command[0]]
+
         room = _Rooms[player.coords]
         verb, nouns = parse_command(command[1])
+
+        if not npc and verb == 'damage': # Only NPCs can use the command damage (for now)
+            verb = 'bad_command'
 
         if not script:
             valid_objects = get_valid_objects(player, room, verb) # Find the valid objects in the room that can be acted on by the verb
@@ -287,6 +314,8 @@ def put_commands(commands, script=False):
 
         if script:
             tags.append('script')
+        if npc:
+            tags.append('npc')
 
         command = [player, room, verb, nouns, object, tags]
         _CommandQueue.put(command)
@@ -320,6 +349,34 @@ def command_thread():
             for message in messages:
                 _MessageQueue.put(message)
 
+        time.sleep(.05) # Sleep for 50ms
+
+def npc_thread():
+    # Runs the commands for all NPC's in the game
+    global _NPCs
+
+    threading.Timer(5.0, npc_thread).start()
+
+    for npc in _NPCs.values():
+        npc_action(npc)
+
+def spawn_npc_thread(n):
+    # Spawns a new NPC for every 'n' players in the game
+    global _Players
+    global _NPCBucket
+    global _NPCs
+    spawned_npc = False
+
+    while 1:
+        if (len(_Players) % n) == 0 and not spawned_npc:
+            npc = random.choice(_NPCBucket)
+            _NPCs[npc.name] = npc
+            spawned_npc = True
+        elif (len(_Players) % n) != 0:
+            spawned_npc = False
+
+        time.sleep(.05) # Sleep for 50ms
+
 def do_command(player, room, verb, nouns, object, tags):
     global _CommandQueue
 
@@ -343,24 +400,23 @@ def do_command(player, room, verb, nouns, object, tags):
 
         if 'script' in tags:
             script = verb + "(room, player, object, noun_string, script=True)"
+        elif 'npc' in tags:
+            script = verb + "(room, player, object, noun_string, npc=True)"
         else:
             script = verb + "(room, player, object, noun_string)"
 
-        text, alt_text, players = eval(script)
+        text, alt_text, player_messages = eval(script) # player_messages are player specific messages, needed when a different message is sent to each player
 
-        if player.name in room.players:
+        if len(text) > 0 and player.name in room.players:
             messages.append((player.name, text))
 
-        if len(alt_text) > 0:
-            if len(players) > 0:
-                for alt_player in players:
-                    if alt_player is not player:
-                        messages.append((alt_player.name, alt_text))
-            else:
-                for alt_player in room.players.values():
-                    if alt_player is not player:
-                        messages.append((alt_player.name, alt_text))
-
+        if len(player_messages) > 0:
+            for player, message in player_messages:
+                messages.append((player.name, message))
+        elif len(alt_text) > 0:
+            for alt_player in room.players.values():
+                if alt_player is not player:
+                    messages.append((alt_player.name, alt_text))
 
             if verb == 'go': # Player entered a new room, pass messages to all players in the new room
                 room = _Rooms[player.coords]
@@ -402,6 +458,7 @@ def parse_command(command):
                        'say': 'say',
                        's': 'say',
                        'shout': 'shout',
+                       'damage': 'damage',
                        'inventory': 'inventory',
                        'quit': 'quit'}
     
@@ -431,32 +488,12 @@ def npc_action(npc):
     global _Rooms
     
     room = _Rooms[npc.coords]
-    messages = []
     if len(room.players) > 0: # There are players in the room, talk to them
         message = "Something" # Replace with tweet
-        text, alt_text, players = say(room, npc, None, message)
-
-        for player in players:
-            difference = 0
-            for person in npc.affiliation: # Calculate the total difference between the player and the npc
-                difference += -abs(npc.affiliation[person] - player.affiliation[person])
-            
-            difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
-            
-            if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
-                player.fih = 30
-            else:
-                player.fih += difference
-
-            if difference > 0:
-                text = "Your Faith in Humanity is increased by %d." % difference
-            elif difference < 0:
-                text = "Your Faith in Humanity is decreased by %d." % abs(difference)
-            else:
-                text = "Your Faith in Humanity is unaffected."
-
-            text = alt_text + " " + text
-            messages.append((player.name, text))
+        commands = []
+        commands.append((npc.name, 'say %s' % message))
+        commands.append((npc.name, 'damage say'))
+        put_commands(commands, npc=True)
     else: # No players in the room, walk closer to a player if there is one within 2 rooms, otherwise randomly choose a portal
         bubble_coords = []
         for i in range(-2,3): # Create a 5x5 bubble around the NPC that they are aware of
@@ -494,16 +531,11 @@ def npc_action(npc):
             if len(valid_portals) > 0:
                 portal = random.choice(valid_portals)
 
-        for player in room.players.coords:
-            messages.append((player.name, "%s has left the room." % npc.name))
-        
-        npc.coords = portal.coords
-
-        room = _Rooms[npc.coords]
-        for player in room.players.values():
-            messages.append((player.name, "%s has entered the room." % npc.name))
-
-    return messages
+        if portal != None:
+            direction = portal.direction
+            command_str = 'go %s' % direction
+            command = (npc.name, command_str)
+            put_commands([command], npc=True)
 
 #Flags  'p' = portals
 #       'r' = room items
@@ -630,7 +662,7 @@ def get_object(nouns, valid_objects):
                 return object_bits[bit][0]
             
 ########### ACTIONS #############
-def look(room, player, object, noun, script=False):
+def look(room, player, object, noun, script=False, npc=False):
     if object == None:
         if 'room' in noun or noun == '':
             text = get_room_text(player.coords)
@@ -641,7 +673,7 @@ def look(room, player, object, noun, script=False):
             
     return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at something
 
-def take(room, player, object, noun, script=False):
+def take(room, player, object, noun, script=False, npc=False):
     alt_text = ''
     
     if object == None:
@@ -655,7 +687,7 @@ def take(room, player, object, noun, script=False):
     
     return text, alt_text, []
 
-def open(room, player, object, noun, script=False):
+def open(room, player, object, noun, script=False, npc=False):
     alt_text = ''
     
     if object == None:
@@ -685,7 +717,7 @@ def open(room, player, object, noun, script=False):
     
     return text, alt_text, []
 
-def go(room, player, object, noun, script=False):
+def go(room, player, object, noun, script=False, npc=False):
     global _Rooms
     alt_text = ''
     
@@ -695,15 +727,17 @@ def go(room, player, object, noun, script=False):
         text = "That way is locked."
     else:
         # Move player to the coordinates the portal leads to
-        del room.players[player.name] # Remove player from last room
         player.coords = object.coords
-        _Rooms[player.coords].players[player.name] = player # Add player to new room
+        if not npc:
+            del room.players[player.name] # Remove player from last room
+            _Rooms[player.coords].players[player.name] = player # Add player to new room
+
         text = get_room_text(player.coords)
-        alt_text = "%s has left the room." % player.name
+        alt_text = "%s has left the room through the %s door." % (player.name, noun)
         
     return text, alt_text, []
 
-def drop(room, player, object, noun, script=False):
+def drop(room, player, object, noun, script=False, npc=False):
     alt_text = ''
     
     if object == None:
@@ -717,7 +751,7 @@ def drop(room, player, object, noun, script=False):
     
     return text, alt_text, []
 
-def unlock(room, player, object, noun, script=False):
+def unlock(room, player, object, noun, script=False, npc=False):
     alt_text = ''
     
     if object == None:
@@ -742,7 +776,7 @@ def unlock(room, player, object, noun, script=False):
     
     return text, alt_text, []
 
-def lock(room, player, object, noun, script=False):
+def lock(room, player, object, noun, script=False, npc=False):
     alt_text = ''
     
     if object == None:
@@ -767,7 +801,7 @@ def lock(room, player, object, noun, script=False):
     
     return text, alt_text, []
 
-def inventory(room, player, object, noun, script=False):
+def inventory(room, player, object, noun, script=False, npc=False):
     if len(player.items) > 0:
         text = "Inventory:"
         for item in player.items.values():
@@ -777,17 +811,13 @@ def inventory(room, player, object, noun, script=False):
         
     return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
 
-def say(room, player, object, noun, script=False):
+def say(room, player, object, noun, script=False, npc=False):
     text = "You say %s" % noun
     alt_text = "%s says %s" % (player.name, noun)
 
-    players = []
-    for alt_player in room.players.values():
-        players.append(alt_player)
+    return text, alt_text, []
 
-    return text, alt_text, players
-
-def shout(room, player, object, noun, script=False):
+def shout(room, player, object, noun, script=False, npc=False):
     global _Rooms
 
     text = "You shout %s" % noun
@@ -803,17 +833,43 @@ def shout(room, player, object, noun, script=False):
         if coords in _Rooms and len(_Rooms[coords].players) > 0:
             trimmed_bubble.append(coords)
 
-    players = []
+    player_messages = []
     for coords in trimmed_bubble:
         for alt_player in _Rooms[coords].players.values():
-            players.append(alt_player)
+            player_messages.append((alt_player, alt_text))
 
-    return text, alt_text, players
+    return text, alt_text, player_messages
 
-def quit(room, player, object, noun, script=False):
+def damage(room, attacker, object, noun, script=False, npc=False):
+    player_messages = []
+
+    for player in room.players.values():
+        difference = 0
+        for person in attacker.affiliation: # Calculate the total difference between the player and the npc
+            difference += -abs(attacker.affiliation[person] - player.affiliation[person])
+
+        difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
+
+        if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
+            player.fih = 30
+        else:
+            player.fih += difference
+
+        if difference > 0:
+            text = "Your Faith in Humanity is increased by %d." % difference
+        elif difference < 0:
+            text = "Your Faith in Humanity is decreased by %d." % abs(difference)
+        else:
+            text = "Your Faith in Humanity is unaffected."
+
+        player_messages.append((player, text))
+
+    return '', '', player_messages
+
+def quit(room, player, object, noun, script=False, npc=False):
     return 'quit', '', [] #Empty string to homogenize return values.
 
-def bad_command(room, player, object, noun, script=False):
+def bad_command(room, player, object, noun, script=False, npc=False):
     return "That is not a valid command.", '', [] # Empty string is alt_text, we don't need to tell other players about a failed command execution.
 ############# CUSTOM SCRIPT METHODS ##########
 def script_delay(player, script):
@@ -832,17 +888,17 @@ def script_delay(player, script):
             command = [player.name, verb + ' ' + noun]
             put_commands([command], script=True) # Push the command to the command queue
         
-def print_text(room, player, object, noun, script=False):
+def print_text(room, player, object, noun, script=False, npc=False):
     return noun
 
-def reveal(room, player, object, noun, script=False):
+def reveal(room, player, object, noun, script=False, npc=False):
     # Reveals a hidden object
     object.hidden = False
     text = "A %s appears in the room." % object.name
 
     return text, text
 
-def hide(room, player, object, noun, script=False):
+def hide(room, player, object, noun, script=False, npc=False):
     # Hides an object
     object.hidden = True
     text = "The %s disappears from the room." % object.name
