@@ -14,7 +14,7 @@ logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(a
 
 
 _Local_Host = socket.gethostname() # replace with actual host address
-_Server_Host = socket.gethostname() #"172.16.248.141"
+_Server_Host = socket.gethostname() # replace with actual server address
 _Login_Port = 1000
 
 _CMD_Queue = Queue.Queue()
