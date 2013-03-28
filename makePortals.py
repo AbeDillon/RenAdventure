@@ -2,7 +2,7 @@ import validator
 import makeItems
 import textwrap
 
-def makePortals(player):
+def makePortals():
 ##### *******************************************TO DO*******************************************************
     #    have script creator and insert it in bottom portion
     
@@ -17,13 +17,15 @@ def makePortals(player):
     for i in range(0, qty):
         portal = {}  
         # Create original name for room commented out global requirment at this time
+        print ""
+        print textwrap.fill('What would you like to name this portal?  All of the portal names in your room must be different.', width=100).strip()
         original = False
         while original == False:    # create original name for portal
-            name = raw_input('What would you like to name this portal?  All of the portal names in your room must be different.\n>  ').strip()
-            if validator.original_name(name, validator.names) == False:  #  Check against list of portals created in entire game
-                print "Sorry that name has already been used by someone else."
-            if validator.original_name(name, room_portals) == False:  #check against list in this newly created room.
-                print "You have already created a portal with that name.  Try again."
+            name = raw_input('\n>').strip()
+            if validator.original_name(name, validator.names) == False:  #  Check against list names in entire game
+                print "\nSorry that name has already been used in the game.  Try Again."
+            elif validator.original_name(name, room_portals) == False:
+                print "\nSorry you have already used that name in this room.   Try Again."
             else:
                 portal[name] = {}
                 room_portals.append(name)
@@ -193,4 +195,4 @@ def makePortals(player):
 
     return room_portals
         
-#makePortals()        
+makePortals()        
