@@ -282,7 +282,7 @@ def put_commands(commands, script=False):
                 if object is new_object:
                     break
 
-        if verb in object.scripts and not script: # Object has a script to override the verb
+        if object != None and verb in object.scripts and not script: # Object has a script to override the verb
             tags.append('start_script')
 
         if script:
@@ -346,15 +346,21 @@ def do_command(player, room, verb, nouns, object, tags):
         else:
             script = verb + "(room, player, object, noun_string)"
 
-        text, alt_text = eval(script)
+        text, alt_text, players = eval(script)
 
         if player.name in room.players:
             messages.append((player.name, text))
 
         if len(alt_text) > 0:
-            for alt_player in room.players.values():
-                if alt_player is not player:
-                    messages.append((alt_player.name, alt_text))
+            if len(players) > 0:
+                for alt_player in players:
+                    if alt_player is not player:
+                        messages.append((alt_player.name, alt_text))
+            else:
+                for alt_player in room.players.values():
+                    if alt_player is not player:
+                        messages.append((alt_player.name, alt_text))
+
 
             if verb == 'go': # Player entered a new room, pass messages to all players in the new room
                 room = _Rooms[player.coords]
@@ -393,6 +399,9 @@ def parse_command(command):
                        'drop': 'drop',
                        'unlock': 'unlock',
                        'lock': 'lock',
+                       'say': 'say',
+                       's': 'say',
+                       'shout': 'shout',
                        'inventory': 'inventory',
                        'quit': 'quit'}
     
@@ -424,7 +433,10 @@ def npc_action(npc):
     room = _Rooms[npc.coords]
     messages = []
     if len(room.players) > 0: # There are players in the room, talk to them
-        for player in room.players.values():
+        message = "Something" # Replace with tweet
+        text, alt_text, players = say(room, npc, None, message)
+
+        for player in players:
             difference = 0
             for person in npc.affiliation: # Calculate the total difference between the player and the npc
                 difference += -abs(npc.affiliation[person] - player.affiliation[person])
@@ -436,7 +448,14 @@ def npc_action(npc):
             else:
                 player.fih += difference
 
-            text = "%s says something, your Faith in Humanity is effected by %d." % (npc.name, difference)
+            if difference > 0:
+                text = "Your Faith in Humanity is increased by %d." % difference
+            elif difference < 0:
+                text = "Your Faith in Humanity is decreased by %d." % abs(difference)
+            else:
+                text = "Your Faith in Humanity is unaffected."
+
+            text = alt_text + " " + text
             messages.append((player.name, text))
     else: # No players in the room, walk closer to a player if there is one within 2 rooms, otherwise randomly choose a portal
         bubble_coords = []
@@ -620,7 +639,7 @@ def look(room, player, object, noun, script=False):
     else:
         text = object.inspect_desc
             
-    return text, '' # Empty string is alt_text, we don't need to tell other players about a player looking at something
+    return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at something
 
 def take(room, player, object, noun, script=False):
     alt_text = ''
@@ -634,7 +653,7 @@ def take(room, player, object, noun, script=False):
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
     
-    return text, alt_text
+    return text, alt_text, []
 
 def open(room, player, object, noun, script=False):
     alt_text = ''
@@ -664,7 +683,7 @@ def open(room, player, object, noun, script=False):
             if script:
                 text = alt_text = "The %s has opened, but there is nothing inside." % object.name
     
-    return text, alt_text
+    return text, alt_text, []
 
 def go(room, player, object, noun, script=False):
     global _Rooms
@@ -682,7 +701,7 @@ def go(room, player, object, noun, script=False):
         text = get_room_text(player.coords)
         alt_text = "%s has left the room." % player.name
         
-    return text, alt_text
+    return text, alt_text, []
 
 def drop(room, player, object, noun, script=False):
     alt_text = ''
@@ -696,7 +715,7 @@ def drop(room, player, object, noun, script=False):
         text = "You have dropped the %s." % object.name
         alt_text = "%s has dropped a %s." % (player.name, object.name)
     
-    return text, alt_text
+    return text, alt_text, []
 
 def unlock(room, player, object, noun, script=False):
     alt_text = ''
@@ -721,7 +740,7 @@ def unlock(room, player, object, noun, script=False):
         else:
             text = "You don't have the key to unlock the %s." % object.name
     
-    return text, alt_text
+    return text, alt_text, []
 
 def lock(room, player, object, noun, script=False):
     alt_text = ''
@@ -746,7 +765,7 @@ def lock(room, player, object, noun, script=False):
         else:
             text = "You don't have the key to lock the %s." % object.name
     
-    return text, alt_text
+    return text, alt_text, []
 
 def inventory(room, player, object, noun, script=False):
     if len(player.items) > 0:
@@ -756,13 +775,46 @@ def inventory(room, player, object, noun, script=False):
     else:
         text = "Your inventory is empty."
         
-    return text, '' # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
+    return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
+
+def say(room, player, object, noun, script=False):
+    text = "You say %s" % noun
+    alt_text = "%s says %s" % (player.name, noun)
+
+    players = []
+    for alt_player in room.players.values():
+        players.append(alt_player)
+
+    return text, alt_text, players
+
+def shout(room, player, object, noun, script=False):
+    global _Rooms
+
+    text = "You shout %s" % noun
+    alt_text = "%s shouted %s" % (player.name, noun)
+
+    bubble_coords = []
+    for i in range(-2,3): # Create a 5x5 bubble around the player
+        for j in range(-2,3):
+            bubble_coords.append((player.coords[0]+i, player.coords[1]+j, player.coords[2]))
+
+    trimmed_bubble = []
+    for coords in bubble_coords: # Remove coords from the bubble that don't have room with players in them
+        if coords in _Rooms and len(_Rooms[coords].players) > 0:
+            trimmed_bubble.append(coords)
+
+    players = []
+    for coords in trimmed_bubble:
+        for alt_player in _Rooms[coords].players.values():
+            players.append(alt_player)
+
+    return text, alt_text, players
 
 def quit(room, player, object, noun, script=False):
-    return 'quit', '' #Empty string to homogenize return values.
+    return 'quit', '', [] #Empty string to homogenize return values.
 
 def bad_command(room, player, object, noun, script=False):
-    return "That is not a valid command.", '' # Empty string is alt_text, we don't need to tell other players about a failed command execution.
+    return "That is not a valid command.", '', [] # Empty string is alt_text, we don't need to tell other players about a failed command execution.
 ############# CUSTOM SCRIPT METHODS ##########
 def script_delay(player, script):
     # Runs the remainder of a script after a delay
