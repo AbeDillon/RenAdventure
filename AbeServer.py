@@ -27,6 +27,11 @@ _Player_OQueues_Lock = threading.RLock()
 _Threads = [] # mutex controlled
 _Threads_Lock = threading.RLock()
 
+#Tracking incoming/outgoing threads for termination
+#key = (string)Player_Name : val = (bool) #True to keep running, False to stop the thread.
+_InThreads = {}
+_OutThreads = {}
+
 def main():
     """
 
@@ -194,14 +199,18 @@ class Login(threading.Thread):
         # spin off new PlayerI/O threads
         ithread = PlayerInput(iport, player_name)
         othread = PlayerOutput(oqueue, addr, oport, player_name)
-
+        
         _Threads_Lock.acquire()
         _Threads.append(ithread)
         _Threads.append(othread)
         _Threads_Lock.release()
 
+        _InThreads[player_name] = True
+        _OutThreads[player_name] = True
+
         ithread.start()
         othread.start()
+
 
         # send new I/O ports to communicate on
         ports = str(iport) + " " + str(oport)
@@ -239,6 +248,7 @@ class PlayerInput(threading.Thread):
         """
         Listen for player input and push it onto the queue
         """
+        global _InThreads
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -248,14 +258,20 @@ class PlayerInput(threading.Thread):
         sock.listen(10)
 
         while 1:
-            conn, addr = sock.accept()
-            print 'got input from ' + self.name
-                    
-            logging.debug('Got input from: <%s>' % self.name)
-            
-            thread.start_new_thread(self.handleInput, (conn, ))
-            time.sleep(0.05)
-
+            if not _InThreads[self.name]: #This input thread no longer needs to run
+                break
+            else:
+                conn, addr = sock.accept()
+                print 'got input from ' + self.name
+                        
+                logging.debug('Got input from: <%s>' % self.name)
+                
+                thread.start_new_thread(self.handleInput, (conn, ))
+                time.sleep(0.05)
+        if not _InThreads[self.name]: #We stopped the loop..
+            print 'Input thread for player <%s> ending' % self.name
+            logging.debug('Input thread for player <%s> ending' % self.name)
+            del _InThreads[self.name] #So we delete the tracker for it.
     def handleInput(self, conn):
         """
         Receive input, parse the message*, and place it in the correct queue*
@@ -263,7 +279,7 @@ class PlayerInput(threading.Thread):
         * message parsing and separate queuing will be implemented if the chat
         input and game input share a port
         """
-
+        global _InThreads
         # receive message
         message = RAProtocol.receiveMessage(conn)
 
@@ -271,11 +287,13 @@ class PlayerInput(threading.Thread):
         try:
             _CMD_Queue.put((self.name, message))
             logging.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
-            
         except:
             pass
 
         conn.close()
+
+        if message == 'quit':#User is quitting, we can end this thread
+            _InThreads[self.name] = False
 
 class PlayerOutput(threading.Thread):
     """
@@ -303,7 +321,8 @@ class PlayerOutput(threading.Thread):
         """
         poll output queue and send messages to player
         """
-        while 1:
+        global _OutThreads
+        while _OutThreads[self.name]:
             # Listen to Output Queue
             message = ""
             try:
@@ -315,7 +334,8 @@ class PlayerOutput(threading.Thread):
             if message != "":
                 print message
                 logging.debug('Sending message to <%s>: "%s"' %(self.name, message))
-                
+                if message == 'quit': #Replying to user quit message with a quit, we can stop this thread
+                    _OutThreads[self.name] = False
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
@@ -324,8 +344,11 @@ class PlayerOutput(threading.Thread):
                 RAProtocol.sendMessage(message, sock)
                 # close connection
                 sock.close()
-
             time.sleep(0.05)
+        if not _OutThreads[self.name]: #This thread will no longer be running...
+            print 'Output thread for player <%s> ending.' % self.name
+            logging.debug('Output thread for player <%s> ending.'%self.name)
+            del _OutThreads[self.name] #So we delete the tracker for it.
 
 class NPCSpawnThread(threading.Thread):
     """
