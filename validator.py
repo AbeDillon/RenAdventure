@@ -1,5 +1,9 @@
-
+# global list of names across all named objects to validate originality will need to appended and removed as onjects are added removed
 names = ['door', 'sword', 'key', 'piano', 'chest']
+
+# lists of item types Append remove similar to names above.  Required to make sure someone does not specify a portal name as an item in a room this
+# would break our loader xml etc becuase they do not have similar attributes.  Am I correct?
+# need to add additional layer of validation in all (make**.py) against these lists still.
 portal_list = []
 item_list = []
 container_list = []
