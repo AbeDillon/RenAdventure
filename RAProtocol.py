@@ -1,6 +1,7 @@
 __author__ = 'ADillon'
 
 import socket
+import sys
 
 def sendMessage(message, conn):
     """
@@ -49,6 +50,7 @@ def decodePrefix(prefix):
 
     """
     msg_len = ord(prefix[0])
+
     for i in range(1,4):
         msg_len *= 256
         msg_len += ord(prefix[i])

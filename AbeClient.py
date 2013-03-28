@@ -28,11 +28,11 @@ def main():
     """
     # start getting keyboard input
     global _CMD_Queue
-    rlt = ReadLineThread()
-    rlt.start()
 
     # try to log into the server and acquire a port
     ports = LogIn()
+    rlt = ReadLineThread()
+    rlt.start()
 
     ports = ports.split()
 
@@ -62,28 +62,29 @@ def LogIn():
     """
     global _CMD_Queue
 
-    print >>sys.stdout, "What is your name?"
-    logging.debug('Output: What is your name?')
+
     ports = None
     while ports == None:
-        line = ""
-        empty_queue = _CMD_Queue.empty()
 
-        try:
-            line = _CMD_Queue.get()
-        except:
-            pass
-
+        line1 = raw_input('Please enter your username:\r\n') #Name
+        logging.debug('Output: Please enter your username:')
+        logging.debug('Input: %s' % line1)
+        line2 = raw_input('Please enter your password:\r\n') #Pass
+        logging.debug('Output: Please enter your password:')
+        logging.debug('Input: %s' % line2)
+        line = line1 + ' ' + line2
         if line != "":
+            
             ports = connect_to_server(line)
-            logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
+            if ports == 'invalid': #Failed login
+                logging.debug('Output: Error, failed to log in. Please try again')
+                print >>sys.stdout, 'Error, failed to log in. Please try again'
+                ports = None
+            else:
+                logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
 
-        if (ports == None) and not empty_queue:
 
-            print >>sys.stdout, "Invalid name, try again."
-            logging.debug('Output: Invalid name, try again')
-
-    print >>sys.stdout, "\nlogged in"
+    print >>sys.stdout, "\nLogged in"
     logging.debug('Output: Logged in.')
 
     return ports
