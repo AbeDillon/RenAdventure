@@ -434,6 +434,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         while 1:
             for person in to_rem:
                 del _User_Pings[person]
+                del _OutThreads[person]
             to_rem = []
             for player in _User_Pings:
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
@@ -487,9 +488,6 @@ class PlayerOutput(threading.Thread):
             if message != "":
                 print message
                 _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
-##                if message == 'quit': #Replying to user quit message with a quit, we can stop this thread
-##                    _OutThreads[self.name] = False
-                    # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
                 try:
