@@ -14,7 +14,7 @@ logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(a
 
 
 _Local_Host = socket.gethostname() # replace with actual host address
-_Server_Host = socket.gethostname() #socket.gethostbyname('ec2-54-244-205-138.us-west-2.compute.amazonaws.com')#socket.gethostname() # replace with actual server address
+_Server_Host = socket.gethostname() #'10.245.50.150' # replace with actual server address
 _Login_Port = 80
 
 _CMD_Queue = Queue.Queue()
