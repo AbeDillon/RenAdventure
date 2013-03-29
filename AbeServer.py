@@ -394,6 +394,7 @@ class PlayerInput(threading.Thread):
             _InThreads[self.name] = False
             _Logged_in.remove(self.name)
             _Logger.debug('Removing <%s> from _Logged_in' % self.name)
+            engine.remove_player(self.name) #Remove player existence from gamestate.
 
 class PlayerOutput(threading.Thread):
     """
