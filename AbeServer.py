@@ -391,6 +391,7 @@ class PlayerInput(threading.Thread):
         """
         global _Logged_in
         global _InThreads
+        global _OutThreads
         global _Logger
         global _User_Pings
         # receive message
@@ -399,16 +400,18 @@ class PlayerInput(threading.Thread):
         if message != '_ping_':
 
             # add it to the queue
-            try:
-                _CMD_Queue.put((self.name, message))
-                _Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
-            except:
-                pass
+            if message != 'quit':
+                try:
+                    _CMD_Queue.put((self.name, message))
+                    _Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
+                except:
+                    pass
 
-            conn.close()
+                conn.close()
 
-            if message == 'quit':#User is quitting, we can end this thread
+            elif message == 'quit':#User is quitting, we can end this thread
                 _InThreads[self.name] = False
+                _OutThreads[self.name] = False
                 _Logged_in.remove(self.name)
                 _Logger.debug('Removing <%s> from _Logged_in' % self.name)
                 engine.remove_player(self.name) #Remove player existence from gamestate.
@@ -484,8 +487,8 @@ class PlayerOutput(threading.Thread):
             if message != "":
                 print message
                 _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
-                if message == 'quit': #Replying to user quit message with a quit, we can stop this thread
-                    _OutThreads[self.name] = False
+##                if message == 'quit': #Replying to user quit message with a quit, we can stop this thread
+##                    _OutThreads[self.name] = False
                     # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
@@ -562,12 +565,14 @@ class ServerActionThread(threading.Thread):
 
             if command != '': #We got something
                 if command.lower() == 'quit':
+                    print 'Got quit, shutting down server.'
                     done = True
-                    print 'GOT QUIT, WOULD SHUT DOWN IF IMPLEMENTED' ###DEBUG
-                    #_CMD_Queue.put('global shutdown') #Command to let everyone know that the server is going to shut down.
-                    #_Logger.debug('Initiating global server shutdown.') 
+                    engine.shutdown_game()
+                    break
                 else: #No other commands presently.
-                    pass
+                    print 'Got command: %s' % command
+
+        return True
 
 class NPCSpawnThread(threading.Thread):
     """

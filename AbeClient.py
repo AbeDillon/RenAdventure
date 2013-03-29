@@ -157,8 +157,10 @@ class KeepAliveThread(threading.Thread):
         start_time = time.time()
 
         signal_time = 10
-
-        while 1:
+        _Quit_Lock.acquire()
+        done = _Quit
+        _Quit_Lock.release()
+        while not done:
             if time.time()-start_time >= signal_time: #We send a keepalive signal.
                 _CMD_Queue.put('_ping_')
                 start_time = time.time()
@@ -258,10 +260,10 @@ class InThread(threading.Thread):
         logging.debug('Hidden: Got the following message from the server: "%s"' % message)
         conn.close()
 
-        if message != 'quit':
+        print >>sys.stdout, "\n" + message
+        logging.debug('Output: %s' % message)
 
-            print >>sys.stdout, "\n" + message
-            logging.debug('Output: %s' % message)
+        return True
 
 class OutThread(threading.Thread):
     """
@@ -312,11 +314,11 @@ class OutThread(threading.Thread):
                     _Quit = True
                     _Quit_Lock.release()
 
-                    
             done = _Quit
             time.sleep(0.05)
 
 if __name__ == "__main__":
     main()
-    logging.debug('Output: Game quit. Please hit enter to exit the program')
-    sys.exit('Game quit. Please hit enter to exit the program')
+    logging.debug('Output: Game quit. Please close the program.')
+    sys.exit('Game quit. Please close the program.')
+    
