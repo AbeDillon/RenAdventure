@@ -148,13 +148,23 @@ _NPCs = {} # NPCs currently in the game
 _Rooms = {} # Rooms currently in the game
 _NPCBucket = [] # Bucket of NPC to pull from when spawning a new NPC
 
-def init_game():
+def init_game(save_state = 0):
     # Initializes the map and starts the command thread
     global _Rooms
 
-    logger.debug('Initializing game state')
-    for filename in os.listdir('rooms'):
-        path = 'rooms/' + filename
+    if save_state > 0:
+        directory = 'SaveState%d' % save_state
+
+        print 'Initializing game state from save state %d' % save_state
+        logger.debug('Initializing game state from save state %d' % save_state)
+    else:
+        directory = 'rooms'
+
+        print 'Initializing game state from default save state'
+        logger.debug('Initializing game state from default save state')
+
+    for filename in os.listdir(directory):
+        path = directory + '/' + filename
         split_name = filename.split('_')
         coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
 
