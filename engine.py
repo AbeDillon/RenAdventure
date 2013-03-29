@@ -140,13 +140,12 @@ class NPC:
         self.affiliation = affiliation
 
 logger = logging.getLogger(__name__.title())
-
+_StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
 _Players = {} # Players currently in the game
 _NPCs = {} # NPCs currently in the game
 _Rooms = {} # Rooms currently in the game
-
 _NPCBucket = [] # Bucket of NPC to pull from when spawning a new NPC
 
 def init_game():
@@ -183,6 +182,35 @@ def init_game():
 
     thread.start_new_thread(npc_thread, ())
     logger.debug("Starting NPC action thread")
+
+def shutdown_game():
+    # Winds the game down and creates a directory with all of the saved state information
+    global _StillAlive
+    global _Players
+    global _Rooms
+
+    logger.debug('Shutting down the game.')
+
+    _StillAlive = False # Causes all of the threads to close
+
+    for player in _Players.values(): # Save all of the player states
+        loader.save_player(player)
+    logger.debug('Saved player states.')
+
+    save_num = 1
+    while 1:    # Create a directory to save the game state in
+        directory = 'SaveState%d' % save_num
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+            for coords in _Rooms: # Save the rooms to the save state directory
+                path = directory + '/%d_%d_%d.xml' % coords
+                loader.save_room(_Rooms[coords], path)
+
+            logger.debug("Saved game state to '%s'" % directory)
+            break
+        else:
+            save_num += 1
 
 def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
     global _Rooms
@@ -274,10 +302,11 @@ def get_messages():
 
 def command_thread():
     # Runs commands from the command queue
+    global _StillAlive
     global _CommandQueue
     global _MessageQueue
 
-    while 1:
+    while _StillAlive:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
             player = command[0]
@@ -296,23 +325,29 @@ def command_thread():
 
         time.sleep(.05) # Sleep for 50ms
 
+    logger.debug("Closing command thread.")
+
 def npc_thread():
     # Runs the commands for all NPC's in the game
+    global _StillAlive
     global _NPCs
 
-    threading.Timer(5.0, npc_thread).start()
+    if _StillAlive:
+        threading.Timer(5.0, npc_thread).start()
 
-    for npc in _NPCs.values():
-        npc_action(npc)
+        for npc in _NPCs.values():
+            npc_action(npc)
+
+    logger.debug("Closing npc action thread.")
 
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game
+    global _StillAlive
     global _Players
     global _NPCBucket
     global _NPCs
-    spawned_npc = False
 
-    while 1:
+    while _StillAlive:
         if ((len(_Rooms) / n) + 1) > len(_NPCs):
             npc = random.choice(_NPCBucket)
             _NPCs[npc.name] = npc
@@ -322,7 +357,9 @@ def spawn_npc_thread(n):
             name = random.choice(_NPCs.keys())
             npc = _NPCs[name]
             del _NPCs[name]
-            
+
             logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
 
         time.sleep(.05) # Sleep for 50ms
+
+    logger.debug("Closing spawn npc thread.")

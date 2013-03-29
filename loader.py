@@ -141,8 +141,8 @@ def save_player(player):
     save.close()
 
 # Writes a room to a save file
-def save_room(room, coords):
-    save = open('rooms/%d_%d_%d.xml' % coords, 'w')
+def save_room(room, path):
+    save = open(path, 'w')
     save.write('<?xml version="1.0"?>\n')
     save.write('<room>\n')
     
