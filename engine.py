@@ -163,15 +163,15 @@ def init_game():
         logger.debug("Loaded room at (%d,%d,%d) from '%s'" % (coords[0], coords[1], coords[2], path))
 
     # Add some NPCs to the bucket
-    affiliation = {'Obama': 1, 'Gates': 2, 'Oreilly': 3, 'Wayne': 4, 'Kardashian': 5}
+    affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
     kanye = NPC('kanye', (0,2,1), affiliation)
     _NPCBucket.append(kanye)
 
-    affiliation = {'Obama': 3, 'Gates': 2, 'Oreilly': 4, 'Wayne': 1, 'Kardashian': 5}
+    affiliation = {'Obama': 3, 'Gottfried': 2, 'OReilly': 4, 'Kanye': 1, 'Burbiglia': 5}
     gates = NPC('bill gates', (0,2,1), affiliation)
     _NPCBucket.append(gates)
 
-    affiliation = {'Obama': 2, 'Gates': 4, 'Oreilly': 1, 'Wayne': 5, 'Kardashian': 3}
+    affiliation = {'Obama': 2, 'Gottfried': 4, 'OReilly': 1, 'Kanye': 5, 'Burbiglia': 3}
     oreilly = NPC('bill oreilly', (0,2,1), affiliation)
     _NPCBucket.append(oreilly)
 
@@ -184,23 +184,27 @@ def init_game():
     thread.start_new_thread(npc_thread, ())
     logger.debug("Starting NPC action thread")
 
-def make_player(name, coords = (0,0,1), affiliation = {}):
+def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
     global _Rooms
     global _Players
 
-    affiliation = {'Obama': 5, 'Gates': 4, 'Oreilly': 3, 'Wayne': 2, 'Kardashian': 1} # REMOVE, ONLY FOR TESTING
-    player = Player(name, coords, affiliation)
+    path = 'players/%s.xml' % name
+    if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
+        player = loader.load_player(path)
+    else:
+        player = Player(name, coords, affiliation)
 
     _Players[player.name] = player # Add to list of players in the game
     _Rooms[player.coords].players[player.name] = player # Add player to list of players in the room they are in
 
-    logger.debug("Made player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+    logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
 
 def remove_player(name):
     global _Rooms
     global _Players
 
     player = _Players[name]
+    loader.save_player(player)  # Save the player
 
     del _Rooms[player.coords] # Remove the player from the room they are in
     del _Players[name] # Remove the player from the list of players in the game
@@ -302,20 +306,23 @@ def npc_thread():
         npc_action(npc)
 
 def spawn_npc_thread(n):
-    # Spawns a new NPC for every 'n' players in the game
+    # Spawns a new NPC for every 'n' rooms in the game
     global _Players
     global _NPCBucket
     global _NPCs
     spawned_npc = False
 
     while 1:
-        if (len(_Players) % n) == 0 and not spawned_npc:
+        if ((len(_Rooms) / n) + 1) > len(_NPCs):
             npc = random.choice(_NPCBucket)
             _NPCs[npc.name] = npc
-            spawned_npc = True
 
             logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
-        elif (len(_Players) % n) != 0:
-            spawned_npc = False
+        elif ((len(_Rooms) / n) + 1) < len(_NPCs):
+            name = random.choice(_NPCs.keys())
+            npc = _NPCs[name]
+            del _NPCs[name]
+            
+            logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
 
         time.sleep(.05) # Sleep for 50ms

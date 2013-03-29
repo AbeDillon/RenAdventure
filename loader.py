@@ -12,7 +12,14 @@ def load_player(path):
     player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
     
     for node in root:
-        player_attributes[node.tag] = node.text
+        if node.tag == 'affiliation':
+            affiliation = {}
+            for tag in node:
+                affiliation[tag.tag] = int(tag.text)
+
+            player_attributes['affiliation'] = affiliation
+        else:
+            player_attributes[node.tag] = node.text
     
     return engine.Player(**player_attributes)
     
@@ -120,10 +127,12 @@ def save_player(player):
     save.write('<player x="%d" y="%d" z="%d">\n' % player.coords)
     
     save.write('<name>%s</name>\n' % player.name)
-    #save.write('<fih>%d</fih>\n' % player.fih)
-    #save.write('<ego>%d</ego>\n' % player.ego)
-    #save.write('<tolerance>%d</tolerance>\n' % player.tolerance)
-    #save.write('<balls>%d</balls>\n' % player.balls)
+    save.write('<fih>%d</fih>\n' % player.fih)
+
+    save.write('<affiliation>')
+    for person in player.affiliation:
+        save.write('<%s>%d</%s>' % (person, player.affiliation[person], person))
+    save.write('</affiliation>')
     
     for item in player.items.values():
         save_item(save, item)
