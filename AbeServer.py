@@ -428,13 +428,14 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _OutThreads
         global _Logger
         global _User_Pings
+        global _Player_OQueues_Lock
+        global _Player_OQueues
 
         timeout = 15
         to_rem = []
         while 1:
             for person in to_rem:
                 del _User_Pings[person]
-                del _OutThreads[person]
             to_rem = []
             for player in _User_Pings:
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
@@ -445,6 +446,9 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     if player in _Logged_in:
                         _Logged_in.remove(player)
                     to_rem.append(player)
+                    _Player_OQueues_Lock.acquire()
+                    _Player_OQueues[player].put('Error, it appears this person has timed out.')
+                    _Player_OQueues_Lock.release()
 
             time.sleep(0.05)
 
@@ -485,7 +489,7 @@ class PlayerOutput(threading.Thread):
             except:
                 # this should handle exceptions
                 pass
-            if message != "":
+            if message != "" and message != 'Error, it appears this person has timed out.':
                 print message
                 _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -498,8 +502,20 @@ class PlayerOutput(threading.Thread):
                     sock.close()
                 except:
                     #Could not make connection or send message
-                    pass
-            time.sleep(0.05)
+                    _Logger.debug('Error making connection or sending message to <%s>'%self.name)
+                time.sleep(0.05)
+            elif message == 'Error, it appears this person has timed out.':
+                print message
+                _Logger.debug('Sending message to <%s>: "%s"'%(self.name,message))
+                _OutThreads[self.name] = False
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                    sock.connect((self.address[0], self.port))
+                    RAProtocol.sendMessage(message, sock)
+                    sock.close()
+                except:
+                    _Logger.debug('Failed to either connect or send a message to <%s> after timeout.'%self.name)
+                time.sleep(0.05)
         if not _OutThreads[self.name]: #This thread will no longer be running...
             print 'Output thread for player <%s> ending.' % self.name
             _Logger.debug('Output thread for player <%s> ending.'%self.name)

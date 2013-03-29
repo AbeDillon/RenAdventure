@@ -1,17 +1,5 @@
 <?xml version="1.0"?>
-<player x="1" y="0" z="1">
+<player x="1" y="1" z="1">
 <name>matt</name>
-<fih>-32</fih>
-<affiliation><Kanye>4</Kanye><OReilly>3</OReilly><Gottfried>2</Gottfried><Burbiglia>1</Burbiglia><Obama>5</Obama></affiliation><item>
-<name>key</name>
-<desc>a key</desc>
-<inspect_desc>something</inspect_desc>
-<portable>1</portable>
-<hidden>0</hidden>
-<take_script>
-<take>key</take>
-<open>chest</open>
-<unlock>heavy door</unlock>
-</take_script>
-</item>
-</player>
+<fih>-4</fih>
+<affiliation><Kanye>4</Kanye><Obama>5</Obama><Gottfried>2</Gottfried><Burbiglia>1</Burbiglia><OReilly>3</OReilly></affiliation></player>

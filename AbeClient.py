@@ -156,7 +156,7 @@ class KeepAliveThread(threading.Thread):
         global _CMD_Queue
         start_time = time.time()
 
-        signal_time = 10
+        signal_time = 5
         _Quit_Lock.acquire()
         done = _Quit
         _Quit_Lock.release()
@@ -164,6 +164,9 @@ class KeepAliveThread(threading.Thread):
             if time.time()-start_time >= signal_time: #We send a keepalive signal.
                 _CMD_Queue.put('_ping_')
                 start_time = time.time()
+                _Quit_Lock.acquire()
+                done = _Quit
+                _Quit_Lock.release()
                 
 
 class ReadLineThread(threading.Thread):
@@ -319,6 +322,5 @@ class OutThread(threading.Thread):
 
 if __name__ == "__main__":
     main()
-    logging.debug('Output: Game quit. Please close the program.')
-    sys.exit('Game quit. Please close the program.')
-    
+    logging.debug('Output: Game quit. Please close the program.')        
+    sys.exit('Game quit. Please close the program.') 
