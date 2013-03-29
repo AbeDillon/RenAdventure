@@ -62,7 +62,8 @@ def LogIn():
     """
     global _CMD_Queue
 
-
+    rank_list = {'Obama':0, 'Kanye':0, 'OReilly':0, 'Gottfried':0, 'Burbiglia':0}
+    used_ranks = [5, 4, 3, 2, 1]
     ports = None
     while ports == None:
 
@@ -84,6 +85,34 @@ def LogIn():
                 logging.debug('Output: Error, illegal player name. Please choose an appropriate name.')
                 print >>sys.stdout, 'Error, illegal player name. Please choose an appropriate name.'
                 ports = None
+            elif ports == 'affiliation_get': #Get user affiliation set
+                print >>sys.stdout, 'This is a new player, which requires you to rank your affiliation with people.'
+                logging.debug('Output: This is a new player, which requires you to rank your affiliation with people.')
+                print >>sys.stdout, 'Please rank the following people 1 through 5 in order of preference:'
+                logging.debug('Output: Please rank the following people 1 through 5 in order of preference:')
+                for person in rank_list:
+                    print >>sys.stdout, '\t'+person
+
+                for person in rank_list:
+                    while 1:
+                        rank = raw_input('On a scale of 1 to 5, where would you rank %s?\r\n'%person)
+                        logging.debug('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person)
+                        logging.debug('Input: %s' % rank)
+                        rank = int(rank)
+                        if rank in used_ranks: #This is okay
+                            rank_list[person] = rank
+                            used_ranks.remove(rank)
+                            break
+                        else:
+                            print >>sys.stdout, 'Sorry, you may only give each person a different ranking'
+                            logging.debug('Output: Sorry, you may only give each person a different ranking')
+                for person in rank_list:
+                    line = line+' '+person+' '+str(rank_list[person]) #Add all the people and their ranking to line
+
+                ports = connect_to_server(line) #Re-send data with attached affiliation set
+
+                
+                    
             else:
                 logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
 

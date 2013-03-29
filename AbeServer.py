@@ -210,6 +210,11 @@ class Login(threading.Thread):
         a_string = input_data.split() #Split on space
         player_name = a_string[0]
         player_pass = a_string[1]
+        player_affil = {} #Current player's affiliation data.
+        if len(a_string) > 2: #We got other data here
+            affiliation = ''
+            for data in a_string:
+                affiliation += data+' ' #Add this data together, should be affiliation list.
 
         path = 'login_file/%s.txt' % player_name
 
@@ -222,17 +227,37 @@ class Login(threading.Thread):
 
                 if player_pass == pwd: #Login successful
                     print 'User <%s> logged in' % player_name
+                    _Logger.debug('User <%s> logged in.'%player_name)
                     logged_in = True
                     _Logged_in.append(player_name)
+                    #Get affiliation from file, put in player_affil.
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
+                    _Logger.debug('User <%s> failed to authenticate.' % player_name)
                     RAProtocol.sendMessage('invalid', conn)
             else: #File does not exist
-                fin = open(path, 'w')
-                fin.write(player_pass)
-                fin.close()
-                logged_in = True
-                _Logged_in.append(player_name)
+
+                if len(a_string) == 2: #We just got name and password, not affiliation
+                    RAProtocol.sendMessage('affiliation_get', conn)
+                    print 'Getting user affiliation'
+                    _Logger.debug('Required user affiliation from <%s>'%player_name)
+                elif len(a_string) == 12: #We got the affiliation data this time.
+                    print 'Creating user: <%s>'% player_name
+                    _Logger.debug('Creating user: <%s>' % player_name)
+
+                    cur_person = ''
+                    for i in range(2, len(a_string)):
+                        if i % 2 == 1: #This is an odd numbered cell, and as such is an affinity.
+                            player_affil[cur_person] = int(a_string[i])
+                        else: #Even numbered, person
+                            cur_person = a_string[i]
+                            player_affil[cur_person] = 0
+                    
+                    fin = open(path, 'w')
+                    fin.write(player_pass)
+                    fin.close()
+                    logged_in = True
+                    _Logged_in.append(player_name)
                 
             if logged_in:
 
