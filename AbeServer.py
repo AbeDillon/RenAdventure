@@ -7,6 +7,8 @@ import RAProtocol
 import engine
 import logging
 import os
+import msvcrt
+import string
 
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 _Logger = logging.getLogger('Server')
@@ -36,6 +38,10 @@ _OutThreads = {}
 
 #Tracking players logged in
 _Logged_in = [] #List with player names
+
+_Banned_names = []
+
+_Server_Queue = Queue.Queue()
 
 def main():
     """
@@ -72,6 +78,18 @@ def main():
 
     print "Log-in thread spawned"
     _Logger.debug('Log-in thread spawned')
+
+    rlt = ReadLineThread()
+    rlt.start()
+
+    print "Server console input thread spawned"
+    _Logger.debug("Server console input thread spawned")
+
+    sat = ServerActionThread()
+    sat.start()
+
+    print 'Server action thread spawned'
+    _Logger.debug('Server action thread spawned')
 
     # Spin-off NPC Spawning thread
 
@@ -184,6 +202,7 @@ class Login(threading.Thread):
         Add a new player to the game
         """
         global _Logged_in
+        global _Banned_names
         global _Logger
         # receive message
         logged_in = False
@@ -193,10 +212,8 @@ class Login(threading.Thread):
         player_pass = a_string[1]
 
         path = 'login_file/%s.txt' % player_name
-        print "Logged in looks like this:" ###DEBUG
-        print _Logged_in ###DEBUG
 
-        if player_name not in _Logged_in: #This person is not already logged in to the game
+        if player_name not in _Logged_in and player_name not in _Banned_names: #This person is not already logged in to the game
 
             if os.path.exists(path): #This file exists
                 fin = open(path)
@@ -207,8 +224,6 @@ class Login(threading.Thread):
                     print 'User <%s> logged in' % player_name
                     logged_in = True
                     _Logged_in.append(player_name)
-                    print 'Logged in now looks like this:' ###DEBUG
-                    print _Logged_in ###DEBUG
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
                     RAProtocol.sendMessage('invalid', conn)
@@ -272,10 +287,15 @@ class Login(threading.Thread):
                 print player_name + " added to the game."
                 _Logger.debug('<'+player_name+'>'+" added to the game.")
 
-        else: #Player name is in _Logged_in
+        elif player_name not in _Banned_names: #Player name is in _Logged_in, and not in _Banned_names
             print 'Error, attempt to log in to an account already signed on'
             _Logger.debug('Error, attempting to log in to an account already signed on: <%s>' % player_name)
-            RAProtocol.sendMessage('already_logged_in', conn) 
+            RAProtocol.sendMessage('already_logged_in', conn)
+
+        else: #player_name in _Banned_names
+            print 'Attempt to log in with a banned name <%s>, account creation rejected' % player_name
+            _Logger.debug('Attempt to log in with a banned name <%s>, account creation rejected'%player_name)
+            RAProtocol.sendMessage('banned_name',conn)
             
 class PlayerInput(threading.Thread):
     """
@@ -405,6 +425,71 @@ class PlayerOutput(threading.Thread):
             print 'Output thread for player <%s> ending.' % self.name
             _Logger.debug('Output thread for player <%s> ending.'%self.name)
             del _OutThreads[self.name] #So we delete the tracker for it.
+
+
+class ReadLineThread(threading.Thread):
+    """
+
+    """
+
+    def run(self):
+        """
+
+        """
+        global _Server_Queue
+        while True: #What would cause this to stop? Only the program ending.
+            line = ""
+            while 1:
+                char = msvcrt.getche()
+                if char == "\r": # enter
+                    break
+
+                elif char == "\x08": # backspace
+                    # Remove a character from the screen
+                    msvcrt.putch(" ")
+                    msvcrt.putch(char)
+
+                    # Remove a character from the string
+                    line = line[:-1]
+
+                elif char in string.printable:
+                    line += char
+
+                time.sleep(0.01)
+
+            try:
+                _Server_Queue.put(line)
+                if line != '':
+                    _Logger.debug('Input from server console: %s' % line)
+            except:
+                pass
+
+class ServerActionThread(threading.Thread):
+    """
+
+    """
+    def run(self):
+        """
+
+        """
+        global _Server_Queue
+        global _CMD_Queue
+        done = False
+        while not done:
+            command = ''
+            try:
+                command = _Server_Queue.get()
+            except:
+                pass
+
+            if command != '': #We got something
+                if command.lower() == 'quit':
+                    done = True
+                    print 'GOT QUIT, WOULD SHUT DOWN IF IMPLEMENTED' ###DEBUG
+                    #_CMD_Queue.put('global shutdown') #Command to let everyone know that the server is going to shut down.
+                    #_Logger.debug('Initiating global server shutdown.') 
+                else: #No other commands presently.
+                    pass
 
 class NPCSpawnThread(threading.Thread):
     """

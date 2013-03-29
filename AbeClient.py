@@ -80,6 +80,10 @@ def LogIn():
                 logging.debug('Output: Error, failed to log in. Please try again')
                 print >>sys.stdout, 'Error, failed to log in. Please try again'
                 ports = None
+            elif ports == 'banned_name': #Invalid username
+                logging.debug('Output: Error, illegal player name. Please choose an appropriate name.')
+                print >>sys.stdout, 'Error, illegal player name. Please choose an appropriate name.'
+                ports = None
             else:
                 logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
 
