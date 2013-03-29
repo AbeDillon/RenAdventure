@@ -18,6 +18,8 @@ def load_player(path):
                 affiliation[tag.tag] = int(tag.text)
 
             player_attributes['affiliation'] = affiliation
+        elif node.tag == 'fih':
+            player_attributes[node.tag] = int(node.text)
         else:
             player_attributes[node.tag] = node.text
     
