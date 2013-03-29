@@ -12,7 +12,6 @@ import logging
 
 logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
-
 _Local_Host = socket.gethostname() # replace with actual host address
 _Server_Host = socket.gethostname() #'10.245.50.150' # replace with actual server address
 _Login_Port = 80
