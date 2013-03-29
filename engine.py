@@ -244,7 +244,7 @@ def remove_player(name):
     player = _Players[name]
     loader.save_player(player)  # Save the player
 
-    del _Rooms[player.coords] # Remove the player from the room they are in
+    del _Rooms[player.coords].players[player.name] # Remove the player from the room they are in
     del _Players[name] # Remove the player from the list of players in the game
 
     logger.debug("Removed player '%s'" % player.name)

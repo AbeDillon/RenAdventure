@@ -130,6 +130,10 @@ def check_key(player, key):
 
     return False
 
+def shortest_path(start_room, finish_room):
+    # Finds the shortest path between two rooms and returns a tuple containing the portals used on that path
+    pass
+
 def parse_command(command):
     # Create translation tables to make the command easier to parse
     translate_one_word = {'i': 'inventory',
