@@ -43,6 +43,9 @@ def main():
     ot = OutThread(int(ports[0]))
     ot.start()
 
+    kat = KeepAliveThread()
+    kat.start()
+
     # wait for quit
     global _Quit
     global _Quit_Lock
@@ -141,6 +144,25 @@ def connect_to_server(line):
     sock.close()
 
     return message
+
+class KeepAliveThread(threading.Thread):
+    """
+
+    """
+    def run(self):
+        """
+
+        """
+        global _CMD_Queue
+        start_time = time.time()
+
+        signal_time = 10
+
+        while 1:
+            if time.time()-start_time >= signal_time: #We send a keepalive signal.
+                _CMD_Queue.put('_ping_')
+                start_time = time.time()
+                
 
 class ReadLineThread(threading.Thread):
     """

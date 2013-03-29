@@ -9,6 +9,7 @@ import logging
 import os
 import msvcrt
 import string
+import loader
 
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 _Logger = logging.getLogger('Server')
@@ -40,6 +41,8 @@ _OutThreads = {}
 _Logged_in = [] #List with player names
 
 _Banned_names = []
+
+_User_Pings = {}
 
 _Server_Queue = Queue.Queue()
 
@@ -91,6 +94,12 @@ def main():
     print 'Server action thread spawned'
     _Logger.debug('Server action thread spawned')
 
+
+    timeout = PlayerTimeout()
+    timeout.start()
+    print 'Player timeout thread spawned'
+    _Logger.debug('Player timeout thread spawned')
+    
     # Spin-off NPC Spawning thread
 
     # Spin-off Item Spawning thread
@@ -204,6 +213,7 @@ class Login(threading.Thread):
         global _Logged_in
         global _Banned_names
         global _Logger
+        global _User_Pings
         # receive message
         logged_in = False
         input_data = RAProtocol.receiveMessage(conn)
@@ -211,10 +221,6 @@ class Login(threading.Thread):
         player_name = a_string[0]
         player_pass = a_string[1]
         player_affil = {} #Current player's affiliation data.
-        if len(a_string) > 2: #We got other data here
-            affiliation = ''
-            for data in a_string:
-                affiliation += data+' ' #Add this data together, should be affiliation list.
 
         path = 'login_file/%s.txt' % player_name
 
@@ -230,7 +236,10 @@ class Login(threading.Thread):
                     _Logger.debug('User <%s> logged in.'%player_name)
                     logged_in = True
                     _Logged_in.append(player_name)
-                    #Get affiliation from file, put in player_affil.
+                    player_path = 'players/%s.xml'%player_name
+                    
+                    person = loader.load_player(player_path)
+                    player_affil = person.affiliation #Load in the players affiliation
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
                     _Logger.debug('User <%s> failed to authenticate.' % player_name)
@@ -261,8 +270,15 @@ class Login(threading.Thread):
                 
             if logged_in:
 
+                _User_Pings[player_name] = time.time()
+                if player_affil != {}: #Blank dict:
                 # *load player object (to be added, create default player for now)
-                engine.make_player(player_name, (0,0,1), {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1})
+                    engine.make_player(player_name, (0,0,1), player_affil)
+                    print 'Made player!' ###DEBUG
+                    print engine._Players ###DEBUG
+
+                else: #Player did not provide an affiliation?
+                    engine.make_player(player_name, (0,0,1)) #Blank affiliation, use default?
 
 
                 # *create player state and add to _Player_States (to be added)
@@ -378,23 +394,58 @@ class PlayerInput(threading.Thread):
         global _Logged_in
         global _InThreads
         global _Logger
+        global _User_Pings
         # receive message
         message = RAProtocol.receiveMessage(conn)
 
-        # add it to the queue
-        try:
-            _CMD_Queue.put((self.name, message))
-            _Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
-        except:
-            pass
+        if message != '_ping_':
 
-        conn.close()
+            # add it to the queue
+            try:
+                _CMD_Queue.put((self.name, message))
+                _Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
+            except:
+                pass
 
-        if message == 'quit':#User is quitting, we can end this thread
-            _InThreads[self.name] = False
-            _Logged_in.remove(self.name)
-            _Logger.debug('Removing <%s> from _Logged_in' % self.name)
-            engine.remove_player(self.name) #Remove player existence from gamestate.
+            conn.close()
+
+            if message == 'quit':#User is quitting, we can end this thread
+                _InThreads[self.name] = False
+                _Logged_in.remove(self.name)
+                _Logger.debug('Removing <%s> from _Logged_in' % self.name)
+                engine.remove_player(self.name) #Remove player existence from gamestate.
+
+        elif message == '_ping_': #Keepalive ping
+            print 'Got ping from <%s>' % self.name
+            _User_Pings[self.name] = time.time()
+            _Logger.debug("Got a ping from <%s>" % self.name)
+
+class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
+
+    def run(self):
+        global _Logged_in
+        global _InThreads
+        global _OutThreads
+        global _Logger
+        global _User_Pings
+
+        timeout = 15
+        to_rem = []
+        while 1:
+            for person in to_rem:
+                del _User_Pings[person]
+            to_rem = []
+            for player in _User_Pings:
+                if time.time() - _User_Pings[player] > timeout: #This client has timed out
+                    print 'Player timed out: <%s>' % player
+                    _Logger.debug('Removing <%s> from game: Timed out' % player)
+                    if player in engine._Players:
+                        engine.remove_player(player)
+                    if player in _Logged_in:
+                        _Logged_in.remove(player)
+                    to_rem.append(player)
+
+            time.sleep(0.05)
 
 class PlayerOutput(threading.Thread):
     """
@@ -441,11 +492,15 @@ class PlayerOutput(threading.Thread):
                     # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
-                sock.connect((self.address[0], self.port))
-                # send message
-                RAProtocol.sendMessage(message, sock)
-                # close connection
-                sock.close()
+                try:
+                    sock.connect((self.address[0], self.port))
+                    # send message
+                    RAProtocol.sendMessage(message, sock)
+                    # close connection
+                    sock.close()
+                except:
+                    #Could not make connection or send message
+                    pass
             time.sleep(0.05)
         if not _OutThreads[self.name]: #This thread will no longer be running...
             print 'Output thread for player <%s> ending.' % self.name
