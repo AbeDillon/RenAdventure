@@ -130,6 +130,7 @@ def save_player(player):
     
     save.write('<name>%s</name>\n' % player.name)
     save.write('<fih>%d</fih>\n' % player.fih)
+
     save.write('<affiliation>')
     for person in player.affiliation:
         save.write('<%s>%d</%s>' % (person, player.affiliation[person], person))
