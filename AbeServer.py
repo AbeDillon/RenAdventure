@@ -274,8 +274,6 @@ class Login(threading.Thread):
                 if player_affil != {}: #Blank dict:
                 # *load player object (to be added, create default player for now)
                     engine.make_player(player_name, (0,0,1), player_affil)
-                    print 'Made player!' ###DEBUG
-                    print engine._Players ###DEBUG
 
                 else: #Player did not provide an affiliation?
                     engine.make_player(player_name, (0,0,1)) #Blank affiliation, use default?
@@ -416,7 +414,6 @@ class PlayerInput(threading.Thread):
                 engine.remove_player(self.name) #Remove player existence from gamestate.
 
         elif message == '_ping_': #Keepalive ping
-            print 'Got ping from <%s>' % self.name
             _User_Pings[self.name] = time.time()
             _Logger.debug("Got a ping from <%s>" % self.name)
 
