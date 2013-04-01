@@ -585,7 +585,7 @@ class ServerActionThread(threading.Thread):
                     break
                 else: #No other commands presently.
                     print 'Got command: %s' % command
-
+            time.sleep(0.05)
         return True
 
 class NPCSpawnThread(threading.Thread):

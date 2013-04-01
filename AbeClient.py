@@ -166,6 +166,7 @@ class KeepAliveThread(threading.Thread):
                 _Quit_Lock.acquire()
                 done = _Quit
                 _Quit_Lock.release()
+            time.sleep(0.05)
                 
 
 class ReadLineThread(threading.Thread):
