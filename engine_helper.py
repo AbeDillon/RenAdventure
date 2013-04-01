@@ -61,7 +61,7 @@ def scrub(scripts):
 
     return scripts
 
-def get_room_text(coords):
+def get_room_text(player_name, coords):
     room = engine._Rooms[coords]
     text = room.desc
 
@@ -107,15 +107,17 @@ def get_room_text(coords):
             else:
                 text += " %s to the %s," % (portal.desc, portal.direction)
 
-    # Add NPCs to the text
-    if len(room.npcs) > 0:
-        for n, npc in enumerate(room.npcs):
-            if len(room.npcs) == 1:
-                text += " %s is in the room." % npc.title()
-            elif n == (len(room.npcs) - 1):
-                text += " and %s are in the room." % npc.title()
-            else:
-                text += " %s," % npc.title()
+    # Add NPCs and players to the text
+    names = room.npcs.keys() + room.players.keys()
+    names.remove(player_name)
+
+    for n, name in enumerate(names):
+        if len(names) == 1:
+            text += " %s is in the room." % name.title()
+        elif n == (len(names) - 1):
+            text += " and %s are in the room." % name.title()
+        else:
+            text += " %s," % name.title()
 
     return text
 
@@ -335,7 +337,7 @@ def get_object(nouns, valid_objects):
 def look(room, player, object, noun, tags):
     if object == None:
         if 'room' in noun or noun == '':
-            text = get_room_text(player.coords)
+            text = get_room_text(player.name, player.coords)
         else:
             text = "There is no %s here." % noun
     else:
@@ -404,7 +406,7 @@ def go(room, player, object, noun, tags):
             del room.npcs[player.name] # Remove NPC from the last room
             engine._Rooms[player.coords].npcs[player.name] = player # Add the NPC to the new room
 
-        text = get_room_text(player.coords)
+        text = get_room_text(player.name, player.coords)
         alt_text = "%s has left the room through the %s door." % (player.name, noun)
 
     return text, alt_text, []
