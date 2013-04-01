@@ -16,8 +16,9 @@ class Room:
     - Containers
     - Items
     - Players
+    - NPCs
     '''
-    def __init__(self, desc, portals = [], containers = [], items = [], players = []):
+    def __init__(self, desc, portals = [], containers = [], items = [], players = [], npcs = []):
         self.desc = desc
         
         # Create a dictionary for each list of portals/containers/items
@@ -36,6 +37,10 @@ class Room:
         self.players = {}
         for player in players:
             self.players[player.name] = player
+
+        self.npcs = {}
+        for npc in npcs:
+            self.npcs[npc.name] = npc
     
 class Portal:
     '''
@@ -187,7 +192,7 @@ def init_game(save_state = 0):
     thread.start_new_thread(command_thread, ())
     logger.debug("Starting command thread")
 
-    thread.start_new_thread(spawn_npc_thread, (3,))
+    thread.start_new_thread(spawn_npc_thread, (5,))
     logger.debug("Starting spawn NPC thread")
 
     thread.start_new_thread(npc_thread, ())
@@ -361,12 +366,14 @@ def spawn_npc_thread(n):
         if ((len(_Rooms) / n) + 1) > len(_NPCs):
             npc = random.choice(_NPCBucket)
             _NPCs[npc.name] = npc
+            _Rooms[npc.coords].npcs[npc.name] = npc # Add the NPC to the room he spawned in
 
             logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
         elif ((len(_Rooms) / n) + 1) < len(_NPCs):
             name = random.choice(_NPCs.keys())
             npc = _NPCs[name]
-            del _NPCs[name]
+            del _NPCs[name] # Remove from the NPC list
+            del _Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
 
             logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
 
