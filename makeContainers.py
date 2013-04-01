@@ -1,5 +1,7 @@
 import validator
 import textwrap
+import engine
+import makeItems
 
 '''
 - Name
@@ -11,6 +13,7 @@ import textwrap
 - Hidden (bool)
 '''
 room_containers = []
+container_items = []
 
 def makeContainer():
 ##### *******************************************TO DO*******************************************************
@@ -27,9 +30,9 @@ def makeContainer():
     original = False
     while original == False:    # create original name for container
         name = raw_input('\n>').strip()
-        if validator.original_name(name, validator.names) == False:  #  Check against list of containers created in entire game
+        if validator.original_name(name, validator.names) == True:  #  Check against list of containers created in entire game
             print "Sorry, that name has already been used by someone else.  Try Again."
-        elif validator.original_name(name, room_containers) == False:  #check against list in this newly created containers.
+        elif validator.original_name(name, room_containers) == True:  #check against list in this newly created containers.
             print "You have already created a container with that name.  Try again."
         else:
             container[name] = {}
@@ -56,28 +59,24 @@ def makeContainer():
                         'your inspection description now.', width=100).strip()
     while desc_accept == False:
         inspect_desc = raw_input('\n>')
-        if len(inspect_desc) > 0:
+        if len(inspect_desc) > 0: 
             container[name]['inspect_desc'] = inspect_desc
             desc_accept = True
         else:
-            print "\nYour Inspection Description cannot be empty.  Try again."            
+            print "\nYour Inspection Description cannot be blank.  Try again."            
 
     #  assign container Lock State
     print ""
     print textwrap.fill('Your container can be locked or unlocked which can then be opened using a key or other scripted method adding to the '
                         'puzzle-type gameplay.  Do you want to lock this container? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').strip().lower()
-        if ans == 'yes' or ans == 'y':
-            container[name]['locked'] = True
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            container[name]['locked'] = False
-            valid_ans = True
-        else:
-            print '\nYour Answer must be yes or no.  Try Again.'
-    
+    ans = validator.validYesNo()
+    if ans == 'yes':
+        lock_state = True
+        container[name]['locked'] = True
+    elif ans == 'no':
+        lock_state = False
+        container[name]['locked'] = False
+
     #  Define Key for container 
     
     print ""
@@ -91,20 +90,19 @@ def makeContainer():
             ans = int(ans)
             if ans == 1: # player wants to name a key
                 print ""
-                print textwrap.fill('Enter the name of the key you want to open the container.  Names are not case sensitive.', width=100).strip()
+                print textwrap.fill('Enter the name of the key (name of item) you want to open the container.  Names are not case sensitive.', width=100).strip()
                 valid_key = False
                 while valid_key == False:
                     key = raw_input('\n>').strip().lower()
                     # add compare key name to items on the map to verify the key name then build if necessary
-                    if validator.validate_name(key, validator.names) == True:
+                    if validator.validate_name(key, validator.names) == True: # name is in list
                         valid_ans = True
                         valid_key = True
                     else:
                         print 'That key does not exist.  Try again.'
             elif ans == 2: #  Player wants to build a key
-                # function for building key not complete
-                #key = makeItems.makeItem()
-                key = "made key"
+                key = makeItems.makeItem[0]  # in Item builder it is possible to build more than 1 item but Items that are built are appended to list
+                # only allow for first item created to be the key
                 valid_ans = True
             elif ans == 3:  # do not assign a key
                 key = None
@@ -114,7 +112,6 @@ def makeContainer():
             
         except:
             print "Your response must be a 1, 2 or 3.  Try again."
-            pass
     
     container[name]['key'] = key
 
@@ -122,18 +119,63 @@ def makeContainer():
     
     print ""
     print textwrap.fill('Your container can be hidden or visible.  Would you like your container to be hidden? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').lower().strip()
-        if ans == 'yes' or ans == 'y':
-            container[name]['hidden'] = True
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            container[name]['hidden'] = False
-            valid_ans = True
-        else:
-            print '\nYour answer must be Yes or No.'
+    ans = validator.validYesNo()
+    if ans == 'yes' or ans == 'y':
+        hidden_state = True
+        container[name]['hidden'] = True
+    elif ans == 'no' or ans == 'n':
+        hidden_state = False
+        container[name]['hidden'] = False
+    else:
+        print '\nYour answer must be Yes or No.'
     
+
+    #  Add items to container
+    print ""
+    print textwrap.fill('You can place items in the container, each container can hold as many items as you wish.  '
+                        'Here you can (1) add an existing item by name, (2) create a new item, '
+                        'or (3) not add an at all.  Which would you like to do? (1, 2, or 3)', width=100).strip()
+    items_done = False
+    while items_done == False:  # make sure answer is 1, 2, or 3
+        ans = raw_input('\n>').strip().lower()
+        try:  #    cast as an integer if no error continue
+            ans = int(ans)
+            if ans == 1: # player wants to name a container
+                print ""
+                print textwrap.fill('Enter the name of the item.  Names are not case sensitive.', width=100).strip()
+                valid_item = False
+                while valid_item == False:
+                    item_name = raw_input('\n>').strip().lower()
+                    # add compare key name to items on the map to verify the key name then build if necessary
+                    if validator.validate_name(item_name, validator.names) == True:
+                        #append to room container list
+                        container_items.append(item_name) #append name to room_containers list
+                        print "Do you want to add another item by name?  (yes or no)"
+                        ans = validator.validYesNo() # returns a yes or no
+                        if ans == 'yes':
+                            print '\nEnter the name of the next item.'
+                        elif ans == 'no':
+                            print textwrap.fill('Now do you want to (1) add another item by name, (2) create an item, '
+                                                'or (3) I\'m done with items.  (1, 2, or 3)', width=100).strip()
+                            valid_item = True
+                    else:
+                        print 'That item does not exist.  Try again.'
+            elif ans == 2: #  Player wants to build a container
+                items = makeItems.makeItem()  # get room containers returned from make containers function
+                for item in items:
+                    container_items.append(item)   # append each container name (containers will have been instantiated in called function.
+                print textwrap.fill('Now do you want to (1) add another item by name, (2) create an item, '
+                                    'or (3) I\'m done with items.  (1, 2, or 3)', width=100).strip()
+            elif ans == 3:  # done
+                items_done = True
+            else:
+                print "Your response must be a 1, 2 or 3.  Try again."
+            
+        except:
+            print "Your response must be a 1, 2 or 3.  Try again."
+
+
+
     #  Enter the scripts here
     
     print ""
@@ -142,23 +184,26 @@ def makeContainer():
     #  Drop script building here later
     container[name]['script'] = scripts
     
+    #  Instantiate the new container
+    try:
+        engine.Container(name, desc, inspect_desc, scripts, locked = lock_state, key = key, hidden = hidden_state, items = container_items )
+    except:
+        #need error handling!!
+        pass
     
-    room_containers.append(container)
-    print room_containers
+    #  Append container name to list
+    room_containers.append(name)
     
+    print '\n', room_containers
     
-    
+    # Finished??    
     print""
     print textwrap.fill('You have built the ' + name + ' container.  Do you want to build another? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').lower().strip()
-        if ans == 'yes' or ans == 'y':
-            makeContainer()
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            return room_containers
-        else:
-            print '\nYour answer must be Yes or No.  Try  Again'
+    ans = validator.validYesNo()
+    if ans == 'yes':
+        makeContainer()
+    elif ans == 'no':
+        return room_containers
 
-#makeContainer()   
+if __name__ == '__main__':
+    makeContainer()   

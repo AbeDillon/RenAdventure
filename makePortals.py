@@ -80,8 +80,8 @@ def makePortals():
         #                     'your door leads, simply answer no.  Would you like to assign a address to your door?  (Yes or No)', width = 100).strip()
         # ans = raw_input('\n>').lower()
         # if ans == 'no' or ans == 'n':
-            #### ******************************* TO DO*******************************************
-        player_coords = engine.player.coords  # (3 part tuple format (x, y, z)
+        player_coords = (0,0,0)
+        #player_coords = engine.player.coords  # (3 part tuple format (x, y, z)
         #x = player_coords[0]
         #y = player_coords[1]
         #z = player_coords[2]
@@ -194,5 +194,6 @@ def makePortals():
         room_portals.append(portal)
 
     return room_portals
-        
-makePortals()        
+
+if __name__ == "__main__":
+    makePortals()        

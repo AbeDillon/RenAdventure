@@ -26,9 +26,9 @@ def makeItem():
     original = False
     while original == False:    # create original name for item
         name = raw_input('\n>').strip()
-        if validator.original_name(name, validator.names) == False:  #  Check against list of items created in entire game
+        if validator.original_name(name, validator.names) == True:  #  Check against list of items created in entire game
             print "Sorry, that name has already been used by someone else.  Try Again."
-        elif validator.original_name(name, room_items) == False:  #check against list in this newly created items.
+        elif validator.original_name(name, room_items) == True:  #check against list in this newly created items.
             print "You have already created a item with that name.  Try again."
         else:
             item[name] = {}
@@ -64,34 +64,22 @@ def makeItem():
     #  Define portable state of the item
     print ""
     print textwrap.fill('Your item can be portable meaning a player can pick it up.  Would you like your item to be portable? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').lower().strip()
-        if ans == 'yes' or ans == 'y':
-            item[name]['portable'] = True
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            item[name]['portable'] = False
-            valid_ans = True
-        else:
-            print '\nYour answer must be Yes or No.'        
-            
+    ans = validator.validYesNo()
+    if ans == 'yes':
+        item[name]['portable'] = True
+    elif ans == 'no' or ans == 'n':
+        item[name]['portable'] = False
+
     #  Define hidden state of the item
     
     print ""
     print textwrap.fill('Your item can be hidden or visible.  Would you like your item to be hidden? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').lower().strip()
-        if ans == 'yes' or ans == 'y':
-            item[name]['hidden'] = True
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            item[name]['hidden'] = False
-            valid_ans = True
-        else:
-            print '\nYour answer must be Yes or No.'
-            
+    ans = validator.validYesNo()
+    if ans == 'yes':
+        item[name]['hidden'] = True
+    elif ans == 'no' or ans == 'n':
+        item[name]['hidden'] = False
+
     #  Enter the scripts here
     print ""
     print textwrap.fill('\n\n\nNeed script builder!', width=100).strip()
@@ -101,19 +89,16 @@ def makeItem():
     
     
     room_items.append(item)
-    print room_itemss
+    print room_items
     
     print""
     print textwrap.fill('You have built the ' + name + ' item.  Do you want to build another? (Yes or No)', width=100).strip()
-    valid_ans = False
-    while valid_ans == False:
-        ans = raw_input('\n>').lower().strip()
-        if ans == 'yes' or ans == 'y':
-            makeItem()
-            valid_ans = True
-        elif ans == 'no' or ans == 'n':
-            return room_items
-        else:
-            print '\nYour answer must be Yes or No.  Try  Again'
+    ans = validator.validYesNo()
+    if ans == 'yes':
+        makeItem()
+    elif ans == 'no':
+        return room_items
 
-#makeItem()   
+
+if __name__ == '__main__':
+    makeItem()   

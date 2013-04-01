@@ -9,10 +9,10 @@ item_list = []
 container_list = []
 
 def validate_name(name, list):  #  function to validate if name is in a given list
-    if name in list:  # If the name is in list it returns False
-        return False
-    elif name not in list:  #  If the name is not in the list returns True
+    if name in list:  # Name in List True
         return True
+    elif name not in list:  # Name not in list False
+        return False
     
     
 def original_name(name, list):  #  Function to validate a given name against a given list/dictionary for originality.
@@ -42,3 +42,15 @@ def validate_coords(coords):
             return False
 
     return True
+
+def validYesNo():  # Validates an answer is a simple Yes or No returns answer Yes or no
+    while True:
+        ans = raw_input('\n>').strip().lower()
+        if ans == 'yes' or ans == 'y':
+            ans = 'yes'
+            return ans 
+        elif ans == 'no' or ans == 'n':
+            ans = 'no'
+            return ans
+        else:
+            print "\nAnswer must be yes or no.  Try again."
