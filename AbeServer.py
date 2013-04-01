@@ -164,7 +164,7 @@ class Login(threading.Thread):
         3) Add registration (name, password, etc.)
     """
 
-    def __init__(self, listen_port=80, spawn_port=2000, host=""):
+    def __init__(self, listen_port=60005, spawn_port=2000, host=""):
         """
         listen_port:        the default port for logging in to the server
         spawn_port:         keeps track of ports to allocate to new players
