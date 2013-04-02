@@ -19,7 +19,11 @@ def receiveMessage(conn):
     """
 
     prefix = conn.recv(4)
+    print 'Prefix recieved is:'
+    print repr(prefix)
+    raw_input('Hit any key to continue')
     msg_len = decodePrefix(prefix)
+    print 'Msg_len is %d' %msg_len
     message = ""
     while msg_len > 4096:
         message += conn.recv(4096)
@@ -53,7 +57,6 @@ def decodePrefix(prefix):
 
     """
     msg_len = ord(prefix[0])
-
     for i in range(1,4):
         msg_len *= 256
         msg_len += ord(prefix[i])

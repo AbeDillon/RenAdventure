@@ -188,21 +188,21 @@ class Login(threading.Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
         _Logger.debug('Login Socket created')
-        ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem',  server_side=True) ###TEST
-        ssl_sock.bind((self.host, self.listen_port))   ###TEST
+        sock.bind((self.host, self.listen_port))
         print "Login Socket bound"
         _Logger.debug('Login Socket bound')
 
         # Listen for new connections
-        ssl_sock.listen(10)  ###TEST
+        sock.listen(10)
         print "Login socket listening"
         _Logger.debug('Login socket listening')
         while 1:
             # wait to accept a connection
-            conn, addr = ssl_sock.accept()  ###TEST
+            conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             _Logger.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
-            thread.start_new_thread(self.addPlayer, (conn, addr)) ###TEST
+            #connstream = ssl.wrap_socket(conn, certfile ='cert.pem', server_side = True) ###TEST
+            thread.start_new_thread(self.addPlayer, (conn, addr))
             time.sleep(0.05)
 
     def addPlayer(self, conn, addr):
@@ -359,11 +359,10 @@ class PlayerInput(threading.Thread):
         global _Logger
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem',  server_side=True) ###TEST
-        ssl_sock.bind((self.host, self.port)) ###TEST
+        sock.bind((self.host, self.port))
 
         # Listen for connection
-        ssl_sock.listen(10)   ###TEST
+        sock.listen(10)
 
         while 1:
             if not _InThreads[self.name]: #This input thread no longer needs to run
@@ -371,9 +370,8 @@ class PlayerInput(threading.Thread):
             else:
                 conn, addr = sock.accept()
                 print 'got input from ' + self.name
-                        
                 _Logger.debug('Got input from: <%s>' % self.name)
-                thread.start_new_thread(self.handleInput, (conn, )) ###TEST
+                thread.start_new_thread(self.handleInput, (conn, ))
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
             print 'Input thread for player <%s> ending' % self.name
@@ -490,14 +488,13 @@ class PlayerOutput(threading.Thread):
                 print message
                 _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
                 # connect to player
                 try:
-                    ssl_sock.connect((self.address[0], self.port)) ###TEST
+                    sock.connect((self.address[0], self.port)) 
                     # send message
-                    RAProtocol.sendMessage(message, ssl_sock)##TEST
+                    RAProtocol.sendMessage(message, ssl_sock)
                     # close connection
-                    ssl_sock.close() ##TEST
+                    sock.close()
                 except:
                     #Could not make connection or send message
                     _Logger.debug('Error making connection or sending message to <%s>'%self.name)
@@ -507,11 +504,10 @@ class PlayerOutput(threading.Thread):
                 _Logger.debug('Sending message to <%s>: "%s"'%(self.name,message))
                 _OutThreads[self.name] = False
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
                 try:
-                    ssl_sock.connect((self.address[0], self.port)) ###TEST
-                    RAProtocol.sendMessage(message, ssl_sock) ###TEST
-                    ssl_sock.close() ###TEST
+                    sock.connect((self.address[0], self.port))
+                    RAProtocol.sendMessage(message, sock)
+                    sock.close()
                 except:
                     _Logger.debug('Failed to either connect or send a message to <%s> after timeout.'%self.name)
                 time.sleep(0.05)
