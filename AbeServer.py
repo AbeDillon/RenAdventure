@@ -10,6 +10,7 @@ import os
 #import msvcrt
 import string
 import loader
+import ssl
 
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 _Logger = logging.getLogger('Server')
@@ -202,8 +203,8 @@ class Login(threading.Thread):
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             _Logger.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
 
-
-            thread.start_new_thread(self.addPlayer, (conn, addr))
+            connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) ###TEST
+            thread.start_new_thread(self.addPlayer, (connstream, addr)) ###TEST
             time.sleep(0.05)
 
     def addPlayer(self, conn, addr):
@@ -375,8 +376,8 @@ class PlayerInput(threading.Thread):
                         
                 _Logger.debug('Got input from: <%s>' % self.name)
                 
-
-                thread.start_new_thread(self.handleInput, (conn, ))
+                connstream = ssl.wrap_socket(conn, certfile='cert.pem', server_side=True) ###TEST
+                thread.start_new_thread(self.handleInput, (connstream, )) ###TEST
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
             print 'Input thread for player <%s> ending' % self.name
@@ -493,13 +494,14 @@ class PlayerOutput(threading.Thread):
                 print message
                 _Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem') ###TEST
                 # connect to player
                 try:
-                    sock.connect((self.address[0], self.port))
+                    ssl_sock.connect((self.address[0], self.port)) ###TEST
                     # send message
-                    RAProtocol.sendMessage(message, sock)
+                    RAProtocol.sendMessage(message, ssl_sock)  ###TEST
                     # close connection
-                    sock.close()
+                    ssl_sock.close()  ###TEST
                 except:
                     #Could not make connection or send message
                     _Logger.debug('Error making connection or sending message to <%s>'%self.name)
@@ -509,10 +511,11 @@ class PlayerOutput(threading.Thread):
                 _Logger.debug('Sending message to <%s>: "%s"'%(self.name,message))
                 _OutThreads[self.name] = False
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem') ###TEST
                 try:
-                    sock.connect((self.address[0], self.port))
-                    RAProtocol.sendMessage(message, sock)
-                    sock.close()
+                    ssl_sock.connect((self.address[0], self.port))  ###TEST
+                    RAProtocol.sendMessage(message, ssl_sock)   ###TEST
+                    ssl_sock.close()  ###TEST
                 except:
                     _Logger.debug('Failed to either connect or send a message to <%s> after timeout.'%self.name)
                 time.sleep(0.05)
