@@ -15,7 +15,7 @@ import ssl
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 _Logger = logging.getLogger('Server')
 
-_Host = socket.gethostname() # replace with actual host address
+_Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
 
