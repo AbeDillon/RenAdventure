@@ -6,7 +6,6 @@ names = ['door', 'sword', 'key', 'piano', 'chest']
 # need to add additional layer of validation in all (make**.py) against these lists still.
 portal_list = []
 item_list = []
-container_list = []
 
 def validate_name(name, list):  #  function to validate if name is in a given list
     if name in list:  # Name in List True
@@ -20,11 +19,11 @@ def original_name(name, list):  #  Function to validate a given name against a g
     if len(name) <= 0:
         print '\nNames must contain at least 1 character to be valid.'
         return False
-    if name in list:
+    if name in list:  
         #print 'That name has already been used.'
-        return False
-    else:
         return True
+    else:
+        return False
 
 def validate_coords(coords):
 
