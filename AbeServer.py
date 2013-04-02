@@ -82,11 +82,11 @@ def main():
     print "Log-in thread spawned"
     _Logger.debug('Log-in thread spawned')
 
-    rlt = ReadLineThread()
-    rlt.start()
+    #rlt = ReadLineThread()
+    #rlt.start()
 
-    print "Server console input thread spawned"
-    _Logger.debug("Server console input thread spawned")
+    #print "Server console input thread spawned"
+    #_Logger.debug("Server console input thread spawned")
 
     sat = ServerActionThread()
     sat.start()
