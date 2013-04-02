@@ -10,7 +10,6 @@ import os
 #import msvcrt
 import string
 import loader
-import ssl
 
 logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 _Logger = logging.getLogger('Server')
@@ -83,11 +82,11 @@ def main():
     print "Log-in thread spawned"
     _Logger.debug('Log-in thread spawned')
 
-    #rlt = ReadLineThread()
-    #rlt.start()
+    rlt = ReadLineThread()
+    rlt.start()
 
-    #print "Server console input thread spawned"
-    #_Logger.debug("Server console input thread spawned")
+    print "Server console input thread spawned"
+    _Logger.debug("Server console input thread spawned")
 
     sat = ServerActionThread()
     sat.start()
@@ -188,6 +187,7 @@ class Login(threading.Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
         _Logger.debug('Login Socket created')
+
         sock.bind((self.host, self.listen_port))
         print "Login Socket bound"
         _Logger.debug('Login Socket bound')
@@ -201,7 +201,8 @@ class Login(threading.Thread):
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             _Logger.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
-            #connstream = ssl.wrap_socket(conn, certfile ='cert.pem', server_side = True) ###TEST
+
+
             thread.start_new_thread(self.addPlayer, (conn, addr))
             time.sleep(0.05)
 
@@ -359,6 +360,7 @@ class PlayerInput(threading.Thread):
         global _Logger
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         sock.bind((self.host, self.port))
 
         # Listen for connection
@@ -370,7 +372,10 @@ class PlayerInput(threading.Thread):
             else:
                 conn, addr = sock.accept()
                 print 'got input from ' + self.name
+                        
                 _Logger.debug('Got input from: <%s>' % self.name)
+                
+
                 thread.start_new_thread(self.handleInput, (conn, ))
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
@@ -490,9 +495,9 @@ class PlayerOutput(threading.Thread):
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 # connect to player
                 try:
-                    sock.connect((self.address[0], self.port)) 
+                    sock.connect((self.address[0], self.port))
                     # send message
-                    RAProtocol.sendMessage(message, ssl_sock)
+                    RAProtocol.sendMessage(message, sock)
                     # close connection
                     sock.close()
                 except:
@@ -517,42 +522,42 @@ class PlayerOutput(threading.Thread):
             del _OutThreads[self.name] #So we delete the tracker for it.
 
 
-##class ReadLineThread(threading.Thread):
-##    """
-##
-##    """
-##
-##    def run(self):
-##        """
-##
-##        """
-##        global _Server_Queue
-##        while True: #What would cause this to stop? Only the program ending.
-##            line = ""
-##            while 1:
-##                char = msvcrt.getche()
-##                if char == "\r": # enter
-##                    break
-##
-##                elif char == "\x08": # backspace
-##                    # Remove a character from the screen
-##                    msvcrt.putch(" ")
-##                    msvcrt.putch(char)
-##
-##                    # Remove a character from the string
-##                    line = line[:-1]
-##
-##                elif char in string.printable:
-##                    line += char
-##
-##                time.sleep(0.01)
-##
-##            try:
-##                _Server_Queue.put(line)
-##                if line != '':
-##                    _Logger.debug('Input from server console: %s' % line)
-##            except:
-##                pass
+# class ReadLineThread(threading.Thread):
+    # """
+
+    # """
+
+    # def run(self):
+        # """
+
+        # """
+        # global _Server_Queue
+        # while True: #What would cause this to stop? Only the program ending.
+            # line = ""
+            # while 1:
+                # char = msvcrt.getche()
+                # if char == "\r": # enter
+                    # break
+
+                # elif char == "\x08": # backspace
+                    # # Remove a character from the screen
+                    # msvcrt.putch(" ")
+                    # msvcrt.putch(char)
+
+                    # # Remove a character from the string
+                    # line = line[:-1]
+
+                # elif char in string.printable:
+                    # line += char
+
+                # time.sleep(0.01)
+
+            # try:
+                # _Server_Queue.put(line)
+                # if line != '':
+                    # _Logger.debug('Input from server console: %s' % line)
+            # except:
+                # pass
 
 class ServerActionThread(threading.Thread):
     """

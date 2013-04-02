@@ -132,6 +132,7 @@ def connect_to_server(line):
     global _Login_Port
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     sock.connect((_Server_Host, _Login_Port))
 
     RAProtocol.sendMessage(line, sock)
@@ -165,7 +166,7 @@ class KeepAliveThread(threading.Thread):
                 _Quit_Lock.acquire()
                 done = _Quit
                 _Quit_Lock.release()
-            time.sleep(0.05)
+                time.sleep(0.05)
                 
 
 class ReadLineThread(threading.Thread):
@@ -233,6 +234,7 @@ class InThread(threading.Thread):
         global _Quit
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         sock.bind((self.host, self.port))
 
         # Listen for connection
@@ -245,6 +247,7 @@ class InThread(threading.Thread):
 
             logging.debug('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
+
             thread.start_new_thread(self.handleInput, (conn, ))
             time.sleep(0.05)
             _Quit_Lock.acquire()
@@ -307,7 +310,7 @@ class OutThread(threading.Thread):
                 RAProtocol.sendMessage(message, sock)
                 logging.debug('Hidden: Sending message "%s" to server' % message)
                 # close connection
-                sock.close()  
+                sock.close()
                 # check for quit
                 if message.lower() == "quit":
                     _Quit_Lock.acquire()
