@@ -343,6 +343,8 @@ def open(room, player, object, noun, tags):
         text = "There is no %s to open." % noun
     elif object.locked and 'script' not in tags:
         text = "You can't open the %s, it is locked." % object.name
+    elif not object.container:
+        text = "You can't open the %s." % object.name
     else:
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
@@ -413,9 +415,10 @@ def unlock(room, player, object, noun, tags):
         if check_key(player, object.key) or 'script' in tags:
             object.locked = False
 
-            for portal in engine._Rooms[object.coords].portals.values(): # Unlock the portal from the other side as well
-                if portal.coords == player.coords:
-                    portal.locked = False
+            if isinstance(object, engine.Portal):
+                for portal in engine._Rooms[object.coords].portals.values(): # Unlock the portal from the other side as well
+                    if portal.coords == player.coords:
+                        portal.locked = False
 
             text = "You have unlocked the %s." % object.name
             alt_text = "%s has unlocked the %s." % (player.name, object.name)
@@ -438,9 +441,10 @@ def lock(room, player, object, noun, tags):
         if check_key(player, object.key) or 'script' in tags:
             object.locked = True
 
-            for portal in engine._Rooms[object.coords].portals.values(): # Lock the portal from the other side as well
-                if portal.coords == player.coords:
-                    portal.locked = True
+            if isinstance(object, engine.Portal):
+                for portal in engine._Rooms[object.coords].portals.values(): # Lock the portal from the other side as well
+                    if portal.coords == player.coords:
+                        portal.locked = True
 
             text = "You have locked the %s." % object.name
             alt_text = "%s has locked the %s." % (player.name, object.name)

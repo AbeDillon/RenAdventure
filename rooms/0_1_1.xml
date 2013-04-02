@@ -33,6 +33,8 @@
 <desc>a chest</desc>
 <inspect_desc>An old wooden chest</inspect_desc>
 <container>1</container>
+<locked>1</locked>
+<key>key</key>
 <item>
 <name>small apple</name>
 <desc>a small apple</desc>
