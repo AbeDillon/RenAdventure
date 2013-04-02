@@ -1,27 +1,8 @@
 <?xml version="1.0"?>
 <room>
 <desc>An empty jail cell.</desc>
-<portal x="1" y="0" z="1">
-<name>door</name>
-<direction>east</direction>
-<desc>a wooden door</desc>
-<inspect_desc>An old wooden door, it looks a little rotted</inspect_desc>
-<locked>0</locked>
-<hidden>0</hidden>
-<key>None</key>
-</portal>
-<portal x="0" y="1" z="1">
-<name>door</name>
-<direction>north</direction>
-<desc>a metal door</desc>
-<inspect_desc>A rusted metal door</inspect_desc>
-<locked>0</locked>
-<hidden>0</hidden>
-<key>None</key>
-</portal>
-<item>
-<name>key</name>
-<desc>a key</desc>
-<inspect_desc>something</inspect_desc>
-</item>
+<portal>door2</portal>
+<portal>door3</portal>
+<item>key</item>
+<item>old toilet</item>
 </room>

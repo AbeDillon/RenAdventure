@@ -17,25 +17,24 @@ class Room:
     - Players
     - NPCs
     '''
-    def __init__(self, desc, portals = [], items = [], players = [], npcs = []):
+    def __init__(self, desc, portals, items, players, npcs):
         self.desc = desc
-        
-        # Create a dictionary for each list of portals and items
+        self.players = players
+        self.npcs = npcs
+
         self.portals = {}
         for portal in portals:
-            self.portals[portal.direction] = portal
-        
+            if portal in self.portals:
+                self.portals[portal] += 1
+            else:
+                self.portals[portal] = 1
+
         self.items = {}
         for item in items:
-            self.items[item.name] = item
-            
-        self.players = {}
-        for player in players:
-            self.players[player.name] = player
-
-        self.npcs = {}
-        for npc in npcs:
-            self.npcs[npc.name] = npc
+            if item in self.items:
+                self.items[item] += 1
+            else:
+                self.items[item] = 1
     
 class Portal:
     '''
@@ -89,7 +88,10 @@ class Item:
 
         self.items = {}
         for item in items:
-            self.items[item.name] = item
+            if item in self.items:
+                self.items[item] += 1
+            else:
+                self.items[item] = 1
 
 class Player:
     '''
@@ -107,10 +109,13 @@ class Player:
         self.coords = coords
         self.fih = fih
         self.affiliation = affiliation
-        
-        self.items = {}     # Create a dictionary of the items a player contains
+
+        self.items = {}
         for item in items:
-            self.items[item.name] = item
+            if item in self.items:
+                self.items[item] += 1
+            else:
+                self.items[item] = 1
 
 class NPC:
     '''
@@ -137,6 +142,7 @@ _NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
 def init_game(save_state = 0):
     # Initializes the map and starts the command thread
     global _Rooms
+    global _Objects
 
     if save_state > 0:
         directory = 'SaveState%d' % save_state
@@ -148,6 +154,9 @@ def init_game(save_state = 0):
 
         print 'Initializing game state from default save state'
         logger.debug('Initializing game state from default save state')
+
+    _Objects = loader.load_objects('objects/objects.xml') # Load the global objects
+    logger.debug("Loaded global objects")
 
     for filename in os.listdir(directory):
         path = directory + '/' + filename
@@ -173,7 +182,7 @@ def init_game(save_state = 0):
     thread.start_new_thread(command_thread, ())
     logger.debug("Starting command thread")
 
-    thread.start_new_thread(spawn_npc_thread, (5,))
+    thread.start_new_thread(spawn_npc_thread, (10,))
     logger.debug("Starting spawn NPC thread")
 
     thread.start_new_thread(npc_thread, ())
@@ -219,7 +228,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
         player = Player(name, coords, affiliation)
 
     _Players[player.name] = player # Add to list of players in the game
-    _Rooms[player.coords].players[player.name] = player # Add player to list of players in the room they are in
+    _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
     logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
 
@@ -230,7 +239,7 @@ def remove_player(name):
     player = _Players[name]
     loader.save_player(player)  # Save the player
 
-    del _Rooms[player.coords].players[player.name] # Remove the player from the room they are in
+    _Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
     del _Players[name] # Remove the player from the list of players in the game
 
     logger.debug("Removed player '%s'" % player.name)
@@ -347,7 +356,7 @@ def spawn_npc_thread(n):
         if ((len(_Rooms) / n) + 1) > len(_NPCs):
             npc = random.choice(_NPCBucket)
             _NPCs[npc.name] = npc
-            _Rooms[npc.coords].npcs[npc.name] = npc # Add the NPC to the room he spawned in
+            _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
 
             logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
         elif ((len(_Rooms) / n) + 1) < len(_NPCs):

@@ -34,17 +34,18 @@ def do_command(player, room, verb, nouns, object, tags):
             for player, message in player_messages:
                 messages.append((player.name, message))
         elif len(alt_text) > 0:
-            for alt_player in room.players.values():
-                if alt_player is not player:
-                    messages.append((alt_player.name, alt_text))
+            for alt_player in room.players:
+                if alt_player != player.name:
+                    messages.append((alt_player, alt_text))
 
             if verb == 'go': # Player entered a new room, pass messages to all players in the new room
                 room = engine._Rooms[player.coords]
-                messages.append((player.name, text))
+                if len(text) > 0 and player.name in room.players:
+                    messages.append((player.name, text))
 
-                for alt_player in room.players.values():
-                    if alt_player is not player:
-                        messages.append((alt_player.name, "%s has entered the room." % player.name))
+                for alt_player in room.players:
+                    if alt_player != player.name:
+                        messages.append((alt_player, "%s has entered the room." % player.name))
 
     return messages
 
@@ -94,7 +95,7 @@ def get_room_text(player_name, coords):
                 text += " %s to the %s," % (portal.desc, portal.direction)
 
     # Add NPCs and players to the text
-    names = room.npcs.keys() + room.players.keys()
+    names = room.npcs + room.players
     names.remove(player_name)
 
     for n, name in enumerate(names):
@@ -107,21 +108,38 @@ def get_room_text(player_name, coords):
 
     return text
 
-def get_visible(objects):
+def get_visible(object_names):
     visible_objects = []
+    objects = []
 
-    for object in objects.values():
+    for name in object_names:
+        for i in range(object_names[name]): # Appends the item name once for each item with that name
+            objects.append(engine._Objects[name])
+
+    for object in objects:
         if not object.hidden:
             visible_objects.append(object)
 
     return visible_objects
 
 def check_key(player, key):
-    for item in player.items.values():
-        if item.name == key:
+    for item in player.items:
+        if item == key:
             return True
 
     return False
+
+def add_item(container, item):
+    if item in container.items:
+        container.items[item] += 1
+    else:
+        container.items[item] = 1
+
+def rem_item(container, item):
+    if container.items[item] == 1:
+        del container.items[item]
+    else:
+        container.items[item] -= 1
 
 def parse_command(command):
     # Create translation tables to make the command easier to parse
@@ -180,6 +198,7 @@ def parse_command(command):
 
 def npc_action(npc):
     room = engine._Rooms[npc.coords]
+
     if len(room.players) > 0: # There are players in the room, talk to them
         message = "Something" # Replace with tweet
         commands = []
@@ -213,19 +232,23 @@ def get_valid_objects(player, room, verb):
     global _ValidLookUp
 
     flags, cull = _ValidLookUp.get(verb, ('',{}))
+    object_names = []
     valid_objects = []
 
     if 'p' in flags:
         for portal in room.portals:
-            valid_objects.append(room.portals[portal])
+            object_names.append(portal)
 
     if 'r' in flags:
         for item in room.items:
-            valid_objects.append(room.items[item])
+            object_names.append(item)
 
     if 'i' in flags:
         for item in player.items:
-            valid_objects.append(player.items[item])
+            object_names.append(item)
+
+    for name in object_names:
+        valid_objects.append(engine._Objects[name])
 
     for object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -329,8 +352,8 @@ def take(room, player, object, noun, tags):
         text = "There is no %s to take." % noun
     else:
         # Move object from room to player
-        player.items[object.name] = object
-        del room.items[object.name]
+        add_item(player, object.name)
+        rem_item(room, object.name)
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
 
@@ -353,12 +376,18 @@ def open(room, player, object, noun, tags):
             if 'script' in tags:
                 text = alt_text = "The %s has opened, inside there is:" % object.name
 
-            # Open the container and move its contents to the room
-            for item in object.items.keys():
-                room.items[item] = object.items[item]
-                del object.items[item]
-                text += "\n\t%s" % item
-                alt_text += "\n\t%s" % item
+            if object.name in room.items: # Container is in a room
+                for item in object.items.keys(): # Open the container and move its contents to the room
+                    add_item(room, item)
+                    rem_item(object, item)
+                    text += "\n\t%s" % item
+                    alt_text += "\n\t%s" % item
+            else: # Container is in the player's inventory
+                for item in object.items.keys(): # Open the container and move its contents to the player's inventory
+                    add_item(player, item)
+                    rem_item(object, item)
+                    text += "\n\t%s" % item
+                    alt_text += "\n\t%s" % item
         else:
             text = "You have opened the %s, but there is nothing inside." % object.name
             alt_text = "%s has opened the %s, but there is nothing inside." % (player.name, object.name)
@@ -379,11 +408,11 @@ def go(room, player, object, noun, tags):
         # Move player to the coordinates the portal leads to
         player.coords = object.coords
         if 'npc' not in tags:
-            del room.players[player.name] # Remove player from last room
-            engine._Rooms[player.coords].players[player.name] = player # Add player to new room
+            room.players.remove(player.name) # Remove player from last room
+            engine._Rooms[player.coords].players.append(player.name) # Add player to new room
         else:
-            del room.npcs[player.name] # Remove NPC from the last room
-            engine._Rooms[player.coords].npcs[player.name] = player # Add the NPC to the new room
+            room.npcs.remove(player.name) # Remove NPC from the last room
+            engine._Rooms[player.coords].npcs.append(player.name) # Add the NPC to the new room
 
         text = get_room_text(player.name, player.coords)
         alt_text = "%s has left the room through the %s door." % (player.name, noun)
@@ -397,8 +426,8 @@ def drop(room, player, object, noun, tags):
         text = "You have no %s to drop." % noun
     else:
         # Move item from player to the room
-        room.items[object.name] = object
-        del player.items[object.name]
+        add_item(room, object.name)
+        rem_item(player, object.name)
         text = "You have dropped the %s." % object.name
         alt_text = "%s has dropped a %s." % (player.name, object.name)
 
@@ -416,7 +445,8 @@ def unlock(room, player, object, noun, tags):
             object.locked = False
 
             if isinstance(object, engine.Portal):
-                for portal in engine._Rooms[object.coords].portals.values(): # Unlock the portal from the other side as well
+                for portal_name in engine._Rooms[object.coords].portals: # Unlock the portal from the other side as well
+                    portal = engine._Objects[portal_name]
                     if portal.coords == player.coords:
                         portal.locked = False
 
@@ -459,8 +489,11 @@ def lock(room, player, object, noun, tags):
 def inventory(room, player, object, noun, tags):
     if len(player.items) > 0:
         text = "Inventory:"
-        for item in player.items.values():
-            text += "\n\t%s" % item.name
+        for item in player.items:
+            text += "\n\t%s" % item
+
+            if player.items[item] > 1:
+                text += " x%d" % player.items[item]
     else:
         text = "Your inventory is empty."
 
@@ -496,7 +529,8 @@ def shout(room, player, object, noun, tags):
 def damage(room, attacker, object, noun, tags):
     player_messages = []
 
-    for player in room.players.values():
+    for player_name in room.players:
+        player = engine._Players[player_name]
         difference = 0
         for person in attacker.affiliation: # Calculate the total difference between the player and the npc
             difference += -abs(attacker.affiliation[person] - player.affiliation[person])
@@ -507,7 +541,6 @@ def damage(room, attacker, object, noun, tags):
             player.fih = 30
         else:
             player.fih += difference
-
         if difference > 0:
             text = "Your Faith in Humanity is increased by %d." % difference
         elif difference < 0:
