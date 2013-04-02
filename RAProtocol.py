@@ -7,14 +7,17 @@ def sendMessage(message, conn):
     """
 
     """
+
     prefix = encodePrefix(message)
     message = prefix + message
     conn.sendall(message)
+
 
 def receiveMessage(conn):
     """
 
     """
+
     prefix = conn.recv(4)
     msg_len = decodePrefix(prefix)
     message = ""

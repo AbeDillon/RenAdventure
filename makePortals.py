@@ -30,7 +30,7 @@ def makePortals():
                 print '\nYou must enter a number between 1 and 6.  Try again.'
         
 
-    # PORTAL CREATION LOOP
+	# PORTAL CREATION LOOP
     for i in range(0, qty):
         portal = {}  #dict for this door
         
