@@ -4,6 +4,9 @@ import engine
 from math import *
 import threading, random
 
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
+
+
 def do_command(player, room, verb, nouns, object, tags):
     messages = []
     if 'start_script' in tags: # Object has a script for this verb, break it into multiple commands
@@ -50,8 +53,8 @@ def do_command(player, room, verb, nouns, object, tags):
 
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
-    valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
-
+    global valid_verbs
+     
     for script in scripts.keys():
         for action in scripts[script]:
             verb = action[0]
