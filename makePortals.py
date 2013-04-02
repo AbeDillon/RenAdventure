@@ -9,77 +9,92 @@ def makePortals():
     room_portals = []
     directions = ['north', 'south', 'east', 'west', 'up', 'down']
 
-    # How many should we create
-    qty = int(raw_input('\nHow many portals would you like to create? (max 6)\n>  '))
-       #    dictionary fot this portal
+    # QTY TO CREATE
+    print ""
+    print textwrap.fill('How many portals would you like to create?  (max 6)')
+    valid_qty = False
+    while valid_qty == False:
+        qty = raw_input('\n>')
+        
+        tryFlag = True
+        try:
+            qty = int(qty)
+        except:
+            print '\nYou must enter a number between 1 and 6.  Try again.'
+            tryFlag = False
+        
+        if tryFlag == True:
+            if qty > 0 and qty < 7:
+                valid_qty = True
+            else:
+                print '\nYou must enter a number between 1 and 6.  Try again.'
+        
 
-    #Enter loop for each door in qty
+    # PORTAL CREATION LOOP
     for i in range(0, qty):
-        portal = {}  
-        # Create original name for room commented out global requirment at this time
+        portal = {}  #dict for this door
+        
+        # GET ORIGINAL NAME
         print ""
-        print textwrap.fill('What would you like to name this portal?  All of the portal names in your room must be different.', width=100).strip()
+        print textwrap.fill('What would you like to name this portal?  All of the portal names must be different in your room and across the entire game.', width=100).strip()
         original = False
         while original == False:    # create original name for portal
             name = raw_input('\n>').strip()
-            if validator.original_name(name, validator.names) == False:  #  Check against list names in entire game
+            if validator.original_name(name, validator.names) == True:  #  Check against list names in entire game
                 print "\nSorry that name has already been used in the game.  Try Again."
-            elif validator.original_name(name, room_portals) == False:
+            elif validator.original_name(name, room_portals) == True:
                 print "\nSorry you have already used that name in this room.   Try Again."
             else:
+                #make dictionary for door with name as key
                 portal[name] = {}
-                room_portals.append(name)
                 original = True  #  Set original to True to break out of validation loop
 
-        # get user desired direction
+        # DIRECTION OF PORTAL
         print ''
-        avail_directions = str(directions).replace("'", '').strip('[]')
+        avail_directions = str(directions).replace("'", '').strip('[]')  #  Dynamic printable list of directions remaining
         print textwrap.fill('A portal is also defined by the direction it leads. Which direction do you want this door to lead?  %s .', width=100) %avail_directions
-
+        # Loop to select available direction
         dir_avail = False
         while dir_avail == False:
             direction = raw_input('\n>').strip().lower()
             if direction not in directions: #  direction must be in list of available to be valid.
-                print "\nThat is not a valid direction.  Try again.\n"
+                print "\nThat is not an available direction.  Try again."
             else:
+                #  write to portal dict
                 portal[name]['direction'] = direction
                 directions.remove(direction) #  remove direction selected from available directions to prevent duplicate
                 dir_avail = True # break from direction loop
 
-        # get user descriptions
+        # PRIMARY DESCRIPTION
         print ''
         print textwrap.fill('Enter a description for your portal.  This is a generalized description that players will see.', width=100).strip()
-
-        # loop to set General Description - Verify/Validate here
+        # accept loop
         desc_accept = False
         while desc_accept == False:
             desc = raw_input('\n>')
-            if desc == None and desc == " " :  # must contain something
-                print "Your Description cannot be empty.  Try again."
+            if len(desc) == 0:  # must contain something
+                print "\nYour Description must conatain at least 1 character.  Try again."
             else:
+                #copy to portal dict and break loop
                 portal[name]['desc'] = desc
                 desc_accept = True
 
-        # Loop to set Inspection Description - Verify/Validate Here
-        desc_accept = False #  Reset to false for new loop
+        # INSPECTION DESCRIPTION
         print ""
         print textwrap.fill('The inspection description is what players will see when they give the inspect command on your door.  Enter '
                             'your inspection description now.', width=100).strip()
+        # accept loop
+        desc_accept = False 
         while desc_accept == False:
             inspect_desc = raw_input('\n>')
-            if inspect_desc == None and inspect_desc == " " :  # must contain something
-                print "Your Inspection Description cannot be empty.  Try again."
+            if len(inspect_desc) == 0:  # must contain something
+                print "\nYour Inspection Description must contain at least 1 character.  Try again."
             else:
+                # Copy to portal Dict and break loop
                 portal[name]['inspect_desc'] = desc
                 desc_accept = True
 
-        #  Get Coordinates (for where door should lead)
-        # print""
-        # print textwrap.fill('The door must lead to a coordinate address which is a 3 part address (x, y, z).  If you would like you can specify an '
-        #                     'address that your door takes you to.  If you want us to set it to the default address according to the direction '
-        #                     'your door leads, simply answer no.  Would you like to assign a address to your door?  (Yes or No)', width = 100).strip()
-        # ans = raw_input('\n>').lower()
-        # if ans == 'no' or ans == 'n':
+        #  COORDINATES (WHERE DOOR SHOULD LEAD)
         player_coords = (0,0,0)
         #player_coords = engine.player.coords  # (3 part tuple format (x, y, z)
         #x = player_coords[0]
@@ -87,6 +102,12 @@ def makePortals():
         #z = player_coords[2]
         x, y, z = player_coords  # thanks Abe
         
+        #print ""
+        #print textwrap.fill('The portal must lead to a coordinate address which is a 3 part address (x, y, z).  If you would like you can specify an '
+        #                     'address that your portal takes you to.  If you want us to set it to the default address according to the direction '
+        #                     'your door leads, simply answer no.  Would you like to assign a special address to your door?  (Yes or No)', width = 100).strip()
+        # ans = validator.validYesNo()
+        # if ans == 'no':
         if direction == 'north':
             portal_coords = (x, y + 1, z) 
         elif direction == 'south':
@@ -100,9 +121,10 @@ def makePortals():
         elif direction == 'down':
             portal_coords = (x,y,z-1)
         #  write to portal dict
-        print portal_coords
+        print '\n****TEST COORDINATES USED AS BASE CHANGE UNCOMMENT CODE TO USE DYNAMIC PLAYER LOCATION****'
+        print portal_coords, 'DELETE OR COMMENT THESE OUT LATER?!'
         portal[name]['coords'] = portal_coords  #   Could use some sort of default algorithm here (ie if direction north (x+1, y, z) from room coords)
-        print 'Default coordinates assigned according to direction chosen.'
+        print '\nDefault coordinates assigned according to direction chosen.'
         # if ans == 'yes' or ans == 'y':
         #     print '\nEnter your 3 part coordinates seperated by a space. For example...  12 4 1'
         #     valid_coords = False
@@ -116,58 +138,60 @@ def makePortals():
         #         else:
         #             print '\nThe Coordinates you entered are not valid for the reason stated above.  Try Again.'
         
-        #  assign Door Lock State
+        #  DOOR LOCKED
         print ""
         print textwrap.fill('Your door can be locked or unlocked which can then be opened using a key or other scripted method adding to the '
                             'puzzle-type gameplay.  Remember, we do want players to be able to move about the map somewhat freely so please be '
-                            'discerning about locking portals.  Do you want to lock this door? (Yes or No)', width=100).strip()
-        ans = raw_input('\n>').strip().lower()
-        if ans == 'yes' or ans == 'y':
+                            'discerning about locking portals.  DO YOU WANT TO LOCK THIS DOOR? (Yes or No)', width=100).strip()
+        ans = validator.validYesNo() # returns only a yes or no
+        if ans == 'yes':
             portal[name]['locked'] = True
         else:
             portal[name]['locked'] = False
 
-        #  Define Key for Door
+        #  KEY
         print ""
         print textwrap.fill('Portals can have a key (which can be any item) associated with them that will lock or unlock the door.  '
                             'Here you can (1) name an existing key that will unlock it, (2) create a key that will unlock it, '
                             'or (3) not associate a key at all.  Which would '
                             'you like to do? (1, 2, or 3)', width=100).strip()
+        # valid answer loop
         valid_ans = False
-        while valid_ans == False:  # make sure answer is 1, 2, or 3
+        while valid_ans == False:
             ans = raw_input('\n>').strip().lower()
-            try:  #    cast as an integer if no error continues rest of error checking
+            tryFlag = True
+            try:  #    cast as an integer if no error continue
                 ans = int(ans)
-                if ans == 1: # player wants to name a key
+            except:
+                tryFlag = False
+                print "\nYour response must be a 1, 2 or 3.  Try again."    
+            
+            if tryFlag == True:                
+                # player wants to name key
+                if ans == 1:
                     print ""
                     print textwrap.fill('Enter the name of the key you want to open the door.  Names are not case sensitive.', width=100).strip()
                     valid_key = False
                     while valid_key == False:
                         key = raw_input('\n>').strip().lower()
-                        # add compare key name to items on the map to verify the key name then build if necessary
                         if validator.validate_name(key, validator.names) == True:
-                            valid_ans = True
-                            valid_key = True
+                            valid_ans = True # break both loops
                         else:
-                            print 'That key does not exist.  Try again.'
-                elif ans == 2: #  Player wants to build a key
-                    # function for building key not complete
-                    #key = makeItems.makeItem()
-                    key = "made key"
-                    valid_ans = True
-                elif ans == 3:  # do not assign a key
+                            print '\nThat key does not exist.  Try again.'
+                # player wants to build key
+                elif ans == 2:
+                    key = makeItems.makeItem(player)
+                    valid_ans = True  # break both loops
+                # Do not assign key
+                elif ans == 3:
                     key = None
-                    valid_ans = True
+                    valid_ans = True # break both loops
                 else:
-                    print "Your response must be a 1, 2 or 3.  Try again."
-                
-            except:
-                print "Your response must be a 1, 2 or 3.  Try again."
-                pass
-        
+                    print "\nYour response must be a 1, 2 or 3.  Try again."
+        # write key to portal dict
         portal[name]['key'] = key
             
-        #  Define hidden state of the door
+        #  HIDDEN?
         print ""
         print textwrap.fill('Your portal can be hidden or visible.  Would you like your portal to be hidden? (Yes or No)', width=100).strip()
         valid_ans = False
@@ -181,19 +205,21 @@ def makePortals():
                 valid_ans = True
             else:
                 print '\nYour answer must be Yes or No.'
-                #  Enter the scripts here
+        
+        # SCRIPTS        
+        scripts = {}
         print ""
         print textwrap.fill('Need script builder!')
-        
-        #  Drop script building here later
-        
-        scripts = {}
-        
+        #   PLACE SCRIPT BUILDER CODE HERE
+        # ********************************        
+        # ********************************
+        # write scripts to portal dict
         portal[name]['scripts'] = scripts
-
+        # append portal dict to room portals list
         room_portals.append(portal)
-
-    return room_portals
+        
+    # return list of dicts with portal attributes.  Do not want to instantiate until time room is instantiated as portals should be linked to rooms strictly
+    return room_portals 
 
 if __name__ == "__main__":
     makePortals()        

@@ -60,23 +60,18 @@ def roomPortals(player):
     #  confirm they want to create portals
     print ''
     print textwrap.fill('Portals, also known as exits, need to be defined.  Do you want to create any portals?',  width=100).strip()
-    ans = validator.validYesNo()
-    if ans == 'no':
-        assignContainers(player)
-    elif ans == 'yes':  # anything other than yes or y
-        portals = makePortals.makePortals()
-        assignContainers(player)
+    ans = validator.validYesNo() # returns yes or no 
+    if ans == 'no':  
+        assignContainers(player)  # move to next function 
+    elif ans == 'yes':
+        portals = makePortals.makePortals()  # create portals with makePortals
+        assignContainers(player)  #  send to next function
 
 def assignContainers(player):
     '''Function at this time will require player to create every container they place in room.
     when other code supports functionality to add existing containers to the room
     along with the items that the said container contains may be added.  Hence function title
     assign Containers'''
-    
-    #    Code to select containers should come before creation code
-    #    because the select code could conceivably lead to creation code.
-    #    for example  - If container selected/named/called does not exist
-    #    would you like to create one?
     
     # begin code to begin container creation
     print ""
@@ -87,39 +82,54 @@ def assignContainers(player):
     containers_done = False
     while containers_done == False:  # make sure answer is 1, 2, or 3
         ans = raw_input('\n>').strip().lower()
+        tryFlag = True
         try:  #    cast as an integer if no error continue
             ans = int(ans)
-            if ans == 1: # player wants to name a container
+        except:
+            tryFlag = False
+            print "\nYour response must be a 1, 2 or 3.  Try again."    
+        
+        if tryFlag == True:    #  Only happens if int casting succeeded
+            
+            #  If player wants to name an existing container
+            if ans == 1: 
                 print ""
                 print textwrap.fill('Enter the name of the container.  Names are not case sensitive.', width=100).strip()
                 valid_container = False
                 while valid_container == False:
                     name = raw_input('\n>').strip().lower()
-                    if validator.validate_name(name, validator.names) == False:  # Name not in list
+                    if validator.validate_name(name, validator.names) == True:  # Name is in list
                         #append to room container list
-                        room_containers.append(name) #append name to room_containers list
-                        print "Do you want to add another container by name?  (yes or no)"
+                        room_containers.append(name)
+                        #want to add more?
+                        print "\nDo you want to add another container by name?  (yes or no)"
                         ans = validator.validYesNo() # returns a yes or no
-                        if ans == 'yes':
+                        if ans == 'yes':  
                             print '\nEnter the name of the next container.'
                         elif ans == 'no':
+                            print ""
                             print textwrap.fill('Now do you want to (1) add another container by name, (2) create a container, '
                                                 'or (3) I\'m done with containers.  (1, 2, or 3)', width=100).strip()
-                            valid_container = True
+                            valid_container = True # break out to primary loop again
                     else:
-                        print 'That container does not exist.  Try again.'
-            elif ans == 2: #  Player wants to build a container
+                        print '\nThat container does not exist.  Try again.'
+            #  If Player wants to build a container
+            elif ans == 2:
                 containers = makeContainers.makeContainer()  # get room containers returned from make containers function
                 for container in containers:
                     room_containers.append(container)   # append each container name (containers will have been instantiated in called function.
                 print textwrap.fill('Now do you want to (1) add another container by name, (2) create a container, '
                                     'or (3) I\'m done with containers.  (1, 2, or 3)', width=100).strip()
-            elif ans == 3:  # done
-                containers_done = True
-            else:
-                print "Your response must be a 1, 2 or 3.  Try again."
-        except:
-            print "Your response must be a 1, 2 or 3.  Try again."
+                valid_container = True  #  Break back to primarly loop
+            
+            elif ans == 3:  #  Player is done
+                containers_done = True  #  Breaks out of both loops
+            
+            else: # Not 1 2 or 3 try again.
+                print "\nYour response must be a 1, 2 or 3.  Try again."
+    
+    #  copy list to room dict and move to next function
+    room['containers'] = room_containers
     assignItems(player)
 
 def assignItems(player):
@@ -133,8 +143,14 @@ def assignItems(player):
     items_done = False
     while items_done == False:  # make sure answer is 1, 2, or 3
         ans = raw_input('\n>').strip().lower()
+        tryFlag = True
         try:  #    cast as an integer if no error continues rest of error checking
             ans = int(ans)
+        except:
+            tryFlag = False
+            print "\nYour response must be a 1, 2 or 3.  Try again."    
+        
+        if tryFlag == True:
             if ans == 1: # player wants to name a item
                 print ""
                 print textwrap.fill('Enter the name of the item.  Names are not case sensitive.', width=100).strip()
@@ -143,7 +159,7 @@ def assignItems(player):
                     item = raw_input('\n>').strip().lower()
                     if validator.validate_name(item, validator.names) == True: # if item name not in list
                         room_items.append(item)
-                        print "Do you want to add another item by name?  (yes or no)"
+                        print "\nDo you want to add another item by name?  (yes or no)"
                         ans = validator.validYesNo() # returns a yes or no
                         if ans == 'yes':
                             print '\nEnter the name of the next item.'
@@ -164,8 +180,7 @@ def assignItems(player):
             else:
                 print "Your response must be a 1, 2 or 3.  Try again."
             
-        except:
-            print "Error!  Your response must be a 1, 2 or 3.  Try again."
+        
             
     submit_room(player)
              
