@@ -10,6 +10,7 @@ def load_player(path):
     root = xml.getroot()
     
     player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
+    player_attributes['items'] = []
     
     for node in root:
         if node.tag == 'affiliation':
@@ -20,9 +21,11 @@ def load_player(path):
             player_attributes['affiliation'] = affiliation
         elif node.tag == 'fih':
             player_attributes[node.tag] = int(node.text)
+        elif node.tag == 'item':
+            player_attributes['items'].append(node.text)
         else:
             player_attributes[node.tag] = node.text
-    
+
     return engine.Player(**player_attributes)
     
 # Loads a room from an xml file
@@ -30,15 +33,21 @@ def load_room(path):
     room_attributes = {}
     room_attributes['items'] = []
     room_attributes['portals'] = []
+    room_attributes['npcs'] = []
+    room_attributes['players'] = []
     
     xml = ET.parse(path)
     root = xml.getroot()
     
     for node in root:
         if node.tag == 'item':
-            room_attributes['items'].append(load_item(node))
+            room_attributes['items'].append(node.text)
         elif node.tag == 'portal':
-            room_attributes['portals'].append(load_portal(node))
+            room_attributes['portals'].append(node.text)
+        elif node.tag == 'npc':
+            room_attributes['npcs'].append(node.text)
+        elif node.tag == 'player':
+            room_attributes['players'].append(node.text)
         else:
             room_attributes[node.tag] = node.text
     
@@ -55,7 +64,7 @@ def load_item(root):
             tag = node.tag.replace('_script', '')
             item_attributes['scripts'][tag] = load_script(node)
         elif node.tag == 'item':
-            item_attributes['items'].append(load_item(node))
+            item_attributes['items'].append(node.text)
         else:
             text = node.text
             
@@ -99,7 +108,37 @@ def load_script(root):
     
     return script
 
+# Loads a dictionary of objects from an xml file
+def load_objects(path):
+    xml = ET.parse(path)
+    root = xml.getroot()
+    objects = {}
+
+    for node in root:
+        if node.tag == 'item':
+            item = load_item(node)
+            objects[item.name] = item
+        elif node.tag == 'portal':
+            portal = load_portal(node)
+            objects[portal.name] = portal
+
+    return objects
+
 ############# SAVE METHODS ##############
+# Writes object list to a save file
+def save_objects(objects):
+    save = open('objects/objects.xml', 'w')
+    save.write('<?xml version="1.0"?>\n')
+    save.write('<objects>\n')
+
+    for object in objects.values():
+        if isinstance(object, engine.Item):
+            save_item(save, object)
+        elif isinstance(object, engine.Portal):
+            save_portal(save, object)
+
+    save.write('</objects>')
+
 # Writes a player to a save file
 def save_player(player):
     save = open('players/%s.xml' % player.name, 'w')
@@ -114,8 +153,8 @@ def save_player(player):
         save.write('<%s>%d</%s>\n' % (person, player.affiliation[person], person))
     save.write('</affiliation>\n')
     
-    for item in player.items.values():
-        save_item(save, item)
+    for item in player.items:
+        save.write('<item>%s</item>\n' % item)
     
     save.write('</player>')
     save.close()
@@ -128,11 +167,11 @@ def save_room(room, path):
     
     save.write('<desc>%s</desc>\n' % room.desc)
     
-    for item in room.items.values():
-        save_item(save, item)
+    for item in room.items:
+        save.write('<item>%s</item>\n' % item)
     
-    for portal in room.portals.values():
-        save_portal(save, portal)
+    for portal in room.portals:
+        save.write('<portal>%s</portal>\n' % portal)
     
     save.write('</room>')
     save.close()

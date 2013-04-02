@@ -9,11 +9,12 @@ import string
 import Queue
 import RAProtocol
 import logging
+import ssl
 
 logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
 _Local_Host = socket.gethostname() # replace with actual host address
-_Server_Host = socket.gethostname() #'10.245.50.150' # replace with actual server address
+_Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
 _Login_Port = 60005
 
 _CMD_Queue = Queue.Queue()
@@ -132,15 +133,15 @@ def connect_to_server(line):
     global _Login_Port
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
+    ssl_sock.connect((_Server_Host, _Login_Port)) ###TEST
 
-    sock.connect((_Server_Host, _Login_Port))
-
-    RAProtocol.sendMessage(line, sock)
+    RAProtocol.sendMessage(line, ssl_sock)  ###TEST
     logging.debug('Hidden: Making connection with remote server')
 
-    message = RAProtocol.receiveMessage(sock)
+    message = RAProtocol.receiveMessage(ssl_sock) ###TEST
 
-    sock.close()
+    ssl_sock.close()  ###TEST
 
     return message
 
@@ -166,7 +167,7 @@ class KeepAliveThread(threading.Thread):
                 _Quit_Lock.acquire()
                 done = _Quit
                 _Quit_Lock.release()
-            time.sleep(0.05)
+                time.sleep(0.05)
                 
 
 class ReadLineThread(threading.Thread):
@@ -247,8 +248,8 @@ class InThread(threading.Thread):
 
             logging.debug('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
-
-            thread.start_new_thread(self.handleInput, (conn, ))
+            connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) ###TEST
+            thread.start_new_thread(self.handleInput, (connstream, ))   ###TEST
             time.sleep(0.05)
             _Quit_Lock.acquire()
             done = _Quit
@@ -304,13 +305,14 @@ class OutThread(threading.Thread):
             if message != "":
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
                 # connect to player
-                sock.connect((self.host, self.port))
+                ssl_sock.connect((self.host, self.port))  ###TEST
                 # send message
-                RAProtocol.sendMessage(message, sock)
+                RAProtocol.sendMessage(message, ssl_sock)  ###TEST
                 logging.debug('Hidden: Sending message "%s" to server' % message)
                 # close connection
-                sock.close()
+                ssl_sock.close()  ###TEST
                 # check for quit
                 if message.lower() == "quit":
                     _Quit_Lock.acquire()

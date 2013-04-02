@@ -7,14 +7,17 @@ def sendMessage(message, conn):
     """
 
     """
+
     prefix = encodePrefix(message)
     message = prefix + message
     conn.sendall(message)
+
 
 def receiveMessage(conn):
     """
 
     """
+
     prefix = conn.recv(4)
     msg_len = decodePrefix(prefix)
     message = ""
@@ -50,7 +53,6 @@ def decodePrefix(prefix):
 
     """
     msg_len = ord(prefix[0])
-
     for i in range(1,4):
         msg_len *= 256
         msg_len += ord(prefix[i])
