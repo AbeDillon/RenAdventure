@@ -13,22 +13,17 @@ class Room:
     
     Contains:
     - Portals
-    - Containers
     - Items
     - Players
     - NPCs
     '''
-    def __init__(self, desc, portals = [], containers = [], items = [], players = [], npcs = []):
+    def __init__(self, desc, portals = [], items = [], players = [], npcs = []):
         self.desc = desc
         
-        # Create a dictionary for each list of portals/containers/items
+        # Create a dictionary for each list of portals and items
         self.portals = {}
         for portal in portals:
             self.portals[portal.direction] = portal
-        
-        self.containers = {}
-        for container in containers:
-            self.containers[container.name] = container
         
         self.items = {}
         for item in items:
@@ -65,33 +60,6 @@ class Portal:
         self.locked = locked
         self.hidden = hidden
         self.key = key
-
-class Container:
-    '''
-    Attributes:
-    - Name
-    - Description (for printing in a room)
-    - Inspect Description (for looking at the item)
-    - Action Scripts (ex. {'take': [['move', 'boulder'], ['move', 'monster']})
-    - Locked (bool)
-    - Key
-    - Hidden (bool)
-    
-    Contains:
-    - Items
-    '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, locked = False, key = None, hidden = False, items = []):
-        self.name = name.lower()
-        self.desc = desc
-        self.inspect_desc = inspect_desc
-        self.scripts = scrub(scripts)
-        self.locked = locked
-        self.hidden = hidden
-        self.key = key
-        
-        self.items = {}     # Create a dictionary of items in the container
-        for item in items:
-            self.items[item.name] = item
     
 class Item:
     '''
@@ -102,14 +70,26 @@ class Item:
     - Action Scripts (ex. {'take': [['move', 'boulder'], ['move', 'monster']})
     - Portable (bool)
     - Hidden (bool)
+
+    - Container (bool)
+    - Locked (bool)
+    - Key
+    - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False):
+    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = None, items = []):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
         self.portable = portable
         self.hidden = hidden
+        self.container = container
+        self.locked = locked
+        self.key = key
         self.scripts = scrub(scripts)
+
+        self.items = {}
+        for item in items:
+            self.items[item.name] = item
 
 class Player:
     '''
@@ -151,7 +131,8 @@ _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the serv
 _Players = {} # Players currently in the game
 _NPCs = {} # NPCs currently in the game
 _Rooms = {} # Rooms currently in the game
-_NPCBucket = [] # Bucket of NPC to pull from when spawning a new NPC
+_Objects = {} # All Objects currently in the game
+_NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
 
 def init_game(save_state = 0):
     # Initializes the map and starts the command thread

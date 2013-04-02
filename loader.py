@@ -29,7 +29,6 @@ def load_player(path):
 def load_room(path):
     room_attributes = {}
     room_attributes['items'] = []
-    room_attributes['containers'] = []
     room_attributes['portals'] = []
     
     xml = ET.parse(path)
@@ -38,8 +37,6 @@ def load_room(path):
     for node in root:
         if node.tag == 'item':
             room_attributes['items'].append(load_item(node))
-        elif node.tag == 'container':
-            room_attributes['containers'].append(load_container(node))
         elif node.tag == 'portal':
             room_attributes['portals'].append(load_portal(node))
         else:
@@ -51,11 +48,14 @@ def load_room(path):
 def load_item(root):
     item_attributes = {}
     item_attributes['scripts'] = {}
+    item_attributes['items'] = []
     
     for node in root:
         if '_script' in node.tag:
             tag = node.tag.replace('_script', '')
             item_attributes['scripts'][tag] = load_script(node)
+        elif node.tag == 'item':
+            item_attributes['items'].append(load_item(node))
         else:
             text = node.text
             
@@ -85,28 +85,6 @@ def load_portal(root):
             portal_attributes[node.tag] = text
 
     return engine.Portal(**portal_attributes)
-
-# Loads a container from a node
-def load_container(root):
-    container_attributes = {}
-    container_attributes['items'] = []
-    container_attributes['scripts'] = {}
-    
-    for node in root:
-        if '_script' in node.tag:
-            tag = node.tag.replace('_script', '')
-            container_attributes['scripts'][tag] = load_script(node)
-        elif node.tag == 'item':
-            container_attributes['items'].append(load_item(node))
-        else:
-            text = node.text
-            
-            if text.isdigit():
-                text = bool(text)
-        
-            container_attributes[node.tag] = text
-
-    return engine.Container(**container_attributes)
 
 # Loads a script from a node
 def load_script(root):
@@ -156,9 +134,6 @@ def save_room(room, path):
     for portal in room.portals.values():
         save_portal(save, portal)
     
-    for container in room.containers.values():
-        save_container(save, container)
-    
     save.write('</room>')
     save.close()
 
@@ -170,6 +145,14 @@ def save_item(save, item):
     save.write('<inspect_desc>%s</inspect_desc>\n' % item.inspect_desc)
     save.write('<portable>%d</portable>\n' % int(item.portable))
     save.write('<hidden>%d</hidden>\n' % int(item.hidden))
+
+    if item.container: # Item is container and has additional attributes
+        save.write('<container>%d</container>\n' % int(item.container))
+        save.write('<locked>%d</locked>\n' % int(item.locked))
+        save.write('<key>%s</key>\n' % item.key)
+
+        for container_item in item.items:
+            save_item(save, container_item)
     
     # Save scripts
     save_scripts(save, item.scripts)
@@ -191,24 +174,6 @@ def save_portal(save, portal):
     save_scripts(save, portal.scripts)
     
     save.write('</portal>\n')
-
-# Writes a container to a save file
-def save_container(save, container):
-    save.write('<container>\n')
-    save.write('<name>%s</name>\n' % container.name)
-    save.write('<desc>%s</desc>\n' % container.desc)
-    save.write('<inspect_desc>%s</inspect_desc>\n' % container.inspect_desc)
-    save.write('<locked>%d</locked>\n' % int(container.locked))
-    save.write('<hidden>%d</hidden>\n' % int(container.hidden))
-    save.write('<key>%s</key>\n' % container.key)
-    
-    # Save scripts
-    save_scripts(save, container.scripts)
-    
-    for item in container.items.values():
-        save_item(save, item)
-    
-    save.write('</container>\n')
 
 # Writes the scripts to a save file
 def save_scripts(save, scripts):

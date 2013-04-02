@@ -79,20 +79,6 @@ def get_room_text(player_name, coords):
             else:
                 text += " %s," % item.desc
 
-    # Add containers to the text
-    visible_containers = get_visible(room.containers)
-
-    if len(visible_containers) > 0:
-        text += " There is"
-
-        for n, container in enumerate(visible_containers):
-            if len(visible_containers) == 1:
-                text += " %s in the room." % container.desc
-            elif n == (len(visible_containers) - 1):
-                text += " and %s in the room." % container.desc
-            else:
-                text += " %s," % container.desc
-
     # Add portals to the text
     visible_portals = get_visible(room.portals)
 
@@ -213,16 +199,15 @@ def npc_action(npc):
 #Flags  'p' = portals
 #       'r' = room items
 #       'i' = player items
-#       'c' = containers
 
-_ValidLookUp = {'look': ('pric', {'hidden': True}),
+_ValidLookUp = {'look': ('pri', {'hidden': True}),
                 'take': ('r', {'hidden': True, 'portable': False}),
                 'drop': ('i', {'hidden': True}),
                 'go': ('p', {'hidden': True}),
-                'open': ('c', {'hidden': True}),
-                'unlock': ('pc', {'hidden': True}),
-                'lock': ('pc', {'hidden': True}),
-                'reveal': ('prc', {'hidden': False})}
+                'open': ('ir', {'hidden': True}),
+                'unlock': ('pri', {'hidden': True}),
+                'lock': ('pri', {'hidden': True}),
+                'reveal': ('pr', {'hidden': False})}
 
 def get_valid_objects(player, room, verb):
     global _ValidLookUp
@@ -241,10 +226,6 @@ def get_valid_objects(player, room, verb):
     if 'i' in flags:
         for item in player.items:
             valid_objects.append(player.items[item])
-
-    if 'c' in flags:
-        for container in room.containers:
-            valid_objects.append(room.containers[container])
 
     for object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -274,10 +255,6 @@ def get_all_objects(player, verb):
         if 'p' in flags:
             for portal in room.portals.values():
                 valid_objects.append((room, portal))
-
-        if 'c' in flags:
-            for container in room.containers.values():
-                valid_objects.append((room, container))
 
     if 'i' in flags:
         for item in player.items.values():

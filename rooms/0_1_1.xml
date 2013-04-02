@@ -28,9 +28,15 @@
 <hidden>0</hidden>
 <key>None</key>
 </portal>
-<container>
+<item>
 <name>chest</name>
 <desc>a chest</desc>
 <inspect_desc>An old wooden chest</inspect_desc>
-</container>
+<container>1</container>
+<item>
+<name>small apple</name>
+<desc>a small apple</desc>
+<inspect_desc>blah</inspect_desc>
+</item>
+</item>
 </room>
