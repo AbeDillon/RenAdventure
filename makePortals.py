@@ -1,6 +1,8 @@
 import validator
 import makeItems
 import textwrap
+import makeScripts
+
 
 def makePortals():
 ##### *******************************************TO DO*******************************************************
@@ -29,7 +31,7 @@ def makePortals():
             else:
                 print '\nYou must enter a number between 1 and 6.  Try again.'
         
-
+    count = qty
     # PORTAL CREATION LOOP
     for i in range(0, qty):
         portal = {}  #dict for this door
@@ -145,15 +147,17 @@ def makePortals():
                             'discerning about locking portals.  DO YOU WANT TO LOCK THIS DOOR? (Yes or No)', width=100).strip()
         ans = validator.validYesNo() # returns only a yes or no
         if ans == 'yes':
-            portal[name]['locked'] = True
+            lock_state = True
         else:
-            portal[name]['locked'] = False
+            lock_state = False
+        # write to portal dict
+        portal[name]['locked'] = False
 
         #  KEY
         print ""
-        print textwrap.fill('Portals can have a key (which can be any item) associated with them that will lock or unlock the door.  '
-                            'Here you can (1) name an existing key that will unlock it, (2) create a key that will unlock it, '
-                            'or (3) not associate a key at all.  Which would '
+        print textwrap.fill('Portals can have a KEY (which can be any item) associated with them that will lock or unlock the door.  '
+                            'Here you can (1) name an existing key that will unlock it, (2) create a KEY that will unlock it, '
+                            'or (3) not associate a KEY at all.  Which would '
                             'you like to do? (1, 2, or 3)', width=100).strip()
         # valid answer loop
         valid_ans = False
@@ -170,17 +174,18 @@ def makePortals():
                 # player wants to name key
                 if ans == 1:
                     print ""
-                    print textwrap.fill('Enter the name of the key you want to open the door.  Names are not case sensitive.', width=100).strip()
+                    print textwrap.fill('Enter the NAME of the key you want to open the door.  Names are not case sensitive.', width=100).strip()
                     valid_key = False
                     while valid_key == False:
                         key = raw_input('\n>').strip().lower()
                         if validator.validate_name(key, validator.names) == True:
+                            valid_key = True
                             valid_ans = True # break both loops
                         else:
                             print '\nThat key does not exist.  Try again.'
                 # player wants to build key
                 elif ans == 2:
-                    key = makeItems.makeItem(player)
+                    key = makeItems.makeItem()
                     valid_ans = True  # break both loops
                 # Do not assign key
                 elif ans == 3:
@@ -193,31 +198,52 @@ def makePortals():
             
         #  HIDDEN?
         print ""
-        print textwrap.fill('Your portal can be hidden or visible.  Would you like your portal to be hidden? (Yes or No)', width=100).strip()
-        valid_ans = False
-        while valid_ans == False:
-            ans = raw_input('\n>').lower().strip()
-            if ans == 'yes' or ans == 'y':
-                portal[name]['hidden'] = True
-                valid_ans = True
-            elif ans == 'no' or ans == 'n':
-                portal[name]['hidden'] = False
-                valid_ans = True
-            else:
-                print '\nYour answer must be Yes or No.'
+        print textwrap.fill('Your portal can be hidden or visible.  Would you like your portal to be HIDDEN? (Yes or No)', width=100).strip()
+        ans = validator.validYesNo()
+        if ans == 'yes':
+            hidden_state = True
+        elif ans == 'no':
+            hidden_state = False
+        # write hidden state to dict
+        portal[name]['hidden']  = hidden_state
         
         # SCRIPTS        
-        scripts = {}
         print ""
-        print textwrap.fill('Need script builder!')
-        #   PLACE SCRIPT BUILDER CODE HERE
-        # ********************************        
-        # ********************************
+        print textwrap.fill('Scripts can be written that will override the commands given upon your portal.  For example unlock door could cause '
+                            'another door in the room to unlock or be revealed.  This is where things can get really interesting.  Would you like to '
+                            'build any scripts for this portal?', width=100).strip()
+        ans = validator.validYesNo()
+        if ans == 'yes':
+            scripts = makeScripts.makeScripts()
+        if ans == 'no':
+            scripts = {}
         # write scripts to portal dict
-        portal[name]['scripts'] = scripts
-        # append portal dict to room portals list
-        room_portals.append(portal)
+        portal[name]['scripts'] = scripts        
         
+        # INSTANTIATE PORTAL
+        tryFlag = True
+        try:
+            print textwrap.fill('COMMENTED OUT PORTAL INSTANTIATION uncomment before live use', width=100)
+            #engine.Portal(name, desc, inspect_desc, portal_coords, scripts = scripts, locked = lock_state, hidden = hidden_state, key = key )
+        except:
+            print "\nSomething has gone wrong in your portal creation.  Sorry but you will have to try again."
+            #  Need better error handling    
+            tryFlag = False
+        if tryFlag == True:
+            print textwrap.fill('Congratultions your ' + name + ' portal has been built!')
+            # append name to master list of names
+            validator.names.append(name)
+            # append name to portal list
+            validator.portal_list.append(name)
+            # append portal dict to room portals list
+            room_portals.append(portal)
+            count -= 1
+            if count > 1:                
+                print '\nYou have ' + str(count) + ' more portals to make.'
+            elif count == 1:
+                print '\nNow let\'s finish up that last portal'
+            elif count == 0:
+                print'\nBe Thankful!  You have finished the portals section!'
     # return list of dicts with portal attributes.  Do not want to instantiate until time room is instantiated as portals should be linked to rooms strictly
     return room_portals 
 
