@@ -326,6 +326,10 @@ class OutThread(threading.Thread):
                 elif 'sunglasses' in message.lower() and 'take' in message.lower(): #If we take the sunglasses
                     sound = 'bad2bone'
                     thread.start_new_thread(play_sound, (sound,))
+                    
+                elif 'abe' in message.lower(): #Abe is involved!
+                    sound = 'smoothasballs'
+                    thread.start_new_thread(play_sound, (sound,))
 
             done = _Quit
             time.sleep(0.05)
