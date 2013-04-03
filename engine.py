@@ -4,7 +4,9 @@ import loader
 from engine_helper import *
 import os, random, time
 import thread, threading, Queue
-import logging
+#import logging
+import Q2logging ###TEST
+
 
 class Room:
     '''
@@ -129,7 +131,8 @@ class NPC:
         self.coords = coords
         self.affiliation = affiliation
 
-logger = logging.getLogger(__name__.title())
+#logger = logging.getLogger(__name__.title())
+logger = Q2logging.out_file_instance('logs/RenEngine') ###TEST
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
@@ -148,15 +151,18 @@ def init_game(save_state = 0):
         directory = 'SaveState%d' % save_state
 
         print 'Initializing game state from save state %d' % save_state
-        logger.debug('Initializing game state from save state %d' % save_state)
+        #logger.debug('Initializing game state from save state %d' % save_state)
+        logger.write_line('Initializing game state from save state %d' % save_state) ###TEST
     else:
         directory = 'rooms'
 
         print 'Initializing game state from default save state'
-        logger.debug('Initializing game state from default save state')
+        #logger.debug('Initializing game state from default save state')
+        logger.write_line('Initializing game state from default save state') ###TEST
 
     _Objects = loader.load_objects('objects/objects.xml') # Load the global objects
-    logger.debug("Loaded global objects")
+    #logger.debug("Loaded global objects")
+    logger.write_line("Loaded global objects") ###TEST
 
     for filename in os.listdir(directory):
         path = directory + '/' + filename
@@ -164,7 +170,8 @@ def init_game(save_state = 0):
         coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
 
         _Rooms[coords] = loader.load_room(path)
-        logger.debug("Loaded room at (%d,%d,%d) from '%s'" % (coords[0], coords[1], coords[2], path))
+        #logger.debug("Loaded room at (%d,%d,%d) from '%s'" % (coords[0], coords[1], coords[2], path))
+        logger.write_line("Loaded room at (%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], path)) ###TEST
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
@@ -180,13 +187,16 @@ def init_game(save_state = 0):
     _NPCBucket.append(oreilly)
 
     thread.start_new_thread(command_thread, ())
-    logger.debug("Starting command thread")
+    #logger.debug("Starting command thread")
+    logger.write_line("Starting command thread") ###TEST
 
     thread.start_new_thread(spawn_npc_thread, (10,))
-    logger.debug("Starting spawn NPC thread")
+    #logger.debug("Starting spawn NPC thread")
+    logger.write_line("Starting spawn NPC thread") ###TEST
 
     thread.start_new_thread(npc_thread, ())
-    logger.debug("Starting NPC action thread")
+    #logger.debug("Starting NPC action thread")
+    logger.write_line("Starting NPC action thread") ###TEST
 
 def shutdown_game():
     # Winds the game down and creates a directory with all of the saved state information
@@ -194,13 +204,15 @@ def shutdown_game():
     global _Players
     global _Rooms
 
-    logger.debug('Shutting down the game.')
+    #logger.debug('Shutting down the game.')
+    logger.write_line('Shutting down the game.') ###TEST
 
     _StillAlive = False # Causes all of the threads to close
 
     for player in _Players.values(): # Save all of the player states
         loader.save_player(player)
-    logger.debug('Saved player states.')
+    #logger.debug('Saved player states.')
+    logger.write_line('Saved player states.') ###TEST
 
     save_num = 1
     while 1:    # Create a directory to save the game state in
@@ -212,7 +224,8 @@ def shutdown_game():
                 path = directory + '/%d_%d_%d.xml' % coords
                 loader.save_room(_Rooms[coords], path)
 
-            logger.debug("Saved game state to '%s'" % directory)
+            #logger.debug("Saved game state to '%s'" % directory)
+            logger.write_line("Saved game state to '%s'"%directory) ###TEST
             break
         else:
             save_num += 1
@@ -230,7 +243,8 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     _Players[player.name] = player # Add to list of players in the game
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
-    logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+    #logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+    logger.write_line("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2])) ###TEST
 
 def remove_player(name):
     global _Rooms
@@ -242,7 +256,8 @@ def remove_player(name):
     _Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
     del _Players[name] # Remove the player from the list of players in the game
 
-    logger.debug("Removed player '%s'" % player.name)
+    #logger.debug("Removed player '%s'" % player.name)
+    logger.write_line("Removed player '%s'"%player.name) ###TEST
 
 def put_commands(commands, script=False, npc=False):
     # Takes a list of commands and pushes them to the command queue (player, room, verb, object, tags)
@@ -290,7 +305,8 @@ def put_commands(commands, script=False, npc=False):
         command = [player, room, verb, nouns, object, tags]
         _CommandQueue.put(command)
 
-        logger.debug("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command))
+        #logger.debug("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command))
+        logger.write_line("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command)) ###TEST
 
 def get_messages():
     # Returns all messages currently in the message queue
@@ -301,7 +317,8 @@ def get_messages():
         message = _MessageQueue.get()
         messages.append(message)
 
-        logger.debug("Sending message to server: (%s, %s)" % message)
+        #logger.debug("Sending message to server: (%s, %s)" % message)
+        logger.write_line("Sending message to server: (%s, %s)"%message) ###TEST
 
     return messages
 
@@ -323,14 +340,16 @@ def command_thread():
 
             messages = do_command(player, room, verb, nouns, object, tags)
 
-            logger.debug("Running command (%s, %s)" % (verb, ' '.join(nouns)))
+            #logger.debug("Running command (%s, %s)" % (verb, ' '.join(nouns)))
+            logger.write_line("Running command (%s, %s)" % (verb, ' '.join(nouns))) ###TEST
 
             for message in messages:
                 _MessageQueue.put(message)
 
         time.sleep(.05) # Sleep for 50ms
 
-    logger.debug("Closing command thread.")
+    #logger.debug("Closing command thread.")
+    logger.write_line("Closing command thread.") ###TEST
 
 def npc_thread():
     # Runs the commands for all NPC's in the game
@@ -343,7 +362,8 @@ def npc_thread():
         for npc in _NPCs.values():
             npc_action(npc)
 
-    logger.debug("Closing npc action thread.")
+    #logger.debug("Closing npc action thread.")
+    logger.write_line("Closing npc action thread.") ###TEST
 
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game
@@ -358,15 +378,18 @@ def spawn_npc_thread(n):
             _NPCs[npc.name] = npc
             _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
 
-            logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
+            #logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
+            logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc)) ###TEST
         elif ((len(_Rooms) / n) + 1) < len(_NPCs):
             name = random.choice(_NPCs.keys())
             npc = _NPCs[name]
             del _NPCs[name] # Remove from the NPC list
             del _Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
 
-            logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
+            #logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
+            logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc)) ###TEST
 
         time.sleep(.05) # Sleep for 50ms
 
-    logger.debug("Closing spawn npc thread.")
+    #logger.debug("Closing spawn npc thread.")
+    logger.write_line("Closing spawn npc thread.") ###TEST

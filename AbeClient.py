@@ -15,7 +15,7 @@ import Q2logging   ###TEST
 
 #logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
-logger = Q2logging.out_file_instance('RenClient') ###TEST
+logger = Q2logging.out_file_instance('logs/RenClient') ###TEST
 
 _Local_Host = socket.gethostname() # replace with actual host address
 _Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
