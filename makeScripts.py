@@ -12,7 +12,7 @@ def makeScripts():
     
     # GET VERB TO OVERIDE
     print ""
-    print textwrap.fill('Enter the action word (verb) you would like to override. This is the first word a player types in thier command.  '
+    print textwrap.fill('Enter the action word (verb) you would like to override. This is the first word a player types in their command.  '
                         'Currently scripts are limited to the %s commands.', width=100) % str(verb_list).strip('[]').replace("'", '')
     
     valid_verb = False
