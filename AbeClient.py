@@ -10,6 +10,7 @@ import Queue
 import RAProtocol
 import logging
 import ssl
+import winsound
 
 logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
@@ -144,7 +145,10 @@ def connect_to_server(line):
     ssl_sock.close()  ###TEST
 
     return message
-    
+def play_sound(sound):
+        path = 'sounds/%s.wav' % sound
+        winsound.PlaySound(path, winsound.SND_FILENAME)
+        return True
     
 class KeepAliveThread(threading.Thread):
     """
@@ -319,6 +323,9 @@ class OutThread(threading.Thread):
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
+                elif 'sunglasses' in message.lower(): #If we take the sunglasses
+                    sound = 'bad2bone'
+                    thread.start_new_thread(play_sound, (sound,))
 
             done = _Quit
             time.sleep(0.05)
