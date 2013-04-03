@@ -144,7 +144,8 @@ def connect_to_server(line):
     ssl_sock.close()  ###TEST
 
     return message
-
+    
+    
 class KeepAliveThread(threading.Thread):
     """
 
