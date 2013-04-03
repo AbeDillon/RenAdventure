@@ -1,0 +1,118 @@
+04/03/2013 15:08:50.415   Output: Please enter your username:
+04/03/2013 15:08:50.415   Input: matt
+04/03/2013 15:08:51.7   Output: Please enter your password:
+04/03/2013 15:08:51.7   Input: test
+04/03/2013 15:08:51.725   Hidden: Making connection with remote server
+04/03/2013 15:08:51.725   Output: This is a new player, which requires you to rank your affiliation with people.
+04/03/2013 15:08:51.725   Output: Please rank the following people 1 through 5 in order of preference:
+04/03/2013 15:08:51.725   Kanye
+04/03/2013 15:08:51.725   Burbiglia
+04/03/2013 15:08:51.725   OReilly
+04/03/2013 15:08:51.725   Gottfried
+04/03/2013 15:08:51.725   Obama
+04/03/2013 15:08:52.396   Output: On a scale of 1 to 5, where would you rank Kanye?
+
+04/03/2013 15:08:52.396   Input: 1
+04/03/2013 15:08:52.801   Output: On a scale of 1 to 5, where would you rank Burbiglia?
+
+04/03/2013 15:08:52.801   Input: 2
+04/03/2013 15:08:53.207   Output: On a scale of 1 to 5, where would you rank OReilly?
+
+04/03/2013 15:08:53.207   Input: 3
+04/03/2013 15:08:53.753   Output: On a scale of 1 to 5, where would you rank Gottfried?
+
+04/03/2013 15:08:53.753   Input: 4
+04/03/2013 15:08:54.221   Output: On a scale of 1 to 5, where would you rank Obama?
+
+04/03/2013 15:08:54.221   Input: 5
+04/03/2013 15:08:54.237   Hidden: Making connection with remote server
+04/03/2013 15:08:54.252   Output: Logged in.
+04/03/2013 15:08:54.361   Hidden: Got connection from ('172.16.248.29', 60631)
+04/03/2013 15:08:54.361   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/03/2013 15:08:54.361   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/03/2013 15:08:56.655   Input from user: take toilet
+04/03/2013 15:08:56.670   Hidden: Sending message "take toilet" to server
+04/03/2013 15:08:56.795   Hidden: Got connection from ('172.16.248.29', 60633)
+04/03/2013 15:08:56.795   Hidden: Got the following message from the server: "You have taken the old toilet."
+04/03/2013 15:08:56.795   Output: You have taken the old toilet.
+04/03/2013 15:08:58.807   Input from user: go e
+04/03/2013 15:08:58.823   Hidden: Sending message "go e" to server
+04/03/2013 15:08:58.917   Hidden: Got connection from ('172.16.248.29', 60635)
+04/03/2013 15:08:58.917   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/03/2013 15:08:58.917   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/03/2013 15:08:59.260   Hidden: Sending message "_ping_" to server
+04/03/2013 15:09:02.380   Input from user: take sunglasses
+04/03/2013 15:09:02.380   Hidden: Sending message "take sunglasses" to server
+04/03/2013 15:09:02.459   Hidden: Got connection from ('172.16.248.29', 60638)
+04/03/2013 15:09:02.459   Hidden: Got the following message from the server: "You have taken the kanye west's sunglasses."
+04/03/2013 15:09:02.459   Output: You have taken the kanye west's sunglasses.
+04/03/2013 15:09:04.268   Hidden: Sending message "_ping_" to server
+04/03/2013 15:09:09.268   Hidden: Sending message "_ping_" to server
+04/03/2013 15:09:14.271   Hidden: Sending message "_ping_" to server
+04/03/2013 15:09:18.93   Input from user: quit
+04/03/2013 15:09:18.93   Hidden: Sending message "quit" to server
+04/03/2013 15:09:18.218   Output: Game quit. Please close the program
+04/03/2013 15:14:46.810   Output: Please enter your username:
+04/03/2013 15:14:46.825   Input: matt
+04/03/2013 15:14:47.403   Output: Please enter your password:
+04/03/2013 15:14:47.403   Input: test
+04/03/2013 15:14:48.105   Hidden: Making connection with remote server
+04/03/2013 15:14:48.105   Output: This is a new player, which requires you to rank your affiliation with people.
+04/03/2013 15:14:48.105   Output: Please rank the following people 1 through 5 in order of preference:
+04/03/2013 15:14:48.120   Kanye
+04/03/2013 15:14:48.120   Burbiglia
+04/03/2013 15:14:48.120   OReilly
+04/03/2013 15:14:48.120   Gottfried
+04/03/2013 15:14:48.120   Obama
+04/03/2013 15:14:48.635   Output: On a scale of 1 to 5, where would you rank Kanye?
+
+04/03/2013 15:14:48.635   Input: 1
+04/03/2013 15:14:48.947   Output: On a scale of 1 to 5, where would you rank Burbiglia?
+
+04/03/2013 15:14:48.947   Input: 2
+04/03/2013 15:14:49.243   Output: On a scale of 1 to 5, where would you rank OReilly?
+
+04/03/2013 15:14:49.243   Input: 3
+04/03/2013 15:14:49.571   Output: On a scale of 1 to 5, where would you rank Gottfried?
+
+04/03/2013 15:14:49.571   Input: 4
+04/03/2013 15:14:49.899   Output: On a scale of 1 to 5, where would you rank Obama?
+
+04/03/2013 15:14:49.899   Input: 5
+04/03/2013 15:14:49.914   Hidden: Making connection with remote server
+04/03/2013 15:14:49.914   Output: Logged in.
+04/03/2013 15:14:49.930   Hidden: Got connection from ('172.16.248.29', 60661)
+04/03/2013 15:14:49.930   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/03/2013 15:14:49.930   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/03/2013 15:14:50.101   Hidden: Got connection from ('172.16.248.29', 60662)
+04/03/2013 15:14:50.101   Hidden: Got the following message from the server: "kanye has entered the room."
+04/03/2013 15:14:50.101   Output: kanye has entered the room.
+04/03/2013 15:14:52.5   Input from user: take key
+04/03/2013 15:14:52.20   Hidden: Sending message "take key" to server
+04/03/2013 15:14:52.98   Hidden: Got connection from ('172.16.248.29', 60664)
+04/03/2013 15:14:52.98   Hidden: Got the following message from the server: "You have taken the key."
+04/03/2013 15:14:52.98   Output: You have taken the key.
+04/03/2013 15:14:52.613   Input from user: go n
+04/03/2013 15:14:52.629   Hidden: Sending message "go n" to server
+04/03/2013 15:14:52.722   Hidden: Got connection from ('172.16.248.29', 60666)
+04/03/2013 15:14:52.722   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/03/2013 15:14:52.722   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/03/2013 15:14:53.268   Input from user: go e
+04/03/2013 15:14:53.284   Hidden: Sending message "go e" to server
+04/03/2013 15:14:53.409   Hidden: Got connection from ('172.16.248.29', 60668)
+04/03/2013 15:14:53.409   Hidden: Got the following message from the server: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/03/2013 15:14:53.409   Output: An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west.
+04/03/2013 15:14:54.937   Hidden: Sending message "_ping_" to server
+04/03/2013 15:14:54.953   Input from user: take toilet
+04/03/2013 15:14:55.   Hidden: Sending message "take toilet" to server
+04/03/2013 15:14:55.93   Hidden: Got connection from ('172.16.248.29', 60671)
+04/03/2013 15:14:55.93   Hidden: Got the following message from the server: "You have taken the old toilet."
+04/03/2013 15:14:55.93   Output: You have taken the old toilet.
+04/03/2013 15:14:56.747   Input from user: drop key
+04/03/2013 15:14:56.763   Hidden: Sending message "drop key" to server
+04/03/2013 15:14:56.841   Hidden: Got connection from ('172.16.248.29', 60673)
+04/03/2013 15:14:56.841   Hidden: Got the following message from the server: "You have dropped the key."
+04/03/2013 15:14:56.841   Output: You have dropped the key.
+04/03/2013 15:14:57.652   Input from user: quit
+04/03/2013 15:14:57.667   Hidden: Sending message "quit" to server
+04/03/2013 15:14:57.792   Output: Game quit. Please close the program

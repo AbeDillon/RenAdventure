@@ -132,7 +132,7 @@ class NPC:
         self.affiliation = affiliation
 
 #logger = logging.getLogger(__name__.title())
-logger = Q2logging.out_file_instance('logs/RenEngine') ###TEST
+logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
