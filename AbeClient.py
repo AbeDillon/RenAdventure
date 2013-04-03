@@ -323,7 +323,7 @@ class OutThread(threading.Thread):
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
-                elif 'sunglasses' in message.lower(): #If we take the sunglasses
+                elif 'sunglasses' in message.lower() and 'take' in message.lower(): #If we take the sunglasses
                     sound = 'bad2bone'
                     thread.start_new_thread(play_sound, (sound,))
 
