@@ -241,6 +241,7 @@ class Login(threading.Thread):
                     
                     person = loader.load_player(player_path)
                     player_affil = person.affiliation #Load in the players affiliation
+                    location = person.coords
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
                     _Logger.debug('User <%s> failed to authenticate.' % player_name)
@@ -266,6 +267,7 @@ class Login(threading.Thread):
                     fin = open(path, 'w')
                     fin.write(player_pass)
                     fin.close()
+                    location = (0,0,1)
                     logged_in = True
                     _Logged_in.append(player_name)
                 
@@ -274,16 +276,16 @@ class Login(threading.Thread):
                 _User_Pings[player_name] = time.time()
                 if player_affil != {}: #Blank dict:
                 # *load player object (to be added, create default player for now)
-                    engine.make_player(player_name, (0,0,1), player_affil)
+                    engine.make_player(player_name, location, player_affil)
 
                 else: #Player did not provide an affiliation?
-                    engine.make_player(player_name, (0,0,1)) #Blank affiliation, use default?
+                    engine.make_player(player_name, location) #Blank affiliation, use default?
 
 
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
-                oqueue.put(engine.get_room_text(player_name, (0, 0, 1)))
+                oqueue.put(engine.get_room_text(player_name, location))
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
