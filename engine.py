@@ -49,7 +49,7 @@ class Portal:
     - Key
     - Hidden (bool)
     '''
-    def __init__(self, name, direction, desc, inspect_desc, coords, scripts = {}, locked = False, hidden = False, key = None):
+    def __init__(self, name, direction, desc, inspect_desc, coords, scripts = {}, locked = False, hidden = False, key = ''):
         self.name = name.lower()
         self.direction = direction
         self.desc = desc
@@ -75,7 +75,7 @@ class Item:
     - Key
     - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = None, items = []):
+    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = []):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc

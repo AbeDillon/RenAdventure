@@ -1,4 +1,3 @@
-<room>
-<desc>An empty room.</desc>
+<room desc="An empty room.">
 <portal>door6</portal>
 </room>
