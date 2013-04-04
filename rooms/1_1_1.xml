@@ -1,18 +1,4 @@
-<room>
-<desc>An emtpy lavatory</desc>
-<portal x="0" y="1" z="1">
-<name>door</name>
-<direction>west</direction>
-<desc>a wooden door</desc>
-<inspect_desc>A splintered old wooden door</inspect_desc>
-<locked>0</locked>
-<hidden>0</hidden>
-<key>None</key>
-</portal>
-
-<item>
-<name>Old Toilet</name>
-<desc>a cruddy old toilet</desc>
-<inspect_desc>This cruddy old toilet looks like it was never cleaned, or flushed...</inspect_desc>
-</item>
+<room desc="An empty lavatory">
+<portal>door1</portal>
+<item>old toilet</item>
 </room>
