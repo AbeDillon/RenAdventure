@@ -290,10 +290,16 @@ class InThread(threading.Thread):
         #logging.debug('Hidden: Got the following message from the server: "%s"' % message)
         logger.write_line('Hidden: Got the following message from the server: "%s"'%message) ###TEST
         conn.close()
-
-        print >>sys.stdout, "\n" + message
-        #logging.debug('Output: %s' % message)
-        logger.write_line('Output: %s' % message) ###TEST
+        if '_play_'in message: #Format from engine for a play sound message is: "_play_ soundname" where soundname is the name of a file you wish to play from the sounds directory
+            message = message.split() #Split into _play_ and the sound name
+            sound_name = message[1]
+            play_sound(sound_name)
+            logger.write_line('Output: Playing sound file called %s' % sound_name) 
+            
+        else:
+            print >>sys.stdout, "\n" + message
+            #logging.debug('Output: %s' % message)
+            logger.write_line('Output: %s' % message) ###TEST
 
         return True
 
@@ -347,13 +353,6 @@ class OutThread(threading.Thread):
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
-                elif 'sunglasses' in message.lower() and 'take' in message.lower(): #If we take the sunglasses
-                    sound = 'bad2bone'
-                    thread.start_new_thread(play_sound, (sound,))
-                    
-                elif 'abe' in message.lower(): #Abe is involved!
-                    sound = 'smoothasballs'
-                    thread.start_new_thread(play_sound, (sound,))
 
             done = _Quit
             time.sleep(0.05)
