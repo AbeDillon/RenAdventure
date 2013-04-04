@@ -1,0 +1,205 @@
+04/04/2013 09:57:06.630   Game State initialized
+04/04/2013 09:57:06.645   Login Socket created
+04/04/2013 09:57:06.645   Log-in thread spawned
+04/04/2013 09:57:06.645   Server action thread spawned
+04/04/2013 09:57:06.645   Login Socket bound
+04/04/2013 09:57:06.645   Login socket listening
+04/04/2013 09:57:06.645   Player timeout thread spawned
+04/04/2013 09:57:06.645   Entering main loop...
+04/04/2013 09:57:13.120   Connected with 172.16.248.23:55845
+04/04/2013 09:57:13.494   Required user affiliation from <matt>
+04/04/2013 09:57:15.959   Connected with 172.16.248.23:55846
+04/04/2013 09:57:15.974   Creating user: <matt>
+04/04/2013 09:57:15.974   <matt> added to the game.
+04/04/2013 09:57:15.974   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:57:17.176   Got input from: <matt>
+04/04/2013 09:57:17.176   Putting in the command queue: <matt>; "go n"
+04/04/2013 09:57:17.191   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 09:57:17.254   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Kanye is in the room."
+04/04/2013 09:57:17.316   Sending message to <matt>: "_play_ death3"
+04/04/2013 09:57:19.155   Got input from: <matt>
+04/04/2013 09:57:19.155   Putting in the command queue: <matt>; "go e"
+04/04/2013 09:57:19.186   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 09:57:19.248   Sending message to <matt>: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 09:57:19.311   Sending message to <matt>: "_play_ death3"
+04/04/2013 09:57:20.977   Got input from: <matt>
+04/04/2013 09:57:20.977   Got a ping from <matt>
+04/04/2013 09:57:21.742   Sending message to <matt>: "kanye has entered the room."
+04/04/2013 09:57:25.985   Got input from: <matt>
+04/04/2013 09:57:25.985   Got a ping from <matt>
+04/04/2013 09:57:26.734   Sending message to <matt>: "kanye says something"
+04/04/2013 09:57:26.796   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 09:57:30.993   Got input from: <matt>
+04/04/2013 09:57:30.993   Got a ping from <matt>
+04/04/2013 09:57:31.789   Sending message to <matt>: "kanye says something"
+04/04/2013 09:57:31.851   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 09:57:33.349   Got input from: <matt>
+04/04/2013 09:57:33.349   Putting in the command queue: <matt>; "go w"
+04/04/2013 09:57:33.411   Processing Command from Queue: <player>: matt <command>: go w
+04/04/2013 09:57:33.536   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 09:57:33.598   Sending message to <matt>: "_play_ death3"
+04/04/2013 09:57:35.439   Got input from: <matt>
+04/04/2013 09:57:35.454   Removing <matt> from _Logged_in
+04/04/2013 09:57:35.517   Input thread for player <matt> ending
+04/04/2013 09:59:21.439   Game State initialized
+04/04/2013 09:59:21.439   Login Socket created
+04/04/2013 09:59:21.439   Log-in thread spawned
+04/04/2013 09:59:21.454   Login Socket bound
+04/04/2013 09:59:21.454   Login socket listening
+04/04/2013 09:59:21.454   Server action thread spawned
+04/04/2013 09:59:21.454   Player timeout thread spawned
+04/04/2013 09:59:21.454   Entering main loop...
+04/04/2013 09:59:27.583   Connected with 172.16.248.23:55869
+04/04/2013 09:59:27.973   User <matt> logged in.
+04/04/2013 09:59:27.973   <matt> added to the game.
+04/04/2013 09:59:27.973   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 09:59:30.873   Got input from: <matt>
+04/04/2013 09:59:30.873   Putting in the command queue: <matt>; "go s"
+04/04/2013 09:59:30.936   Processing Command from Queue: <player>: matt <command>: go s
+04/04/2013 09:59:30.998   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 09:59:31.60   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 09:59:31.513   Sending message to <matt>: "bill oreilly says something"
+04/04/2013 09:59:31.563   Sending message to <matt>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 09:59:32.712   Got input from: <matt>
+04/04/2013 09:59:32.722   Putting in the command queue: <matt>; "go e"
+04/04/2013 09:59:32.762   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 09:59:32.812   Sending message to <matt>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 09:59:32.862   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 09:59:32.982   Got input from: <matt>
+04/04/2013 09:59:32.982   Got a ping from <matt>
+04/04/2013 09:59:36.231   Got input from: <matt>
+04/04/2013 09:59:36.241   Putting in the command queue: <matt>; "take sunglasses"
+04/04/2013 09:59:36.261   Processing Command from Queue: <player>: matt <command>: take sunglasses
+04/04/2013 09:59:36.311   Sending message to <matt>: "You have taken the kanye west's sunglasses."
+04/04/2013 09:59:37.990   Got input from: <matt>
+04/04/2013 09:59:37.990   Got a ping from <matt>
+04/04/2013 09:59:39.380   Got input from: <matt>
+04/04/2013 09:59:39.380   Putting in the command queue: <matt>; "go e"
+04/04/2013 09:59:39.410   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 09:59:39.460   Sending message to <matt>: "You can't go that way."
+04/04/2013 09:59:40.239   Got input from: <matt>
+04/04/2013 09:59:40.249   Putting in the command queue: <matt>; "go w"
+04/04/2013 09:59:40.259   Processing Command from Queue: <player>: matt <command>: go w
+04/04/2013 09:59:40.309   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:59:40.359   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 09:59:41.19   Got input from: <matt>
+04/04/2013 09:59:41.19   Putting in the command queue: <matt>; "go n"
+04/04/2013 09:59:41.59   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 09:59:41.109   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 09:59:41.159   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 09:59:41.509   Sending message to <matt>: "bill oreilly says something"
+04/04/2013 09:59:41.559   Sending message to <matt>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 09:59:42.159   Got input from: <matt>
+04/04/2013 09:59:42.169   Putting in the command queue: <matt>; "go s"
+04/04/2013 09:59:42.202   Processing Command from Queue: <player>: matt <command>: go s
+04/04/2013 09:59:42.272   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:59:42.322   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 09:59:42.992   Got input from: <matt>
+04/04/2013 09:59:42.992   Got a ping from <matt>
+04/04/2013 09:59:47.360   Got input from: <matt>
+04/04/2013 09:59:47.360   Removing <matt> from _Logged_in
+04/04/2013 09:59:47.410   Input thread for player <matt> ending
+04/04/2013 09:59:58.25   Removing <matt> from game: Timed out
+04/04/2013 09:59:58.25   Sending message to <matt>: "Error, it appears this person has timed out."
+04/04/2013 09:59:58.35   Failed to either connect or send a message to <matt> after timeout.
+04/04/2013 09:59:58.85   Output thread for player <matt> ending.
+04/04/2013 10:05:43.140   Game State initialized
+04/04/2013 10:05:43.140   Login Socket created
+04/04/2013 10:05:43.140   Log-in thread spawned
+04/04/2013 10:05:43.140   Server action thread spawned
+04/04/2013 10:05:43.140   Login Socket bound
+04/04/2013 10:05:43.140   Player timeout thread spawned
+04/04/2013 10:05:43.140   Login socket listening
+04/04/2013 10:05:43.140   Entering main loop...
+04/04/2013 10:05:49.675   Connected with 172.16.248.23:55953
+04/04/2013 10:05:50.50   User <matt> logged in.
+04/04/2013 10:05:50.50   <matt> added to the game.
+04/04/2013 10:05:50.50   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:05:51.173   Got input from: <matt>
+04/04/2013 10:05:51.173   Putting in the command queue: <matt>; "go n"
+04/04/2013 10:05:51.188   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 10:05:51.313   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:05:51.376   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:05:53.248   Sending message to <matt>: "bill oreilly has entered the room."
+04/04/2013 10:05:54.908   Got input from: <matt>
+04/04/2013 10:05:54.908   Putting in the command queue: <matt>; "go w"
+04/04/2013 10:05:54.948   Processing Command from Queue: <player>: matt <command>: go w
+04/04/2013 10:05:55.48   Sending message to <matt>: "You can't go that way."
+04/04/2013 10:05:55.58   Got input from: <matt>
+04/04/2013 10:05:55.58   Got a ping from <matt>
+04/04/2013 10:05:55.978   Got input from: <matt>
+04/04/2013 10:05:55.978   Putting in the command queue: <matt>; "go s"
+04/04/2013 10:05:55.998   Processing Command from Queue: <player>: matt <command>: go s
+04/04/2013 10:05:56.98   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:05:56.148   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:05:57.608   Got input from: <matt>
+04/04/2013 10:05:57.608   Putting in the command queue: <matt>; "go e"
+04/04/2013 10:05:57.648   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 10:05:57.748   Sending message to <matt>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:05:57.798   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:05:58.697   Got input from: <matt>
+04/04/2013 10:05:58.697   Putting in the command queue: <matt>; "go n"
+04/04/2013 10:05:58.747   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 10:05:58.847   Sending message to <matt>: "You can't go that way."
+04/04/2013 10:06:00.67   Got input from: <matt>
+04/04/2013 10:06:00.67   Got a ping from <matt>
+04/04/2013 10:06:59.561   Game State initialized
+04/04/2013 10:06:59.561   Login Socket created
+04/04/2013 10:06:59.561   Log-in thread spawned
+04/04/2013 10:06:59.561   Server action thread spawned
+04/04/2013 10:06:59.561   Login Socket bound
+04/04/2013 10:06:59.561   Login socket listening
+04/04/2013 10:06:59.561   Player timeout thread spawned
+04/04/2013 10:06:59.561   Entering main loop...
+04/04/2013 10:07:05.909   Connected with 172.16.248.23:55973
+04/04/2013 10:07:06.283   User <matt> logged in.
+04/04/2013 10:07:06.283   <matt> added to the game.
+04/04/2013 10:07:06.283   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 10:07:09.528   Got input from: <matt>
+04/04/2013 10:07:09.543   Putting in the command queue: <matt>; "go e"
+04/04/2013 10:07:09.606   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 10:07:09.606   Sending message to <matt>: "bill oreilly says something"
+04/04/2013 10:07:09.731   Sending message to <matt>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:07:09.793   Sending message to <matt>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:07:09.855   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:10.978   Got input from: <matt>
+04/04/2013 10:07:10.988   Putting in the command queue: <matt>; "go w"
+04/04/2013 10:07:11.8   Processing Command from Queue: <player>: matt <command>: go w
+04/04/2013 10:07:11.108   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 10:07:11.158   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:11.288   Got input from: <matt>
+04/04/2013 10:07:11.288   Got a ping from <matt>
+04/04/2013 10:07:11.777   Got input from: <matt>
+04/04/2013 10:07:11.777   Putting in the command queue: <matt>; "go n"
+04/04/2013 10:07:11.807   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 10:07:11.907   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:07:11.957   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:12.677   Got input from: <matt>
+04/04/2013 10:07:12.677   Putting in the command queue: <matt>; "go e"
+04/04/2013 10:07:12.707   Processing Command from Queue: <player>: matt <command>: go e
+04/04/2013 10:07:12.807   Sending message to <matt>: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 10:07:12.857   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:16.297   Got input from: <matt>
+04/04/2013 10:07:16.297   Got a ping from <matt>
+04/04/2013 10:07:21.303   Got input from: <matt>
+04/04/2013 10:07:21.303   Got a ping from <matt>
+04/04/2013 10:07:26.309   Got input from: <matt>
+04/04/2013 10:07:26.309   Got a ping from <matt>
+04/04/2013 10:07:28.368   Got input from: <matt>
+04/04/2013 10:07:28.368   Putting in the command queue: <matt>; "go w"
+04/04/2013 10:07:28.431   Processing Command from Queue: <player>: matt <command>: go w
+04/04/2013 10:07:28.556   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 10:07:28.618   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:29.696   Sending message to <matt>: "bill oreilly says something"
+04/04/2013 10:07:29.746   Sending message to <matt>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:07:29.896   Got input from: <matt>
+04/04/2013 10:07:29.906   Putting in the command queue: <matt>; "go s"
+04/04/2013 10:07:29.946   Processing Command from Queue: <player>: matt <command>: go s
+04/04/2013 10:07:30.46   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:07:30.96   Sending message to <matt>: "_play_ bad2bone"
+04/04/2013 10:07:31.316   Got input from: <matt>
+04/04/2013 10:07:31.316   Got a ping from <matt>
+04/04/2013 10:07:34.695   Sending message to <matt>: "bill oreilly has entered the room."
+04/04/2013 10:07:35.405   Got input from: <matt>
+04/04/2013 10:07:35.405   Removing <matt> from _Logged_in
+04/04/2013 10:07:35.455   Input thread for player <matt> ending

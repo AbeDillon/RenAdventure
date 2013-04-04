@@ -26,6 +26,8 @@ _CMD_Queue = Queue.Queue()
 _Quit = False
 _Quit_Lock = threading.RLock()
 
+_Sound_Playing = False
+
 def main():
     """
 
@@ -165,9 +167,12 @@ def connect_to_server(line):
 
     return message
 def play_sound(sound):
-        path = 'sounds/%s.wav' % sound
-        winsound.PlaySound(path, winsound.SND_FILENAME)
-        return True
+    global _Sound_Playing
+    path = 'sounds/%s.wav' % sound
+        
+    winsound.PlaySound(path, winsound.SND_FILENAME)
+    _Sound_Playing = False
+    return True
     
 class KeepAliveThread(threading.Thread):
     """
@@ -286,17 +291,20 @@ class InThread(threading.Thread):
         """
 
         """
+        global _Sound_Playing
         message = RAProtocol.receiveMessage(conn)
         #logging.debug('Hidden: Got the following message from the server: "%s"' % message)
         logger.write_line('Hidden: Got the following message from the server: "%s"'%message) ###TEST
         conn.close()
-        if '_play_'in message: #Format from engine for a play sound message is: "_play_ soundname" where soundname is the name of a file you wish to play from the sounds directory
+        if '_play_'in message and not _Sound_Playing: 
+        #Format from engine for a play sound message is: "_play_ soundname" where soundname is the name of a file you wish to play from the sounds directory
             message = message.split() #Split into _play_ and the sound name
             sound_name = message[1]
-            play_sound(sound_name)
+            _Sound_Playing = True ###To block other plays for now.
+            thread.start_new_thread(play_sound, (sound_name,))
             logger.write_line('Output: Playing sound file called %s' % sound_name) 
             
-        else:
+        elif not '_play_' in message: #This isn't a playsound message, we can print it.
             print >>sys.stdout, "\n" + message
             #logging.debug('Output: %s' % message)
             logger.write_line('Output: %s' % message) ###TEST

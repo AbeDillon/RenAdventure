@@ -1,0 +1,281 @@
+04/04/2013 09:57:12.59   Output: Please enter your username:
+04/04/2013 09:57:12.59   Input: matt
+04/04/2013 09:57:12.761   Output: Please enter your password:
+04/04/2013 09:57:12.761   Input: test
+04/04/2013 09:57:13.494   Hidden: Making connection with remote server
+04/04/2013 09:57:13.494   Output: This is a new player, which requires you to rank your affiliation with people.
+04/04/2013 09:57:13.494   Output: Please rank the following people 1 through 5 in order of preference:
+04/04/2013 09:57:13.494   Kanye
+04/04/2013 09:57:13.494   Burbiglia
+04/04/2013 09:57:13.510   OReilly
+04/04/2013 09:57:13.510   Gottfried
+04/04/2013 09:57:13.510   Obama
+04/04/2013 09:57:14.446   Output: On a scale of 1 to 5, where would you rank Kanye?
+
+04/04/2013 09:57:14.446   Input: 1
+04/04/2013 09:57:14.758   Output: On a scale of 1 to 5, where would you rank Burbiglia?
+
+04/04/2013 09:57:14.758   Input: 2
+04/04/2013 09:57:15.70   Output: On a scale of 1 to 5, where would you rank OReilly?
+
+04/04/2013 09:57:15.70   Input: 3
+04/04/2013 09:57:15.491   Output: On a scale of 1 to 5, where would you rank Gottfried?
+
+04/04/2013 09:57:15.491   Input: 4
+04/04/2013 09:57:15.959   Output: On a scale of 1 to 5, where would you rank Obama?
+
+04/04/2013 09:57:15.959   Input: 5
+04/04/2013 09:57:15.959   Hidden: Making connection with remote server
+04/04/2013 09:57:15.974   Output: Logged in.
+04/04/2013 09:57:15.974   Hidden: Got connection from ('172.16.248.23', 55848)
+04/04/2013 09:57:15.990   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:57:15.990   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 09:57:17.176   Input from user: go n
+04/04/2013 09:57:17.176   Hidden: Sending message "go n" to server
+04/04/2013 09:57:17.254   Hidden: Got connection from ('172.16.248.23', 55850)
+04/04/2013 09:57:17.254   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Kanye is in the room."
+04/04/2013 09:57:17.254   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Kanye is in the room.
+04/04/2013 09:57:17.316   Hidden: Got connection from ('172.16.248.23', 55851)
+04/04/2013 09:57:17.316   Hidden: Got the following message from the server: "_play_ death3"
+04/04/2013 09:57:18.661   Output: Playing sound file called death3
+04/04/2013 09:57:19.139   Input from user: go e
+04/04/2013 09:57:19.155   Hidden: Sending message "go e" to server
+04/04/2013 09:57:19.248   Hidden: Got connection from ('172.16.248.23', 55853)
+04/04/2013 09:57:19.248   Hidden: Got the following message from the server: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 09:57:19.248   Output: An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west.
+04/04/2013 09:57:19.311   Hidden: Got connection from ('172.16.248.23', 55854)
+04/04/2013 09:57:19.311   Hidden: Got the following message from the server: "_play_ death3"
+04/04/2013 09:57:20.546   Output: Playing sound file called death3
+04/04/2013 09:57:20.977   Hidden: Sending message "_ping_" to server
+04/04/2013 09:57:21.742   Hidden: Got connection from ('172.16.248.23', 55856)
+04/04/2013 09:57:21.742   Hidden: Got the following message from the server: "kanye has entered the room."
+04/04/2013 09:57:21.742   Output: kanye has entered the room.
+04/04/2013 09:57:25.985   Hidden: Sending message "_ping_" to server
+04/04/2013 09:57:26.734   Hidden: Got connection from ('172.16.248.23', 55859)
+04/04/2013 09:57:26.734   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 09:57:26.734   Output: kanye says something
+04/04/2013 09:57:26.796   Hidden: Got connection from ('172.16.248.23', 55860)
+04/04/2013 09:57:26.796   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 09:57:26.796   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 09:57:30.993   Hidden: Sending message "_ping_" to server
+04/04/2013 09:57:31.789   Hidden: Got connection from ('172.16.248.23', 55862)
+04/04/2013 09:57:31.789   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 09:57:31.789   Output: kanye says something
+04/04/2013 09:57:31.851   Hidden: Got connection from ('172.16.248.23', 55863)
+04/04/2013 09:57:31.851   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 09:57:31.851   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 09:57:33.349   Input from user: go w
+04/04/2013 09:57:33.349   Hidden: Sending message "go w" to server
+04/04/2013 09:57:33.536   Hidden: Got connection from ('172.16.248.23', 55865)
+04/04/2013 09:57:33.536   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 09:57:33.536   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/04/2013 09:57:33.598   Hidden: Got connection from ('172.16.248.23', 55866)
+04/04/2013 09:57:33.598   Hidden: Got the following message from the server: "_play_ death3"
+04/04/2013 09:57:34.836   Output: Playing sound file called death3
+04/04/2013 09:57:35.439   Input from user: quit
+04/04/2013 09:57:35.454   Hidden: Sending message "quit" to server
+04/04/2013 09:57:35.532   Output: Game quit. Please close the program
+04/04/2013 09:59:26.663   Output: Please enter your username:
+04/04/2013 09:59:26.663   Input: matt
+04/04/2013 09:59:27.240   Output: Please enter your password:
+04/04/2013 09:59:27.240   Input: test
+04/04/2013 09:59:27.973   Hidden: Making connection with remote server
+04/04/2013 09:59:27.973   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 09:59:27.973   Output: Logged in.
+04/04/2013 09:59:27.973   Hidden: Got connection from ('172.16.248.23', 55871)
+04/04/2013 09:59:27.973   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 09:59:27.988   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/04/2013 09:59:30.873   Input from user: go s
+04/04/2013 09:59:30.873   Hidden: Sending message "go s" to server
+04/04/2013 09:59:30.998   Hidden: Got connection from ('172.16.248.23', 55873)
+04/04/2013 09:59:30.998   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 09:59:30.998   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room.
+04/04/2013 09:59:31.60   Hidden: Got connection from ('172.16.248.23', 55874)
+04/04/2013 09:59:31.60   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 09:59:31.60   Output: Playing sound file called bad2bone
+04/04/2013 09:59:31.513   Hidden: Got connection from ('172.16.248.23', 55875)
+04/04/2013 09:59:31.513   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 09:59:31.513   Output: bill oreilly says something
+04/04/2013 09:59:31.563   Hidden: Got connection from ('172.16.248.23', 55876)
+04/04/2013 09:59:31.563   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 09:59:31.563   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 09:59:32.712   Input from user: go e
+04/04/2013 09:59:32.722   Hidden: Sending message "go e" to server
+04/04/2013 09:59:32.812   Hidden: Got connection from ('172.16.248.23', 55878)
+04/04/2013 09:59:32.812   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 09:59:32.812   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 09:59:32.862   Hidden: Got connection from ('172.16.248.23', 55879)
+04/04/2013 09:59:32.862   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 09:59:32.862   Output: Playing sound file called bad2bone
+04/04/2013 09:59:32.982   Hidden: Sending message "_ping_" to server
+04/04/2013 09:59:36.231   Input from user: take sunglasses
+04/04/2013 09:59:36.241   Hidden: Sending message "take sunglasses" to server
+04/04/2013 09:59:36.311   Hidden: Got connection from ('172.16.248.23', 55882)
+04/04/2013 09:59:36.311   Hidden: Got the following message from the server: "You have taken the kanye west's sunglasses."
+04/04/2013 09:59:36.311   Output: You have taken the kanye west's sunglasses.
+04/04/2013 09:59:37.990   Hidden: Sending message "_ping_" to server
+04/04/2013 09:59:39.380   Input from user: go e
+04/04/2013 09:59:39.380   Hidden: Sending message "go e" to server
+04/04/2013 09:59:39.460   Hidden: Got connection from ('172.16.248.23', 55885)
+04/04/2013 09:59:39.460   Hidden: Got the following message from the server: "You can't go that way."
+04/04/2013 09:59:39.460   Output: You can't go that way.
+04/04/2013 09:59:40.239   Input from user: go w
+04/04/2013 09:59:40.249   Hidden: Sending message "go w" to server
+04/04/2013 09:59:40.309   Hidden: Got connection from ('172.16.248.23', 55887)
+04/04/2013 09:59:40.309   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:59:40.309   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 09:59:40.359   Hidden: Got connection from ('172.16.248.23', 55888)
+04/04/2013 09:59:40.359   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 09:59:40.359   Output: Playing sound file called bad2bone
+04/04/2013 09:59:41.19   Input from user: go n
+04/04/2013 09:59:41.19   Hidden: Sending message "go n" to server
+04/04/2013 09:59:41.109   Hidden: Got connection from ('172.16.248.23', 55890)
+04/04/2013 09:59:41.109   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 09:59:41.119   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room.
+04/04/2013 09:59:41.159   Hidden: Got connection from ('172.16.248.23', 55891)
+04/04/2013 09:59:41.159   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 09:59:41.159   Output: Playing sound file called bad2bone
+04/04/2013 09:59:41.509   Hidden: Got connection from ('172.16.248.23', 55892)
+04/04/2013 09:59:41.509   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 09:59:41.509   Output: bill oreilly says something
+04/04/2013 09:59:41.559   Hidden: Got connection from ('172.16.248.23', 55893)
+04/04/2013 09:59:41.559   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 09:59:41.559   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 09:59:42.159   Input from user: go s
+04/04/2013 09:59:42.169   Hidden: Sending message "go s" to server
+04/04/2013 09:59:42.272   Hidden: Got connection from ('172.16.248.23', 55895)
+04/04/2013 09:59:42.272   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 09:59:42.272   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 09:59:42.322   Hidden: Got connection from ('172.16.248.23', 55896)
+04/04/2013 09:59:42.322   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 09:59:42.322   Output: Playing sound file called bad2bone
+04/04/2013 09:59:42.992   Hidden: Sending message "_ping_" to server
+04/04/2013 09:59:47.360   Input from user: quit
+04/04/2013 09:59:47.360   Hidden: Sending message "quit" to server
+04/04/2013 09:59:47.440   Output: Game quit. Please close the program
+04/04/2013 10:05:48.443   Output: Please enter your username:
+04/04/2013 10:05:48.443   Input: matt
+04/04/2013 10:05:49.348   Output: Please enter your password:
+04/04/2013 10:05:49.348   Input: test
+04/04/2013 10:05:50.50   Hidden: Making connection with remote server
+04/04/2013 10:05:50.50   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 10:05:50.50   Output: Logged in.
+04/04/2013 10:05:50.65   Hidden: Got connection from ('172.16.248.23', 55955)
+04/04/2013 10:05:50.65   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:05:50.65   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:05:51.173   Input from user: go n
+04/04/2013 10:05:51.173   Hidden: Sending message "go n" to server
+04/04/2013 10:05:51.313   Hidden: Got connection from ('172.16.248.23', 55957)
+04/04/2013 10:05:51.313   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:05:51.313   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/04/2013 10:05:51.376   Hidden: Got connection from ('172.16.248.23', 55958)
+04/04/2013 10:05:51.376   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:05:51.376   Output: Playing sound file called bad2bone
+04/04/2013 10:05:53.248   Hidden: Got connection from ('172.16.248.23', 55959)
+04/04/2013 10:05:53.248   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 10:05:53.248   Output: bill oreilly has entered the room.
+04/04/2013 10:05:54.898   Input from user: go w
+04/04/2013 10:05:54.908   Hidden: Sending message "go w" to server
+04/04/2013 10:05:55.48   Hidden: Got connection from ('172.16.248.23', 55961)
+04/04/2013 10:05:55.48   Hidden: Got the following message from the server: "You can't go that way."
+04/04/2013 10:05:55.48   Output: You can't go that way.
+04/04/2013 10:05:55.58   Hidden: Sending message "_ping_" to server
+04/04/2013 10:05:55.978   Input from user: go s
+04/04/2013 10:05:55.978   Hidden: Sending message "go s" to server
+04/04/2013 10:05:56.98   Hidden: Got connection from ('172.16.248.23', 55964)
+04/04/2013 10:05:56.98   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:05:56.98   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:05:56.148   Hidden: Got connection from ('172.16.248.23', 55965)
+04/04/2013 10:05:56.148   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:05:56.148   Output: _play_ bad2bone
+04/04/2013 10:05:57.608   Input from user: go e
+04/04/2013 10:05:57.608   Hidden: Sending message "go e" to server
+04/04/2013 10:05:57.748   Hidden: Got connection from ('172.16.248.23', 55967)
+04/04/2013 10:05:57.748   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:05:57.758   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 10:05:57.798   Hidden: Got connection from ('172.16.248.23', 55968)
+04/04/2013 10:05:57.798   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:05:57.798   Output: _play_ bad2bone
+04/04/2013 10:05:58.697   Input from user: go n
+04/04/2013 10:05:58.697   Hidden: Sending message "go n" to server
+04/04/2013 10:05:58.847   Hidden: Got connection from ('172.16.248.23', 55970)
+04/04/2013 10:05:58.847   Hidden: Got the following message from the server: "You can't go that way."
+04/04/2013 10:05:58.847   Output: You can't go that way.
+04/04/2013 10:06:00.67   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:04.926   Output: Please enter your username:
+04/04/2013 10:07:04.926   Input: matt
+04/04/2013 10:07:05.535   Output: Please enter your password:
+04/04/2013 10:07:05.535   Input: test
+04/04/2013 10:07:06.283   Hidden: Making connection with remote server
+04/04/2013 10:07:06.283   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 10:07:06.283   Output: Logged in.
+04/04/2013 10:07:06.283   Hidden: Got connection from ('172.16.248.23', 55975)
+04/04/2013 10:07:06.299   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 10:07:06.299   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room.
+04/04/2013 10:07:09.528   Input from user: go e
+04/04/2013 10:07:09.543   Hidden: Sending message "go e" to server
+04/04/2013 10:07:09.606   Hidden: Got connection from ('172.16.248.23', 55977)
+04/04/2013 10:07:09.606   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:07:09.606   Output: bill oreilly says something
+04/04/2013 10:07:09.731   Hidden: Got connection from ('172.16.248.23', 55978)
+04/04/2013 10:07:09.731   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:07:09.731   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:07:09.793   Hidden: Got connection from ('172.16.248.23', 55979)
+04/04/2013 10:07:09.793   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:07:09.793   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 10:07:09.855   Hidden: Got connection from ('172.16.248.23', 55980)
+04/04/2013 10:07:09.855   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:09.855   Output: Playing sound file called bad2bone
+04/04/2013 10:07:10.978   Input from user: go w
+04/04/2013 10:07:10.988   Hidden: Sending message "go w" to server
+04/04/2013 10:07:11.108   Hidden: Got connection from ('172.16.248.23', 55982)
+04/04/2013 10:07:11.108   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 10:07:11.108   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room.
+04/04/2013 10:07:11.158   Hidden: Got connection from ('172.16.248.23', 55983)
+04/04/2013 10:07:11.158   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:11.288   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:11.767   Input from user: go n
+04/04/2013 10:07:11.777   Hidden: Sending message "go n" to server
+04/04/2013 10:07:11.907   Hidden: Got connection from ('172.16.248.23', 55986)
+04/04/2013 10:07:11.907   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:07:11.907   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/04/2013 10:07:11.957   Hidden: Got connection from ('172.16.248.23', 55987)
+04/04/2013 10:07:11.957   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:12.677   Input from user: go e
+04/04/2013 10:07:12.677   Hidden: Sending message "go e" to server
+04/04/2013 10:07:12.807   Hidden: Got connection from ('172.16.248.23', 55989)
+04/04/2013 10:07:12.807   Hidden: Got the following message from the server: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 10:07:12.807   Output: An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west.
+04/04/2013 10:07:12.857   Hidden: Got connection from ('172.16.248.23', 55990)
+04/04/2013 10:07:12.857   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:16.297   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:21.303   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:26.309   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:28.368   Input from user: go w
+04/04/2013 10:07:28.368   Hidden: Sending message "go w" to server
+04/04/2013 10:07:28.556   Hidden: Got connection from ('172.16.248.23', 55995)
+04/04/2013 10:07:28.556   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 10:07:28.556   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room.
+04/04/2013 10:07:28.618   Hidden: Got connection from ('172.16.248.23', 55996)
+04/04/2013 10:07:28.618   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:28.618   Output: Playing sound file called bad2bone
+04/04/2013 10:07:29.696   Hidden: Got connection from ('172.16.248.23', 55997)
+04/04/2013 10:07:29.696   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:07:29.706   Output: bill oreilly says something
+04/04/2013 10:07:29.746   Hidden: Got connection from ('172.16.248.23', 55998)
+04/04/2013 10:07:29.746   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:07:29.746   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:07:29.896   Input from user: go s
+04/04/2013 10:07:29.906   Hidden: Sending message "go s" to server
+04/04/2013 10:07:30.46   Hidden: Got connection from ('172.16.248.23', 56000)
+04/04/2013 10:07:30.46   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:07:30.46   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:07:30.96   Hidden: Got connection from ('172.16.248.23', 56001)
+04/04/2013 10:07:30.96   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:07:31.316   Hidden: Sending message "_ping_" to server
+04/04/2013 10:07:34.695   Hidden: Got connection from ('172.16.248.23', 56003)
+04/04/2013 10:07:34.695   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 10:07:34.695   Output: bill oreilly has entered the room.
+04/04/2013 10:07:35.395   Input from user: quit
+04/04/2013 10:07:35.405   Hidden: Sending message "quit" to server
+04/04/2013 10:07:35.495   Output: Game quit. Please close the program

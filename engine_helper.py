@@ -45,6 +45,7 @@ def do_command(player, room, verb, nouns, object, tags):
                 room = engine._Rooms[player.coords]
                 if len(text) > 0 and player.name in room.players:
                     messages.append((player.name, text))
+                    messages.append((player.name, '_play_ bad2bone')) ###TESTING
 
                 for alt_player in room.players:
                     if alt_player != player.name:
