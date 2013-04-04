@@ -8,19 +8,25 @@ import time
 import string
 import Queue
 import RAProtocol
-import logging
+#import logging
+import ssl
+import winsound
+import Q2logging   ###TEST
 
-logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
+#logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
+logger = Q2logging.out_file_instance('logs/client/RenClient') ###TEST
 
 _Local_Host = socket.gethostname() # replace with actual host address
-_Server_Host = socket.gethostname() #"172.16.248.141"
-_Login_Port = 1000
+_Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
+_Login_Port = 60005
 
 _CMD_Queue = Queue.Queue()
 
 _Quit = False
 _Quit_Lock = threading.RLock()
+
+_Sound_Playing = False
 
 def main():
     """
@@ -28,11 +34,11 @@ def main():
     """
     # start getting keyboard input
     global _CMD_Queue
-    rlt = ReadLineThread()
-    rlt.start()
 
     # try to log into the server and acquire a port
     ports = LogIn()
+    rlt = ReadLineThread()
+    rlt.start()
 
     ports = ports.split()
 
@@ -42,6 +48,9 @@ def main():
 
     ot = OutThread(int(ports[0]))
     ot.start()
+
+    kat = KeepAliveThread()
+    kat.start()
 
     # wait for quit
     global _Quit
@@ -62,29 +71,78 @@ def LogIn():
     """
     global _CMD_Queue
 
-    print >>sys.stdout, "What is your name?"
-    logging.debug('Output: What is your name?')
+    rank_list = {'Obama':0, 'Kanye':0, 'OReilly':0, 'Gottfried':0, 'Burbiglia':0}
+    used_ranks = [5, 4, 3, 2, 1]
     ports = None
     while ports == None:
-        line = ""
-        empty_queue = _CMD_Queue.empty()
 
-        try:
-            line = _CMD_Queue.get()
-        except:
-            pass
-
+        line1 = raw_input('Please enter your username:\r\n') #Name
+        #logging.debug('Output: Please enter your username:')
+        #logging.debug('Input: %s' % line1)
+        logger.write_line('Output: Please enter your username:')
+        logger.write_line('Input: %s' % line1)
+        line2 = raw_input('Please enter your password:\r\n') #Pass
+        #logging.debug('Output: Please enter your password:')
+        #logging.debug('Input: %s' % line2)
+        logger.write_line('Output: Please enter your password:') ###TEST
+        logger.write_line('Input: %s' % line2)   ###TEST
+        
+        line = line1 + ' ' + line2
         if line != "":
+            
             ports = connect_to_server(line)
-            logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
+            if ports == 'invalid': #Failed login
+                #logging.debug('Output: Error, failed to log in. Please try again')
+                logger.write_line('Output: Error, failed to log in. Please try again') ###TEST
+                print >>sys.stdout, 'Error, failed to log in. Please try again'
+                ports = None
+            elif ports == 'banned_name': #Invalid username
+                #logging.debug('Output: Error, illegal player name. Please choose an appropriate name.')
+                logger.write_line('Output: Error, illegal player name. Please choose an appropriate name.') ###TEST
+                print >>sys.stdout, 'Error, illegal player name. Please choose an appropriate name.'
+                ports = None
+            elif ports == 'affiliation_get': #Get user affiliation set
+                print >>sys.stdout, 'This is a new player, which requires you to rank your affiliation with people.'
+                #logging.debug('Output: This is a new player, which requires you to rank your affiliation with people.')
+                logger.write_line('Output: This is a new player, which requires you to rank your affiliation with people.') ###TEST
+                print >>sys.stdout, 'Please rank the following people 1 through 5 in order of preference:'
+                #logging.debug('Output: Please rank the following people 1 through 5 in order of preference:')
+                logger.write_line('Output: Please rank the following people 1 through 5 in order of preference:') ###TEST
+                for person in rank_list:
+                    print >>sys.stdout, '\t'+person
+                    #logging.debug(person)
+                    logger.write_line(person) ###TEST
+                for person in rank_list:
+                    while 1:
+                        rank = raw_input('On a scale of 1 to 5, where would you rank %s?\r\n'%person)
+                        #logging.debug('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person)
+                        logger.write_line('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person) ###TEST
+                        #logging.debug('Input: %s' % rank)
+                        logger.write_line('Input: %s' % rank) ###TEST
+                        rank = int(rank)
+                        if rank in used_ranks: #This is okay
+                            rank_list[person] = rank
+                            used_ranks.remove(rank)
+                            break
+                        else:
+                            print >>sys.stdout, 'Sorry, you may only give each person a different ranking'
+                            #logging.debug('Output: Sorry, you may only give each person a different ranking')
+                            logger.write_line('Output: Sorry, you may only give each person a different ranking') ###TEST
+                for person in rank_list:
+                    line = line+' '+person+' '+str(rank_list[person]) #Add all the people and their ranking to line
 
-        if (ports == None) and not empty_queue:
+                ports = connect_to_server(line) #Re-send data with attached affiliation set
 
-            print >>sys.stdout, "Invalid name, try again."
-            logging.debug('Output: Invalid name, try again')
+                
+                    
+            else:
+                #logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
+                logger.write_line('Hidden: Connection to server made, connecting on ports %s' % ports) ###TEST
 
-    print >>sys.stdout, "\nlogged in"
-    logging.debug('Output: Logged in.')
+
+    print >>sys.stdout, "\nLogged in"
+    #logging.debug('Output: Logged in.')
+    logger.write_line('Output: Logged in.') ###TEST
 
     return ports
 
@@ -96,17 +154,50 @@ def connect_to_server(line):
     global _Login_Port
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
+    ssl_sock.connect((_Server_Host, _Login_Port)) ###TEST
 
-    sock.connect((_Server_Host, _Login_Port))
+    RAProtocol.sendMessage(line, ssl_sock)  ###TEST
+    #logging.debug('Hidden: Making connection with remote server')
+    logger.write_line('Hidden: Making connection with remote server') ###TEST
 
-    RAProtocol.sendMessage(line, sock)
-    logging.debug('Hidden: Making connection with remote server')
+    message = RAProtocol.receiveMessage(ssl_sock) ###TEST
 
-    message = RAProtocol.receiveMessage(sock)
-
-    sock.close()
+    ssl_sock.close()  ###TEST
 
     return message
+def play_sound(sound):
+    global _Sound_Playing
+    path = 'sounds/%s.wav' % sound
+        
+    winsound.PlaySound(path, winsound.SND_FILENAME)
+    _Sound_Playing = False
+    return True
+    
+class KeepAliveThread(threading.Thread):
+    """
+
+    """
+    def run(self):
+        """
+
+        """
+        global _CMD_Queue
+        start_time = time.time()
+
+        signal_time = 5
+        _Quit_Lock.acquire()
+        done = _Quit
+        _Quit_Lock.release()
+        while not done:
+            if time.time()-start_time >= signal_time: #We send a keepalive signal.
+                _CMD_Queue.put('_ping_')
+                start_time = time.time()
+                _Quit_Lock.acquire()
+                done = _Quit
+                _Quit_Lock.release()
+                time.sleep(0.05)
+                
 
 class ReadLineThread(threading.Thread):
     """
@@ -145,7 +236,8 @@ class ReadLineThread(threading.Thread):
             try:
                 _CMD_Queue.put(line)
                 if line != '':
-                    logging.debug('Input from user: %s' % line)
+                    #logging.debug('Input from user: %s' % line)
+                    logger.write_line('Input from user: %s' % line) ###TEST
             except:
                 pass
             _Quit_Lock.acquire()
@@ -184,10 +276,11 @@ class InThread(threading.Thread):
         while not done:
             conn, addr = sock.accept()
 
-            logging.debug('Hidden: Got connection from %s' % str(addr))
+            #logging.debug('Hidden: Got connection from %s' % str(addr))
+            logger.write_line('Hidden: Got connection from %s' % str(addr)) ###TEST
             #print 'got input from ' + self.name
-
-            thread.start_new_thread(self.handleInput, (conn, ))
+            connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True)
+            thread.start_new_thread(self.handleInput, (connstream, ))
             time.sleep(0.05)
             _Quit_Lock.acquire()
             done = _Quit
@@ -198,14 +291,25 @@ class InThread(threading.Thread):
         """
 
         """
+        global _Sound_Playing
         message = RAProtocol.receiveMessage(conn)
-        logging.debug('Hidden: Got the following message from the server: "%s"' % message)
+        #logging.debug('Hidden: Got the following message from the server: "%s"' % message)
+        logger.write_line('Hidden: Got the following message from the server: "%s"'%message) ###TEST
         conn.close()
-
-        if message != 'quit':
-
+        if '_play_'in message and not _Sound_Playing: 
+        #Format from engine for a play sound message is: "_play_ soundname" where soundname is the name of a file you wish to play from the sounds directory
+            message = message.split() #Split into _play_ and the sound name
+            sound_name = message[1]
+            _Sound_Playing = True ###To block other plays for now.
+            thread.start_new_thread(play_sound, (sound_name,))
+            logger.write_line('Output: Playing sound file called %s' % sound_name) 
+            
+        elif not '_play_' in message: #This isn't a playsound message, we can print it.
             print >>sys.stdout, "\n" + message
-            logging.debug('Output: %s' % message)
+            #logging.debug('Output: %s' % message)
+            logger.write_line('Output: %s' % message) ###TEST
+
+        return True
 
 class OutThread(threading.Thread):
     """
@@ -243,24 +347,27 @@ class OutThread(threading.Thread):
             if message != "":
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
                 # connect to player
-                sock.connect((self.host, self.port))
+                ssl_sock.connect((self.host, self.port))  ###TEST
                 # send message
-                RAProtocol.sendMessage(message, sock)
-                logging.debug('Hidden: Sending message "%s" to server' % message)
+                RAProtocol.sendMessage(message, ssl_sock)  ###TEST
+                #logging.debug('Hidden: Sending message "%s" to server' % message)
+                logger.write_line('Hidden: Sending message "%s" to server' % message) ###TEST
                 # close connection
-                sock.close()
+                ssl_sock.close()  ###TEST
                 # check for quit
                 if message.lower() == "quit":
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
 
-                    
             done = _Quit
             time.sleep(0.05)
 
 if __name__ == "__main__":
     main()
-    logging.debug('Output: Game quit. Please hit enter to exit the program')
-    sys.exit('Game quit. Please hit enter to exit the program')
+    #logging.debug('Output: Game quit. Please close the program.')       
+    logger.write_line('Output: Game quit. Please close the program') ###TEST
+    logger.shutdown()
+    sys.exit('Game quit. Please close the program.') 
