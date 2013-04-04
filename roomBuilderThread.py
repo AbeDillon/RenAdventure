@@ -4,14 +4,14 @@ import Queue
 import time
 import copy
 import engine
-from msilib.schema import SelfReg
+
 
 class BuilderThread(threading.Thread):
     """
     Room builder thread
     """
 
-    def __init__(self, type_of_object, cmd_queue, msg_queue, valid_out_queue, room_coords=None, game_state, player_name=""):
+    def __init__(self, type_of_object, cmd_queue, msg_queue,  game_state, game_state_lock, room_coords=None, player_name=""):
         """
         Initialize a Room Builder thread
         """
@@ -19,10 +19,9 @@ class BuilderThread(threading.Thread):
         self.type = type_of_object # being built
         self.cmd_queue = cmd_queue
         self.msg_queue = msg_queue
-        self.validation_in_queue = Queue.Queue()
-        self.validation_out_queue = valid_out_queue
-        self.room_coords = room_coords
         self.game_state  = game_state
+        self.game_state_lock = game_state_lock
+        self.room_coords = room_coords
         self.player = player_name
         self.prototype = {}
         if self.type == "room":
@@ -65,9 +64,13 @@ class BuilderThread(threading.Thread):
         
         self.addItems()
         
+        #add functionality for placing NPCs
+        
         self.reviewObject()
         
         self.validate()
+        
+        self.makeRoom()
         
     def buildPortal(self, direction=""):
         """
@@ -76,7 +79,7 @@ class BuilderThread(threading.Thread):
         
         # Name Portal 
         self.addName()
-
+        
         # Description
         self.addDescription()
         
@@ -85,18 +88,117 @@ class BuilderThread(threading.Thread):
         
         # Direction
         if direction == "":
-            self.getDirection()
+            direction = self.getDirection()  # need to have variable set to pass into coords if direction = ""
         else:
             self.prototype['direction'] = direction
-            
-
         
+        # Coords
+        self.assignCoords(self, direction)
+        
+        # Locked
+        self.isLocked()
+                
+        # Key
+        self.addKey()
+        
+        # Hidden
+        self.isHidden()
+        
+        # Scripts
+        self.buildScripts()
+        
+        self.reviewObject()
+        
+        self.validate()
+        
+        self.makePortal()
         
     def buildItem(self):
         """
-        
+        function to build items
         """
+        #Name Item
+        self.addName()
         
+        #Item Description
+        self.addDescription()
+        
+        #Inspection Description
+        self.addInspectionDescription()
+        
+        #Scripts
+        self.buildScripts()
+        
+        #Portable
+        self.isPortable()
+        
+        #Hidden
+        self.isHidden()
+        
+        #Container
+        self.isContainer()
+
+        if self.prototype['container'] == True:
+            #locked
+            self.isLocked()
+            #key
+            self.addKey()
+            #items in item
+            self.addItems()
+        else:
+            self.prototype['locked'] = False
+            self.prototype['key'] = None
+            self.prototype['items'] = []
+        
+        self.reviewObject()
+        
+        self.validate()
+        
+        self.makeItem()
+        
+    def buildScripts(self):
+        """
+        Function to build out Action scripts for Items and Portals
+        """
+        # list of valid verbs (populate when builder is run) from engine
+        verbs = []
+        scripts = {}
+        
+        intro_text = '\n' +textwrap.fill('You can [b]uild a script for this '+self.type+', e[x]it scripts, or get [h]elp?  What is your preference?', width=100).strip()
+        valid_responses = (('build', 'b'), ('exit', 'x'), ('help', 'h'))
+        
+        help_text = '\n' +textwrap.fill('Scripts are commands that run in place of the command given on this '+self.type+'.   For example if you are '
+                                        'making an apple you could make it so that if they say "take apple" you can have it open a portal in the room and/or '
+                                        'reveal a chest.  Remember if you do this if you still wanted to have the player take the apple you have to include '
+                                        'that in the list of actions.', width=100).strip()
+    
+        help_text2 = '\n'+textwrap.fill('Here is how it works.  You give us a verb (the first word of a command) that you want to replace with other '
+                                        'actions.  Then you give us the action(s) you want to happen along with a whole number that will represent '
+                                        'a delay (in seconds) that will occur before that action happens. You can add an unlimited number of actions '
+                                        'for each verb replaced.', width=100).strip()
+        
+        help_text3 = '\n'+textwrap.fill('And finally, a word about how delays work.  Delays will not begin until all the delays before them have completed.  '
+                                        'For example -  if you were to replace the verb "take" on the item "apple" take apple 0, go north 3, drop apple 2 '
+                                        'would have the player that issued the command take apple to take the apple immediately, wait 3 seconds and move north, '
+                                        'wait another 2 seconds and drop the apple.  As you can see this could be rather interesting.  Have fun but try not to '
+                                        'ruin things for everyone else while you are at it.',width=100)
+        #get user
+        ans = self.get_valid_response(intro_text, validResponses=valid_responses)
+        while ans != 'exit':
+            if ans == 'build':
+               ans = 'exit'
+               
+#               script = {}
+#               text = 'Enter the verb you want to override.'
+#               verb = self.get_cmd 
+            else:
+                # User wants help
+                self.send_message_to_player(help_text + help_text2 + help_text3)
+                ans = self.get_valid_response(intro_text, validResponses=valid_responses)
+        
+        self.prototype['scripts'] = scripts
+        
+    
     def buildNPC(self):
         """
         
@@ -107,12 +209,14 @@ class BuilderThread(threading.Thread):
         """
         
         """
+        
     def addName(self):
         """
         function for adding a name
+        does not all names that have already been used.
         """
         text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
-        deny = '\n' + textwrap.fill('That name has already been used try agian.',  width=100).strip()
+        deny = '\n' + textwrap.fill('That name has already been used try again.',  width=100).strip()
         
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
@@ -123,7 +227,26 @@ class BuilderThread(threading.Thread):
             
         self.prototype['name'] = name
             
+    def checkName(self):
+        """
+        Function for checking name when player wants to add items by name
+        Only allows names that do exist
         
+        RETURNS name that has been found in list.
+        """
+        # Get desired name
+        text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
+        deny = '\n' + textwrap.fill('That item does not exist try again.',  width=100).strip()
+        
+        self.send_message_to_player(text)
+        name = self.get_cmd_from_player()
+        
+        while name not in game_state._Objects:    #  *****CHANGE WHEN LOCATION IS KNOWN FOR LIST/DICT
+            self.send_message_to_player(deny)
+            name = self.get_cmd_from_player()
+        
+        return name
+    
     # begin room creation
     def addDescription(self):
         """
@@ -150,18 +273,128 @@ class BuilderThread(threading.Thread):
         
         self.prototype['inspection_description'] = i_desc
 
-        
+    def assignCoords(self, direction):    
+        """ function to assign coordinates for item based upon 
+        room coordinates and direction given.  Typical use portal
+        destination assignment
+        """
+        coords = self.room_coords
+        x,y,z,d = coords
+        if direction == 'north':
+            coords = (x, y+1, z) 
+        elif direction == 'south':
+            coords = (x, y-1, z)
+        elif direction == 'west':
+            coords = (x-1, y, z)
+        elif direction == 'east':
+            coords = (x+1, y, z)
+        elif direction == 'up':
+            coords = (x, y,z+1)
+        elif direction == 'down':
+            coords = (x,y,z-1)
+        elif direction == 'in':
+            coords = (x,y,z,d+1)
+        elif direction == 'out':
+            coords = (x,y,z,d-1)
     
+        self.prototype['coords'] = coords
+        
+    def isLocked(self):
+        """
+        Function to define lock state
+        """
+        lock_text = '\n' + textwrap.fill('This ' +self.type+ ' can be [l]ocked or [u]nlocked.  Which do you prefer?',  width=100).strip()
+        valid_responses = (('unlocked', 'u'), ('locked', 'l'))
+        
+        lock_state = self.get_valid_response(lock_text, validResponses=valid_responses)
+        if lock_state == 'unlocked':
+            self.prototype['locked'] = False
+        else:
+            self.prototype['locked'] = True        
+    
+    def addKey(self):
+        """
+        Function to add a key to items and portals
+        """
+        
+        key_text = '\n' + textwrap.fill('This ' +self.type+ ' can have a key (any item).  Do you want to [n]ame a key, [b]uild a key,  or leave it [k]eyless?',  width=100).strip()
+        valid_responses = (('name', 'n'), ('build', 'b'), ('keyless', 'k'))
+        ans = self.get_valid_response(key_text, validResponses=valid_responses)
+        
+        key = None
+        while ans != 'keyless':
+            orig_type = self.type #capture type we are currently making
+            self.type = 'key' #change type to key for proper wording in functions
+            
+            if ans == 'name':
+                # get key name
+                key = checkName() #checks name is in gamestate list
+            else:
+                # build item for key
+                temp_prototype = copy.deepcopy(self.prototype)  #  temp2 is now the portal dict
+                self.prototype = {} # key dict
+                # build key
+                self.builditem(sentTo=True) # Builds item without it being a container
+                # get name of key
+                key = self.prototype['name']
+                # restore portal prototype
+                self.prototype = temp_prototype
+                
+        # reset temp type
+        self.type = orig_type  # set type back to original type
+        self.prototype['key'] = key
+        
+    def isPortable(self):
+        """
+        Function sets portability state
+        """
+        
+        portable_text = '\n' + textwrap.fill('Items can be [p]ortable or [n]on portable affecting players ability to pick them up.  Which do you prefer?',  width=100).strip()
+        valid_responses = (('portable', 'p'), ('non portable', 'n'))
+        
+        portable_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
+        if portable_state == "portable":
+            self.prototype['portable'] = True
+        else:
+            self.prototype['portable'] = False
+    
+    def isHidden(self):
+        """
+        Function sets hidden state
+        """
+        
+        hidden_text = '\n' + textwrap.fill('This ' +self.type+ ' can be [h]idden or [v]isible.  Which do you prefer?',  width=100).strip()
+        valid_responses = (('hidden', 'v'), ('visible', 'v'))
+        
+        hidden_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
+        if hidden_state == "hidden":
+            self.prototype['hidden'] = True
+        else:
+            self.prototype['hidden'] = False
+    
+    def isContainer(self):
+        """
+        Function sets Container flag (bool)
+        """
+        
+        container_text = '\n' + textwrap.fill('Items can containers and hold other items. Do you want to make it a container?  [y]es or [n]',  width=100).strip()
+                
+        container_state = self.get_valid_response(container_text, validResponses)
+        if container_state == "yes":
+            self.prototype['container'] = True
+        else:
+            self.prototype['container'] = False
     
     def addPortals(self):
+        """
+        
+        """
         
         portals = {}
         
         #  confirm they want to create portals
         text = '\n' + textwrap.fill('To add a portal, specify the direction you want ([n]orth, [s]outh, [e]ast, [w]est, [u]p, [d]own, [i]n, or [o]ut). If you are done adding portals e[x]it.',  width=100).strip()
         valid_responses = (("north", "n"), ("south", "s"), ("east", "e"), ("west", "w"), ("in", "i"), ("out", "o"), ("exit", "x"))
-        
-        self.send_message_to_player(text)
         
         # save the current room prototype because calling the buildPortal function will clobber it
         temp_prototype = copy.deepcopy(self.prototype)
@@ -179,7 +412,7 @@ class BuilderThread(threading.Thread):
             portals[ans] = name
             # prompt the user again
             direction = self.get_valid_response(text, validResponses=valid_responses)
-        
+                
         # restore the prototype to the room prototype
         self.prototype = temp_prototype
         self.type = temp_type
@@ -194,15 +427,13 @@ class BuilderThread(threading.Thread):
         
         #  confirm they want to add item(s)
         text1 = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
-        valid_responses = (("new", "n"), ("existing", "e"), ("exit", "x"), ("west", "w"))
+        valid_responses = (("new", "n"), ("existing", "e"), ("exit", "x"))
         
-        self.send_message_to_player(text1)
-        
-        # save the current room prototype because calling the buildPortal function will clobber it
+        # save the current room prototype because calling the buildItem function will clobber it
         temp_prototype = copy.deepcopy(self.prototype)
         temp_type = copy.copy(self.type)
         self.type = "item"
-        ans = self.get_valid_response(text, validResponses=valid_responses)
+        ans = self.get_valid_response(text1, validResponses=valid_responses)
         while ans not in ("exit", "x"):
             # add an item by name
             if ans == "existing":
@@ -240,13 +471,87 @@ class BuilderThread(threading.Thread):
         
     def reviewObject(self):
         """
-        
+        function to display the object created and allow for the player to make edits.
         """
+        self.printObject()
+        #I want to add editing capabilities here later hence the review object and print object functions
+    
+    def printObject(self):
+        """
+        Displays object in printable format.
+        """
+        text = ""
+        for key in self.prototype:
+            text += key + '=   ' + str(prototype[key]) + "\n"
+            
+        self.send_message_to_player(text)
         
     def validate(self):
         """
         
         """
+        object_name = self.prototype['name']
+        obj = self.makePrototype()
+        
+        fail = False
+                
+        self.game_state_lock.accuire()
+        if object_name not in self.game_state:
+            self.game_state[object_name] = obj
+        else:
+            fail = True
+        self.game_state_lock.release()
+        
+    def makeRoom(self):
+        """
+        """
+        desc = self.prototype['description']
+        portals = self.prototype['portals']
+        items = self.prototype['items']
+        players = []
+        npcs = []
+        
+        room = engine.Room(desc, portals, items, players, npcs)
+    
+    def makePortal(self):
+        """
+        
+        """
+        name = self.prototype['name']
+        desc = self.prototype['description']
+        i_desc = self.prototype['inspection_description']
+        dir = self.prototype['direction']
+        coords = self.prototype['coords']
+        locked = self.prototype['locked']
+        key = self.prototype['key']
+        hidden = self.prototype['hidden']
+        scripts = self.prototype['scripts']
+        
+        # Build Portal
+        portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
+        
+        return portal
+    
+    def makeItem(self):
+        """
+        
+        """
+        name = self.prototype['name']
+        desc = self.prototype['description']
+        i_desc = self.prototype['inspection_description']
+        scripts = self.prototype['scripts']
+        portable = self.prototype['portable']
+        hidden = self.prototype['hidden']
+        container = self.prototype['container']
+        locked = self.prototype['locked']
+        key = self.prototype['key']
+        items = self.prototype['items']
+         
+        item = engine.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
+        
+        return item
+    
+    
                 
     def get_valid_response(self, prompt, validResponses=(("yes", "y"), ("no", "n"))):
         """
