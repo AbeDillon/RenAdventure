@@ -279,3 +279,405 @@
 04/04/2013 10:07:35.395   Input from user: quit
 04/04/2013 10:07:35.405   Hidden: Sending message "quit" to server
 04/04/2013 10:07:35.495   Output: Game quit. Please close the program
+04/04/2013 10:27:33.832   Output: Please enter your username:
+04/04/2013 10:27:33.833   Input: evan
+04/04/2013 10:27:34.656   Output: Please enter your password:
+04/04/2013 10:27:34.657   Input: testing
+04/04/2013 10:27:36.474   Hidden: Making connection with remote server
+04/04/2013 10:27:36.486   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 10:27:36.486   Output: Logged in.
+04/04/2013 10:27:36.488   Hidden: Got connection from ('172.16.248.75', 54774)
+04/04/2013 10:27:36.495   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:27:36.496   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:27:38.314   Hidden: Got connection from ('172.16.248.75', 54776)
+04/04/2013 10:27:38.323   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 10:27:38.325   Output: bill oreilly has entered the room.
+04/04/2013 10:27:41.499   Hidden: Sending message "_ping_" to server
+04/04/2013 10:27:43.314   Hidden: Got connection from ('172.16.248.75', 54780)
+04/04/2013 10:27:43.322   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:27:43.324   Output: bill oreilly says something
+04/04/2013 10:27:43.373   Hidden: Got connection from ('172.16.248.75', 54783)
+04/04/2013 10:27:43.381   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:43.383   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:27:46.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:27:48.315   Hidden: Got connection from ('172.16.248.75', 54789)
+04/04/2013 10:27:48.324   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:27:48.325   Output: bill oreilly says something
+04/04/2013 10:27:48.376   Hidden: Got connection from ('172.16.248.75', 54790)
+04/04/2013 10:27:48.384   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:48.386   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:27:51.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:27:53.315   Hidden: Got connection from ('172.16.248.75', 54792)
+04/04/2013 10:27:53.323   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:27:53.325   Output: bill oreilly says something
+04/04/2013 10:27:53.374   Hidden: Got connection from ('172.16.248.75', 54795)
+04/04/2013 10:27:53.379   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:53.380   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:27:56.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:27:58.316   Hidden: Got connection from ('172.16.248.75', 54801)
+04/04/2013 10:27:58.323   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:27:58.324   Output: bill oreilly says something
+04/04/2013 10:27:58.375   Hidden: Got connection from ('172.16.248.75', 54802)
+04/04/2013 10:27:58.383   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:58.385   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:01.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:03.316   Hidden: Got connection from ('172.16.248.75', 54804)
+04/04/2013 10:28:03.324   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:03.327   Output: bill oreilly says something
+04/04/2013 10:28:03.376   Hidden: Got connection from ('172.16.248.75', 54807)
+04/04/2013 10:28:03.384   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:03.386   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:06.497   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:08.317   Hidden: Got connection from ('172.16.248.75', 54813)
+04/04/2013 10:28:08.325   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:08.328   Output: bill oreilly says something
+04/04/2013 10:28:08.378   Hidden: Got connection from ('172.16.248.75', 54814)
+04/04/2013 10:28:08.386   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:08.388   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:11.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:13.316   Hidden: Got connection from ('172.16.248.75', 54817)
+04/04/2013 10:28:13.323   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:13.326   Output: bill oreilly says something
+04/04/2013 10:28:13.376   Hidden: Got connection from ('172.16.248.75', 54820)
+04/04/2013 10:28:13.384   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:13.386   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:16.497   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:18.269   Hidden: Got connection from ('172.16.248.75', 54826)
+04/04/2013 10:28:18.273   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:18.274   Output: bill oreilly says something
+04/04/2013 10:28:18.324   Hidden: Got connection from ('172.16.248.75', 54827)
+04/04/2013 10:28:18.329   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital."
+04/04/2013 10:28:18.331   Output: Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+04/04/2013 10:28:21.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:23.269   Hidden: Got connection from ('172.16.248.75', 54830)
+04/04/2013 10:28:23.274   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:23.275   Output: bill oreilly says something
+04/04/2013 10:28:23.326   Hidden: Got connection from ('172.16.248.75', 54831)
+04/04/2013 10:28:23.330   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:23.332   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:26.493   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:28.269   Hidden: Got connection from ('172.16.248.75', 54839)
+04/04/2013 10:28:28.274   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:28:28.275   Output: bill oreilly says something
+04/04/2013 10:28:28.324   Hidden: Got connection from ('172.16.248.75', 54840)
+04/04/2013 10:28:28.329   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:28.330   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:28:30.115   Input from user: e
+04/04/2013 10:28:30.123   Hidden: Sending message "e" to server
+04/04/2013 10:28:30.220   Hidden: Got connection from ('172.16.248.75', 54842)
+04/04/2013 10:28:30.225   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:28:30.227   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 10:28:30.277   Hidden: Got connection from ('172.16.248.75', 54843)
+04/04/2013 10:28:30.284   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:28:30.284   Output: Playing sound file called bad2bone
+04/04/2013 10:28:31.495   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:36.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:41.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:46.497   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:51.49   Input from user: w
+04/04/2013 10:28:51.59   Hidden: Sending message "w" to server
+04/04/2013 10:28:51.123   Hidden: Got connection from ('172.16.248.75', 54861)
+04/04/2013 10:28:51.133   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:28:51.136   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:28:51.184   Hidden: Got connection from ('172.16.248.75', 54862)
+04/04/2013 10:28:51.192   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:28:51.192   Output: Playing sound file called bad2bone
+04/04/2013 10:28:51.495   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:53.272   Hidden: Got connection from ('172.16.248.75', 54864)
+04/04/2013 10:28:53.280   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 10:28:53.283   Output: bill oreilly has entered the room.
+04/04/2013 10:28:53.649   Input from user: n
+04/04/2013 10:28:53.656   Hidden: Sending message "n" to server
+04/04/2013 10:28:53.722   Hidden: Got connection from ('172.16.248.75', 54868)
+04/04/2013 10:28:53.731   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:28:53.734   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.
+04/04/2013 10:28:53.782   Hidden: Got connection from ('172.16.248.75', 54869)
+04/04/2013 10:28:53.790   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:28:56.497   Hidden: Sending message "_ping_" to server
+04/04/2013 10:28:58.273   Hidden: Got connection from ('172.16.248.75', 54875)
+04/04/2013 10:28:58.282   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 10:28:58.285   Output: bill oreilly has entered the room.
+04/04/2013 10:28:58.350   Input from user: s
+04/04/2013 10:28:58.359   Hidden: Sending message "s" to server
+04/04/2013 10:28:58.424   Hidden: Got connection from ('172.16.248.75', 54877)
+04/04/2013 10:28:58.433   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:28:58.437   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:28:58.484   Hidden: Got connection from ('172.16.248.75', 54878)
+04/04/2013 10:28:58.490   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:28:59.17   Input from user: e
+04/04/2013 10:28:59.26   Hidden: Sending message "e" to server
+04/04/2013 10:28:59.123   Hidden: Got connection from ('172.16.248.75', 54880)
+04/04/2013 10:28:59.131   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:28:59.135   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 10:28:59.184   Hidden: Got connection from ('172.16.248.75', 54881)
+04/04/2013 10:28:59.192   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:29:01.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:02.235   Input from user: w
+04/04/2013 10:29:02.246   Hidden: Sending message "w" to server
+04/04/2013 10:29:02.323   Hidden: Got connection from ('172.16.248.75', 54884)
+04/04/2013 10:29:02.331   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:29:02.335   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 10:29:02.383   Hidden: Got connection from ('172.16.248.75', 54885)
+04/04/2013 10:29:02.390   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:29:02.391   Output: Playing sound file called bad2bone
+04/04/2013 10:29:03.620   Input from user: n
+04/04/2013 10:29:03.629   Hidden: Sending message "n" to server
+04/04/2013 10:29:03.725   Hidden: Got connection from ('172.16.248.75', 54889)
+04/04/2013 10:29:03.733   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 10:29:03.736   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room.
+04/04/2013 10:29:03.785   Hidden: Got connection from ('172.16.248.75', 54890)
+04/04/2013 10:29:03.792   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 10:29:06.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:08.275   Hidden: Got connection from ('172.16.248.75', 54896)
+04/04/2013 10:29:08.283   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:08.285   Output: bill oreilly says something
+04/04/2013 10:29:08.334   Hidden: Got connection from ('172.16.248.75', 54897)
+04/04/2013 10:29:08.342   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:08.345   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:11.497   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:13.274   Hidden: Got connection from ('172.16.248.75', 54899)
+04/04/2013 10:29:13.283   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:13.285   Output: bill oreilly says something
+04/04/2013 10:29:13.335   Hidden: Got connection from ('172.16.248.75', 54900)
+04/04/2013 10:29:13.344   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:13.346   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:16.494   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:18.276   Hidden: Got connection from ('172.16.248.75', 54908)
+04/04/2013 10:29:18.285   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:18.287   Output: bill oreilly says something
+04/04/2013 10:29:18.336   Hidden: Got connection from ('172.16.248.75', 54909)
+04/04/2013 10:29:18.345   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:18.348   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:21.496   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:23.276   Hidden: Got connection from ('172.16.248.75', 54911)
+04/04/2013 10:29:23.285   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:23.287   Output: bill oreilly says something
+04/04/2013 10:29:23.336   Hidden: Got connection from ('172.16.248.75', 54912)
+04/04/2013 10:29:23.343   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:23.345   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:26.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:28.277   Hidden: Got connection from ('172.16.248.75', 54920)
+04/04/2013 10:29:28.285   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:28.289   Output: bill oreilly says something
+04/04/2013 10:29:28.337   Hidden: Got connection from ('172.16.248.75', 54921)
+04/04/2013 10:29:28.345   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:28.347   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:31.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:33.276   Hidden: Got connection from ('172.16.248.75', 54923)
+04/04/2013 10:29:33.284   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:33.286   Output: bill oreilly says something
+04/04/2013 10:29:33.336   Hidden: Got connection from ('172.16.248.75', 54924)
+04/04/2013 10:29:33.344   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up."
+04/04/2013 10:29:33.348   Output: Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up.
+04/04/2013 10:29:36.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:38.278   Hidden: Got connection from ('172.16.248.75', 54932)
+04/04/2013 10:29:38.286   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 10:29:38.289   Output: bill oreilly says something
+04/04/2013 10:29:38.339   Hidden: Got connection from ('172.16.248.75', 54933)
+04/04/2013 10:29:38.347   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:38.349   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 10:29:40.722   Input from user: look
+04/04/2013 10:29:40.733   Hidden: Sending message "look" to server
+04/04/2013 10:29:41.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:46.498   Hidden: Sending message "_ping_" to server
+04/04/2013 10:29:51.498   Hidden: Sending message "_ping_" to server
+04/04/2013 11:01:42.978   Output: Please enter your username:
+04/04/2013 11:01:42.978   Input: evan
+04/04/2013 11:01:44.242   Output: Please enter your password:
+04/04/2013 11:01:44.242   Input: testing
+04/04/2013 11:01:46.88   Hidden: Making connection with remote server
+04/04/2013 11:01:46.100   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 11:01:46.101   Output: Logged in.
+04/04/2013 11:01:46.104   Hidden: Got connection from ('172.16.248.75', 56130)
+04/04/2013 11:01:46.110   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:01:46.112   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 11:01:47.63   Hidden: Got connection from ('172.16.248.75', 56131)
+04/04/2013 11:01:47.67   Hidden: Got the following message from the server: "bill gates has entered the room."
+04/04/2013 11:01:47.69   Output: bill gates has entered the room.
+04/04/2013 11:01:47.119   Hidden: Got connection from ('172.16.248.75', 56132)
+04/04/2013 11:01:47.124   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 11:01:47.125   Output: bill oreilly has entered the room.
+04/04/2013 11:01:51.110   Hidden: Sending message "_ping_" to server
+04/04/2013 11:01:52.63   Hidden: Got connection from ('172.16.248.75', 56134)
+04/04/2013 11:01:52.67   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:01:52.68   Output: bill gates says something
+04/04/2013 11:01:52.118   Hidden: Got connection from ('172.16.248.75', 56135)
+04/04/2013 11:01:52.123   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:01:52.124   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:01:52.174   Hidden: Got connection from ('172.16.248.75', 56136)
+04/04/2013 11:01:52.179   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 11:01:52.180   Output: bill oreilly says something
+04/04/2013 11:01:52.230   Hidden: Got connection from ('172.16.248.75', 56137)
+04/04/2013 11:01:52.235   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:01:52.236   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 11:01:53.97   Input from user: e
+04/04/2013 11:01:53.105   Hidden: Sending message "e" to server
+04/04/2013 11:01:53.163   Hidden: Got connection from ('172.16.248.75', 56139)
+04/04/2013 11:01:53.170   Hidden: Got the following message from the server: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 11:01:53.172   Output: An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.
+04/04/2013 11:01:53.221   Hidden: Got connection from ('172.16.248.75', 56140)
+04/04/2013 11:01:53.226   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 11:01:53.227   Output: Playing sound file called bad2bone
+04/04/2013 11:01:56.109   Hidden: Sending message "_ping_" to server
+04/04/2013 11:01:57.63   Hidden: Got connection from ('172.16.248.75', 56148)
+04/04/2013 11:01:57.69   Hidden: Got the following message from the server: "bill gates has entered the room."
+04/04/2013 11:01:57.71   Output: bill gates has entered the room.
+04/04/2013 11:02:01.109   Hidden: Sending message "_ping_" to server
+04/04/2013 11:02:02.63   Hidden: Got connection from ('172.16.248.75', 56150)
+04/04/2013 11:02:02.68   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:02:02.70   Output: bill gates says something
+04/04/2013 11:02:02.119   Hidden: Got connection from ('172.16.248.75', 56151)
+04/04/2013 11:02:02.123   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:02.125   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:02:02.213   Hidden: Got connection from ('172.16.248.75', 56152)
+04/04/2013 11:02:02.217   Hidden: Got the following message from the server: "kanye has entered the room."
+04/04/2013 11:02:02.220   Output: kanye has entered the room.
+04/04/2013 11:02:06.108   Hidden: Sending message "_ping_" to server
+04/04/2013 11:02:07.64   Hidden: Got connection from ('172.16.248.75', 56160)
+04/04/2013 11:02:07.69   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:02:07.70   Output: bill gates says something
+04/04/2013 11:02:07.120   Hidden: Got connection from ('172.16.248.75', 56161)
+04/04/2013 11:02:07.124   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:07.126   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:02:07.175   Hidden: Got connection from ('172.16.248.75', 56162)
+04/04/2013 11:02:07.180   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 11:02:07.182   Output: bill oreilly has entered the room.
+04/04/2013 11:02:07.231   Hidden: Got connection from ('172.16.248.75', 56163)
+04/04/2013 11:02:07.236   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 11:02:07.238   Output: kanye says something
+04/04/2013 11:02:07.288   Hidden: Got connection from ('172.16.248.75', 56164)
+04/04/2013 11:02:07.293   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:02:07.295   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 11:02:11.110   Hidden: Sending message "_ping_" to server
+04/04/2013 11:02:12.64   Hidden: Got connection from ('172.16.248.75', 56166)
+04/04/2013 11:02:12.69   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:02:12.70   Output: bill gates says something
+04/04/2013 11:02:12.119   Hidden: Got connection from ('172.16.248.75', 56167)
+04/04/2013 11:02:12.124   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:12.126   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:02:12.175   Hidden: Got connection from ('172.16.248.75', 56168)
+04/04/2013 11:02:12.180   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 11:02:12.182   Output: bill oreilly says something
+04/04/2013 11:02:12.242   Hidden: Got connection from ('172.16.248.75', 56169)
+04/04/2013 11:02:12.247   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:02:12.248   Output: Your Faith in Humanity is decreased by 4.
+04/04/2013 11:02:12.299   Hidden: Got connection from ('172.16.248.75', 56170)
+04/04/2013 11:02:12.303   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 11:02:12.305   Output: kanye says something
+04/04/2013 11:02:12.355   Hidden: Got connection from ('172.16.248.75', 56171)
+04/04/2013 11:02:12.360   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:02:12.362   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 11:02:16.109   Hidden: Sending message "_ping_" to server
+04/04/2013 11:02:17.65   Hidden: Got connection from ('172.16.248.75', 56179)
+04/04/2013 11:02:17.70   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:02:17.72   Output: bill gates says something
+04/04/2013 11:02:17.121   Hidden: Got connection from ('172.16.248.75', 56180)
+04/04/2013 11:02:17.125   Hidden: Got the following message from the server: "_play_ death"
+04/04/2013 11:02:17.125   Output: Playing sound file called death
+04/04/2013 11:02:17.179   Hidden: Got connection from ('172.16.248.75', 56181)
+04/04/2013 11:02:17.187   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Bill Oreilly, Kanye, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, and Bill Oreilly are in the room."
+04/04/2013 11:02:17.200   Output: Your Faith in Humanity is decreased by 2.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Bill Oreilly, Kanye, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, and Bill Oreilly are in the room.
+04/04/2013 11:03:08.90   Output: Please enter your username:
+04/04/2013 11:03:08.90   Input: evan
+04/04/2013 11:03:09.111   Output: Please enter your password:
+04/04/2013 11:03:09.111   Input: testing
+04/04/2013 11:03:11.29   Hidden: Making connection with remote server
+04/04/2013 11:03:11.34   Hidden: Connection to server made, connecting on ports 2000 2001
+04/04/2013 11:03:11.34   Output: Logged in.
+04/04/2013 11:03:11.37   Hidden: Got connection from ('172.16.248.75', 56216)
+04/04/2013 11:03:11.43   Hidden: Got the following message from the server: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:03:11.44   Output: An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 11:03:12.922   Hidden: Got connection from ('172.16.248.75', 56217)
+04/04/2013 11:03:12.931   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 11:03:12.934   Output: bill oreilly has entered the room.
+04/04/2013 11:03:13.469   Input from user: n
+04/04/2013 11:03:13.481   Hidden: Sending message "n" to server
+04/04/2013 11:03:13.573   Hidden: Got connection from ('172.16.248.75', 56219)
+04/04/2013 11:03:13.581   Hidden: Got the following message from the server: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Gates, Bill Gates, Bill Gates, Kanye, and Bill Gates are in the room."
+04/04/2013 11:03:13.583   Output: An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Gates, Bill Gates, Bill Gates, Kanye, and Bill Gates are in the room.
+04/04/2013 11:03:13.632   Hidden: Got connection from ('172.16.248.75', 56220)
+04/04/2013 11:03:13.639   Hidden: Got the following message from the server: "_play_ bad2bone"
+04/04/2013 11:03:13.640   Output: Playing sound file called bad2bone
+04/04/2013 11:03:16.40   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:17.872   Hidden: Got connection from ('172.16.248.75', 56228)
+04/04/2013 11:03:17.879   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:03:17.880   Output: bill gates says something
+04/04/2013 11:03:17.929   Hidden: Got connection from ('172.16.248.75', 56229)
+04/04/2013 11:03:17.935   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:17.936   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:03:18.22   Hidden: Got connection from ('172.16.248.75', 56230)
+04/04/2013 11:03:18.27   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 11:03:18.28   Output: kanye says something
+04/04/2013 11:03:18.77   Hidden: Got connection from ('172.16.248.75', 56231)
+04/04/2013 11:03:18.82   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:18.83   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 11:03:21.44   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:22.873   Hidden: Got connection from ('172.16.248.75', 56233)
+04/04/2013 11:03:22.881   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:03:22.884   Output: bill gates says something
+04/04/2013 11:03:22.933   Hidden: Got connection from ('172.16.248.75', 56234)
+04/04/2013 11:03:22.941   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:22.944   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:03:23.23   Hidden: Got connection from ('172.16.248.75', 56235)
+04/04/2013 11:03:23.32   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 11:03:23.34   Output: kanye says something
+04/04/2013 11:03:23.83   Hidden: Got connection from ('172.16.248.75', 56236)
+04/04/2013 11:03:23.90   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:23.92   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 11:03:26.44   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:27.874   Hidden: Got connection from ('172.16.248.75', 56244)
+04/04/2013 11:03:27.883   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:03:27.885   Output: bill gates says something
+04/04/2013 11:03:27.935   Hidden: Got connection from ('172.16.248.75', 56245)
+04/04/2013 11:03:27.941   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:27.944   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:03:27.992   Hidden: Got connection from ('172.16.248.75', 56246)
+04/04/2013 11:03:28.   Hidden: Got the following message from the server: "bill oreilly has entered the room."
+04/04/2013 11:03:28.3   Output: bill oreilly has entered the room.
+04/04/2013 11:03:28.51   Hidden: Got connection from ('172.16.248.75', 56247)
+04/04/2013 11:03:28.57   Hidden: Got the following message from the server: "kanye says something"
+04/04/2013 11:03:28.61   Output: kanye says something
+04/04/2013 11:03:28.109   Hidden: Got connection from ('172.16.248.75', 56248)
+04/04/2013 11:03:28.117   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:28.120   Output: Your Faith in Humanity is decreased by 6.
+04/04/2013 11:03:31.44   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:32.874   Hidden: Got connection from ('172.16.248.75', 56250)
+04/04/2013 11:03:32.883   Hidden: Got the following message from the server: "bill gates says something"
+04/04/2013 11:03:32.885   Output: bill gates says something
+04/04/2013 11:03:32.934   Hidden: Got connection from ('172.16.248.75', 56251)
+04/04/2013 11:03:32.943   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:32.946   Output: Your Faith in Humanity is decreased by 2.
+04/04/2013 11:03:32.995   Hidden: Got connection from ('172.16.248.75', 56252)
+04/04/2013 11:03:33.3   Hidden: Got the following message from the server: "bill oreilly says something"
+04/04/2013 11:03:33.5   Output: bill oreilly says something
+04/04/2013 11:03:33.55   Hidden: Got connection from ('172.16.248.75', 56253)
+04/04/2013 11:03:33.61   Hidden: Got the following message from the server: "_play_ death"
+04/04/2013 11:03:33.62   Output: Playing sound file called death
+04/04/2013 11:03:33.114   Hidden: Got connection from ('172.16.248.75', 56254)
+04/04/2013 11:03:33.122   Hidden: Got the following message from the server: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You pass out from trying to make sense of everything. You are taken to the mental hospital for a quick round of shock therapy.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:03:33.127   Output: Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You pass out from trying to make sense of everything. You are taken to the mental hospital for a quick round of shock therapy.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.
+04/04/2013 11:03:36.45   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:41.42   Hidden: Sending message "_ping_" to server
+04/04/2013 11:03:42.974   Hidden: Got connection from ('172.16.248.75', 56263)
+04/04/2013 11:03:42.982   Hidden: Got the following message from the server: "kanye has entered the room."
+04/04/2013 11:03:42.985   Output: kanye has entered the room.

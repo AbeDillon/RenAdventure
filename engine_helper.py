@@ -45,7 +45,6 @@ def do_command(player, room, verb, nouns, object, tags):
                 room = engine._Rooms[player.coords]
                 if len(text) > 0 and player.name in room.players:
                     messages.append((player.name, text))
-                    messages.append((player.name, '_play_ bad2bone')) ###TESTING
 
                 for alt_player in room.players:
                     if alt_player != player.name:
@@ -425,6 +424,7 @@ def go(room, player, object, noun, tags):
 
 def drop(room, player, object, noun, tags):
     alt_text = ''
+    player_messages = []
 
     if object == None:
         text = "You have no %s to drop." % noun
@@ -434,8 +434,9 @@ def drop(room, player, object, noun, tags):
         rem_item(player, object.name)
         text = "You have dropped the %s." % object.name
         alt_text = "%s has dropped a %s." % (player.name, object.name)
+        player_messages.append((player.name, '_play_ drop'))
 
-    return text, alt_text, []
+    return text, alt_text, player_messages
 
 def unlock(room, player, object, noun, tags):
     alt_text = ''
@@ -552,6 +553,22 @@ def damage(room, attacker, object, noun, tags):
         else:
             text = "Your Faith in Humanity is unaffected."
 
+        death_msgs = ["You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up.",
+                      "You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.",
+                      "You pass out from trying to make sense of everything. You are taken to the mental hospital for a quick round of shock therapy."]
+
+        if player.fih <= 0: # Check if the player has died
+            text += "\nYour Faith in Humanity has reached 0."
+            text += "\n%s" % random.choice(death_msgs)
+
+            # Reset player
+            player.fih = 30
+            player.coords = (0,0,1)
+            room.players.remove(player.name) # Remove player from room
+            engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
+            text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
+            player_messages.append((player, '_play_ death'))    # Send the death sound
+
         player_messages.append((player, text))
 
     return '', '', player_messages
@@ -587,4 +604,4 @@ def hide(room, player, object, noun, tags):
     object.hidden = True
     text = "The %s disappears from the room." % object.name
 
-    return text, text
+    return text, tex

@@ -190,7 +190,7 @@ def init_game(save_state = 0):
     #logger.debug("Starting command thread")
     logger.write_line("Starting command thread") ###TEST
 
-    thread.start_new_thread(spawn_npc_thread, (10,))
+    thread.start_new_thread(spawn_npc_thread, (2,))
     #logger.debug("Starting spawn NPC thread")
     logger.write_line("Starting spawn NPC thread") ###TEST
 

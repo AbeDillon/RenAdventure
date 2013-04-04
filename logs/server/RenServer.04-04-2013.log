@@ -203,3 +203,272 @@
 04/04/2013 10:07:35.405   Got input from: <matt>
 04/04/2013 10:07:35.405   Removing <matt> from _Logged_in
 04/04/2013 10:07:35.455   Input thread for player <matt> ending
+04/04/2013 10:27:23.251   Game State initialized
+04/04/2013 10:27:23.255   Log-in thread spawned
+04/04/2013 10:27:23.255   Login Socket created
+04/04/2013 10:27:23.256   Login Socket bound
+04/04/2013 10:27:23.257   Server action thread spawned
+04/04/2013 10:27:23.257   Login socket listening
+04/04/2013 10:27:23.258   Player timeout thread spawned
+04/04/2013 10:27:23.259   Entering main loop...
+04/04/2013 10:27:35.397   Connected with 172.16.248.75:54771
+04/04/2013 10:27:36.477   User <evan> logged in.
+04/04/2013 10:27:36.485   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:27:36.486   <evan> added to the game.
+04/04/2013 10:27:38.311   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 10:27:41.492   Got input from: <evan>
+04/04/2013 10:27:41.499   Got a ping from <evan>
+04/04/2013 10:27:43.311   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:27:43.371   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:46.490   Got input from: <evan>
+04/04/2013 10:27:46.498   Got a ping from <evan>
+04/04/2013 10:27:48.312   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:27:48.373   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:51.491   Got input from: <evan>
+04/04/2013 10:27:51.498   Got a ping from <evan>
+04/04/2013 10:27:53.312   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:27:53.373   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:27:56.491   Got input from: <evan>
+04/04/2013 10:27:56.498   Got a ping from <evan>
+04/04/2013 10:27:58.313   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:27:58.373   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:01.491   Got input from: <evan>
+04/04/2013 10:28:01.498   Got a ping from <evan>
+04/04/2013 10:28:03.313   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:03.374   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:06.490   Got input from: <evan>
+04/04/2013 10:28:06.497   Got a ping from <evan>
+04/04/2013 10:28:08.314   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:08.375   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:11.491   Got input from: <evan>
+04/04/2013 10:28:11.498   Got a ping from <evan>
+04/04/2013 10:28:13.314   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:13.373   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:16.493   Got input from: <evan>
+04/04/2013 10:28:16.497   Got a ping from <evan>
+04/04/2013 10:28:18.267   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:18.323   Sending message to <evan>: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital."
+04/04/2013 10:28:21.491   Got input from: <evan>
+04/04/2013 10:28:21.498   Got a ping from <evan>
+04/04/2013 10:28:23.267   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:23.324   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:26.489   Got input from: <evan>
+04/04/2013 10:28:26.493   Got a ping from <evan>
+04/04/2013 10:28:28.268   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:28:28.323   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:28:30.119   Got input from: <evan>
+04/04/2013 10:28:30.124   Putting in the command queue: <evan>; "e"
+04/04/2013 10:28:30.168   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 10:28:30.218   Sending message to <evan>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:28:30.274   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:28:31.490   Got input from: <evan>
+04/04/2013 10:28:31.495   Got a ping from <evan>
+04/04/2013 10:28:36.491   Got input from: <evan>
+04/04/2013 10:28:36.498   Got a ping from <evan>
+04/04/2013 10:28:41.491   Got input from: <evan>
+04/04/2013 10:28:41.498   Got a ping from <evan>
+04/04/2013 10:28:46.491   Got input from: <evan>
+04/04/2013 10:28:46.498   Got a ping from <evan>
+04/04/2013 10:28:51.53   Got input from: <evan>
+04/04/2013 10:28:51.59   Putting in the command queue: <evan>; "w"
+04/04/2013 10:28:51.70   Processing Command from Queue: <player>: evan <command>: w
+04/04/2013 10:28:51.120   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:28:51.181   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:28:51.491   Got input from: <evan>
+04/04/2013 10:28:51.495   Got a ping from <evan>
+04/04/2013 10:28:53.270   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 10:28:53.652   Got input from: <evan>
+04/04/2013 10:28:53.656   Putting in the command queue: <evan>; "n"
+04/04/2013 10:28:53.670   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 10:28:53.720   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 10:28:53.780   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:28:56.491   Got input from: <evan>
+04/04/2013 10:28:56.498   Got a ping from <evan>
+04/04/2013 10:28:58.271   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 10:28:58.353   Got input from: <evan>
+04/04/2013 10:28:58.359   Putting in the command queue: <evan>; "s"
+04/04/2013 10:28:58.371   Processing Command from Queue: <player>: evan <command>: s
+04/04/2013 10:28:58.421   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:28:58.482   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:28:59.20   Got input from: <evan>
+04/04/2013 10:28:59.26   Putting in the command queue: <evan>; "e"
+04/04/2013 10:28:59.71   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 10:28:59.121   Sending message to <evan>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 10:28:59.181   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:29:01.491   Got input from: <evan>
+04/04/2013 10:29:01.498   Got a ping from <evan>
+04/04/2013 10:29:02.239   Got input from: <evan>
+04/04/2013 10:29:02.246   Putting in the command queue: <evan>; "w"
+04/04/2013 10:29:02.271   Processing Command from Queue: <player>: evan <command>: w
+04/04/2013 10:29:02.321   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 10:29:02.381   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:29:03.624   Got input from: <evan>
+04/04/2013 10:29:03.629   Putting in the command queue: <evan>; "n"
+04/04/2013 10:29:03.671   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 10:29:03.722   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room."
+04/04/2013 10:29:03.782   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 10:29:06.491   Got input from: <evan>
+04/04/2013 10:29:06.498   Got a ping from <evan>
+04/04/2013 10:29:08.272   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:08.332   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:11.490   Got input from: <evan>
+04/04/2013 10:29:11.498   Got a ping from <evan>
+04/04/2013 10:29:13.272   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:13.332   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:16.490   Got input from: <evan>
+04/04/2013 10:29:16.494   Got a ping from <evan>
+04/04/2013 10:29:18.273   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:18.334   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:21.491   Got input from: <evan>
+04/04/2013 10:29:21.497   Got a ping from <evan>
+04/04/2013 10:29:23.273   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:23.334   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:26.491   Got input from: <evan>
+04/04/2013 10:29:26.498   Got a ping from <evan>
+04/04/2013 10:29:28.274   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:28.335   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:31.491   Got input from: <evan>
+04/04/2013 10:29:31.498   Got a ping from <evan>
+04/04/2013 10:29:33.274   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:33.333   Sending message to <evan>: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up."
+04/04/2013 10:29:36.490   Got input from: <evan>
+04/04/2013 10:29:36.498   Got a ping from <evan>
+04/04/2013 10:29:38.275   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 10:29:38.336   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 10:29:40.725   Got input from: <evan>
+04/04/2013 10:29:40.732   Putting in the command queue: <evan>; "look"
+04/04/2013 10:29:40.775   Processing Command from Queue: <player>: evan <command>: look
+04/04/2013 10:29:41.490   Got input from: <evan>
+04/04/2013 10:29:41.498   Got a ping from <evan>
+04/04/2013 10:29:46.491   Got input from: <evan>
+04/04/2013 10:29:46.498   Got a ping from <evan>
+04/04/2013 10:29:51.491   Got input from: <evan>
+04/04/2013 10:29:51.498   Got a ping from <evan>
+04/04/2013 10:33:56.592   Game State initialized
+04/04/2013 10:33:56.595   Log-in thread spawned
+04/04/2013 10:33:56.596   Login Socket created
+04/04/2013 10:33:56.597   Login Socket bound
+04/04/2013 10:33:56.598   Server action thread spawned
+04/04/2013 10:33:56.598   Login socket listening
+04/04/2013 10:33:56.598   Player timeout thread spawned
+04/04/2013 10:33:56.598   Entering main loop...
+04/04/2013 11:01:05.330   Game State initialized
+04/04/2013 11:01:05.333   Log-in thread spawned
+04/04/2013 11:01:05.333   Login Socket created
+04/04/2013 11:01:05.335   Login Socket bound
+04/04/2013 11:01:05.336   Server action thread spawned
+04/04/2013 11:01:05.336   Login socket listening
+04/04/2013 11:01:05.336   Player timeout thread spawned
+04/04/2013 11:01:05.337   Entering main loop...
+04/04/2013 11:01:37.3   Game State initialized
+04/04/2013 11:01:37.6   Log-in thread spawned
+04/04/2013 11:01:37.7   Login Socket created
+04/04/2013 11:01:37.8   Login Socket bound
+04/04/2013 11:01:37.9   Server action thread spawned
+04/04/2013 11:01:37.10   Login socket listening
+04/04/2013 11:01:37.10   Player timeout thread spawned
+04/04/2013 11:01:37.11   Entering main loop...
+04/04/2013 11:01:44.963   Connected with 172.16.248.75:56124
+04/04/2013 11:01:46.91   User <evan> logged in.
+04/04/2013 11:01:46.100   <evan> added to the game.
+04/04/2013 11:01:46.100   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:01:47.61   Sending message to <evan>: "bill gates has entered the room."
+04/04/2013 11:01:47.117   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:01:51.106   Got input from: <evan>
+04/04/2013 11:01:51.111   Got a ping from <evan>
+04/04/2013 11:01:52.61   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:01:52.117   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:01:52.173   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:01:52.229   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:01:53.101   Got input from: <evan>
+04/04/2013 11:01:53.105   Putting in the command queue: <evan>; "e"
+04/04/2013 11:01:53.111   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 11:01:53.161   Sending message to <evan>: "An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west."
+04/04/2013 11:01:53.219   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 11:01:56.105   Got input from: <evan>
+04/04/2013 11:01:56.109   Got a ping from <evan>
+04/04/2013 11:01:57.61   Sending message to <evan>: "bill gates has entered the room."
+04/04/2013 11:02:01.105   Got input from: <evan>
+04/04/2013 11:02:01.109   Got a ping from <evan>
+04/04/2013 11:02:02.61   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:02:02.117   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:02.211   Sending message to <evan>: "kanye has entered the room."
+04/04/2013 11:02:06.104   Got input from: <evan>
+04/04/2013 11:02:06.109   Got a ping from <evan>
+04/04/2013 11:02:07.62   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:02:07.118   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:07.174   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:02:07.230   Sending message to <evan>: "kanye says something"
+04/04/2013 11:02:07.286   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:02:11.106   Got input from: <evan>
+04/04/2013 11:02:11.110   Got a ping from <evan>
+04/04/2013 11:02:12.62   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:02:12.118   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:02:12.174   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:02:12.230   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:02:12.297   Sending message to <evan>: "kanye says something"
+04/04/2013 11:02:12.353   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:02:16.105   Got input from: <evan>
+04/04/2013 11:02:16.109   Got a ping from <evan>
+04/04/2013 11:02:17.63   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:02:17.119   Sending message to <evan>: "_play_ death"
+04/04/2013 11:02:17.178   Sending message to <evan>: "Your Faith in Humanity is decreased by 2.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Bill Oreilly, Kanye, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, and Bill Oreilly are in the room."
+04/04/2013 11:03:02.813   Game State initialized
+04/04/2013 11:03:02.816   Log-in thread spawned
+04/04/2013 11:03:02.816   Login Socket created
+04/04/2013 11:03:02.817   Login Socket bound
+04/04/2013 11:03:02.817   Server action thread spawned
+04/04/2013 11:03:02.818   Login socket listening
+04/04/2013 11:03:02.818   Player timeout thread spawned
+04/04/2013 11:03:02.818   Entering main loop...
+04/04/2013 11:03:09.898   Connected with 172.16.248.75:56214
+04/04/2013 11:03:11.30   User <evan> logged in.
+04/04/2013 11:03:11.34   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:03:11.34   <evan> added to the game.
+04/04/2013 11:03:12.919   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:03:13.474   Got input from: <evan>
+04/04/2013 11:03:13.481   Putting in the command queue: <evan>; "n"
+04/04/2013 11:03:13.520   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 11:03:13.570   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Gates, Bill Gates, Bill Gates, Kanye, and Bill Gates are in the room."
+04/04/2013 11:03:13.629   Sending message to <evan>: "_play_ bad2bone"
+04/04/2013 11:03:16.36   Got input from: <evan>
+04/04/2013 11:03:16.40   Got a ping from <evan>
+04/04/2013 11:03:17.870   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:03:17.928   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:18.20   Sending message to <evan>: "kanye says something"
+04/04/2013 11:03:18.76   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:21.37   Got input from: <evan>
+04/04/2013 11:03:21.44   Got a ping from <evan>
+04/04/2013 11:03:22.870   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:03:22.930   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:23.20   Sending message to <evan>: "kanye says something"
+04/04/2013 11:03:23.81   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:26.37   Got input from: <evan>
+04/04/2013 11:03:26.44   Got a ping from <evan>
+04/04/2013 11:03:27.871   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:03:27.932   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:27.990   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:03:28.49   Sending message to <evan>: "kanye says something"
+04/04/2013 11:03:28.106   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:03:31.37   Got input from: <evan>
+04/04/2013 11:03:31.44   Got a ping from <evan>
+04/04/2013 11:03:32.871   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:03:32.932   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:03:32.992   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:03:33.52   Sending message to <evan>: "_play_ death"
+04/04/2013 11:03:33.111   Sending message to <evan>: "Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You pass out from trying to make sense of everything. You are taken to the mental hospital for a quick round of shock therapy.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:03:36.37   Got input from: <evan>
+04/04/2013 11:03:36.45   Got a ping from <evan>
+04/04/2013 11:03:41.37   Got input from: <evan>
+04/04/2013 11:03:41.42   Got a ping from <evan>
+04/04/2013 11:03:42.972   Sending message to <evan>: "kanye has entered the room."

@@ -246,3 +246,1364 @@
 04/04/2013 10:07:34.645   Running command (go, south)
 04/04/2013 10:07:34.695   Sending message to server: (matt, bill oreilly has entered the room.)
 04/04/2013 10:07:35.405   Removed player 'matt'
+04/04/2013 10:27:23.119   Initializing game state from default save state
+04/04/2013 10:27:23.225   Loaded global objects
+04/04/2013 10:27:23.231   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 10:27:23.236   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 10:27:23.240   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 10:27:23.244   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 10:27:23.248   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 10:27:23.249   Starting command thread
+04/04/2013 10:27:23.249   Starting spawn NPC thread
+04/04/2013 10:27:23.250   Starting NPC action thread
+04/04/2013 10:27:23.250   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x00000000027C4708>
+04/04/2013 10:27:23.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4248>, go, ['south'], <engine.Portal instance at 0x00000000027BFD48>, ['npc']) in the command queue
+04/04/2013 10:27:23.256   Closing npc action thread.
+04/04/2013 10:27:23.299   Running command (go, south)
+04/04/2013 10:27:28.254   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, go, ['south'], <engine.Portal instance at 0x00000000027BFCC8>, ['npc']) in the command queue
+04/04/2013 10:27:28.254   Closing npc action thread.
+04/04/2013 10:27:28.300   Running command (go, south)
+04/04/2013 10:27:33.255   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, go, ['east'], <engine.Portal instance at 0x00000000027BFB88>, ['npc']) in the command queue
+04/04/2013 10:27:33.255   Closing npc action thread.
+04/04/2013 10:27:33.300   Running command (go, east)
+04/04/2013 10:27:36.482   Created player 'evan' at (0,0,1)
+04/04/2013 10:27:38.255   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4448>, go, ['west'], <engine.Portal instance at 0x00000000027BFD88>, ['npc']) in the command queue
+04/04/2013 10:27:38.255   Closing npc action thread.
+04/04/2013 10:27:38.301   Running command (go, west)
+04/04/2013 10:27:38.311   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 10:27:43.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:27:43.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:27:43.256   Closing npc action thread.
+04/04/2013 10:27:43.301   Running command (say, something)
+04/04/2013 10:27:43.311   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:27:43.351   Running command (damage, say)
+04/04/2013 10:27:43.361   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:27:48.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:27:48.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:27:48.257   Closing npc action thread.
+04/04/2013 10:27:48.302   Running command (say, something)
+04/04/2013 10:27:48.312   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:27:48.352   Running command (damage, say)
+04/04/2013 10:27:48.362   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:27:53.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:27:53.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:27:53.256   Closing npc action thread.
+04/04/2013 10:27:53.302   Running command (say, something)
+04/04/2013 10:27:53.312   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:27:53.352   Running command (damage, say)
+04/04/2013 10:27:53.362   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:27:58.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:27:58.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:27:58.256   Closing npc action thread.
+04/04/2013 10:27:58.303   Running command (say, something)
+04/04/2013 10:27:58.313   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:27:58.353   Running command (damage, say)
+04/04/2013 10:27:58.363   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:03.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:03.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:03.256   Closing npc action thread.
+04/04/2013 10:28:03.303   Running command (say, something)
+04/04/2013 10:28:03.313   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:03.353   Running command (damage, say)
+04/04/2013 10:28:03.363   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:08.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:08.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:08.257   Closing npc action thread.
+04/04/2013 10:28:08.304   Running command (say, something)
+04/04/2013 10:28:08.314   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:08.354   Running command (damage, say)
+04/04/2013 10:28:08.364   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:13.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:13.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:13.258   Closing npc action thread.
+04/04/2013 10:28:13.304   Running command (say, something)
+04/04/2013 10:28:13.314   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:13.354   Running command (damage, say)
+04/04/2013 10:28:13.364   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:18.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:18.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:18.256   Closing npc action thread.
+04/04/2013 10:28:18.260   Running command (say, something)
+04/04/2013 10:28:18.267   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:18.310   Running command (damage, say)
+04/04/2013 10:28:18.317   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.)
+04/04/2013 10:28:23.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:23.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:23.257   Closing npc action thread.
+04/04/2013 10:28:23.260   Running command (say, something)
+04/04/2013 10:28:23.267   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:23.310   Running command (damage, say)
+04/04/2013 10:28:23.317   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:28.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:28:28.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:28:28.256   Closing npc action thread.
+04/04/2013 10:28:28.261   Running command (say, something)
+04/04/2013 10:28:28.268   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:28:28.311   Running command (damage, say)
+04/04/2013 10:28:28.318   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:28:30.168   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027BFE48>, go, ['east'], <engine.Portal instance at 0x00000000027BFB88>, []) in the command queue
+04/04/2013 10:28:30.214   Running command (go, east)
+04/04/2013 10:28:30.218   Sending message to server: (evan, An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.)
+04/04/2013 10:28:30.218   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:28:33.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, go, ['north'], <engine.Portal instance at 0x00000000027BFBC8>, ['npc']) in the command queue
+04/04/2013 10:28:33.256   Closing npc action thread.
+04/04/2013 10:28:33.266   Running command (go, north)
+04/04/2013 10:28:38.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, go, ['east'], <engine.Portal instance at 0x00000000027BFC48>, ['npc']) in the command queue
+04/04/2013 10:28:38.257   Closing npc action thread.
+04/04/2013 10:28:38.267   Running command (go, east)
+04/04/2013 10:28:43.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4648>, go, ['west'], <engine.Portal instance at 0x00000000027BFB48>, ['npc']) in the command queue
+04/04/2013 10:28:43.257   Closing npc action thread.
+04/04/2013 10:28:43.267   Running command (go, west)
+04/04/2013 10:28:48.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, go, ['north'], <engine.Portal instance at 0x00000000027BFC88>, ['npc']) in the command queue
+04/04/2013 10:28:48.257   Closing npc action thread.
+04/04/2013 10:28:48.268   Running command (go, north)
+04/04/2013 10:28:51.70   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027C4448>, go, ['west'], <engine.Portal instance at 0x00000000027BFD88>, []) in the command queue
+04/04/2013 10:28:51.118   Running command (go, west)
+04/04/2013 10:28:51.120   Sending message to server: (evan, An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.)
+04/04/2013 10:28:51.120   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:28:53.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, go, ['south'], <engine.Portal instance at 0x00000000027BFCC8>, ['npc']) in the command queue
+04/04/2013 10:28:53.257   Closing npc action thread.
+04/04/2013 10:28:53.268   Running command (go, south)
+04/04/2013 10:28:53.270   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 10:28:53.670   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027BFE48>, go, ['north'], <engine.Portal instance at 0x00000000027BFBC8>, []) in the command queue
+04/04/2013 10:28:53.718   Running command (go, north)
+04/04/2013 10:28:53.720   Sending message to server: (evan, An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.)
+04/04/2013 10:28:53.720   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:28:58.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027BFE48>, go, ['north'], <engine.Portal instance at 0x00000000027BFBC8>, ['npc']) in the command queue
+04/04/2013 10:28:58.257   Closing npc action thread.
+04/04/2013 10:28:58.269   Running command (go, north)
+04/04/2013 10:28:58.271   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 10:28:58.371   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027C4088>, go, ['south'], <engine.Portal instance at 0x00000000027BFCC8>, []) in the command queue
+04/04/2013 10:28:58.419   Running command (go, south)
+04/04/2013 10:28:58.421   Sending message to server: (evan, An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.)
+04/04/2013 10:28:58.421   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:28:59.71   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027BFE48>, go, ['east'], <engine.Portal instance at 0x00000000027BFB88>, []) in the command queue
+04/04/2013 10:28:59.119   Running command (go, east)
+04/04/2013 10:28:59.121   Sending message to server: (evan, An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.)
+04/04/2013 10:28:59.121   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:29:02.271   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027C4448>, go, ['west'], <engine.Portal instance at 0x00000000027BFD88>, []) in the command queue
+04/04/2013 10:29:02.319   Running command (go, west)
+04/04/2013 10:29:02.321   Sending message to server: (evan, An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.)
+04/04/2013 10:29:02.321   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:29:03.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, go, ['north'], <engine.Portal instance at 0x00000000027BFC88>, ['npc']) in the command queue
+04/04/2013 10:29:03.257   Closing npc action thread.
+04/04/2013 10:29:03.269   Running command (go, north)
+04/04/2013 10:29:03.671   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027BFE48>, go, ['north'], <engine.Portal instance at 0x00000000027BFBC8>, []) in the command queue
+04/04/2013 10:29:03.719   Running command (go, north)
+04/04/2013 10:29:03.721   Sending message to server: (evan, An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Oreilly is in the room.)
+04/04/2013 10:29:03.721   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 10:29:08.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:08.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:08.257   Closing npc action thread.
+04/04/2013 10:29:08.270   Running command (say, something)
+04/04/2013 10:29:08.272   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:08.320   Running command (damage, say)
+04/04/2013 10:29:08.322   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:13.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:13.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:13.257   Closing npc action thread.
+04/04/2013 10:29:13.270   Running command (say, something)
+04/04/2013 10:29:13.272   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:13.320   Running command (damage, say)
+04/04/2013 10:29:13.322   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:18.256   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:18.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:18.257   Closing npc action thread.
+04/04/2013 10:29:18.271   Running command (say, something)
+04/04/2013 10:29:18.273   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:18.321   Running command (damage, say)
+04/04/2013 10:29:18.323   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:23.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:23.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:23.257   Closing npc action thread.
+04/04/2013 10:29:23.271   Running command (say, something)
+04/04/2013 10:29:23.273   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:23.321   Running command (damage, say)
+04/04/2013 10:29:23.323   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:28.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:28.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:28.257   Closing npc action thread.
+04/04/2013 10:29:28.272   Running command (say, something)
+04/04/2013 10:29:28.274   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:28.322   Running command (damage, say)
+04/04/2013 10:29:28.324   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:33.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:33.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:33.258   Closing npc action thread.
+04/04/2013 10:29:33.272   Running command (say, something)
+04/04/2013 10:29:33.274   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:33.322   Running command (damage, say)
+04/04/2013 10:29:33.324   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up.)
+04/04/2013 10:29:38.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:38.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:38.258   Closing npc action thread.
+04/04/2013 10:29:38.273   Running command (say, something)
+04/04/2013 10:29:38.275   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 10:29:38.323   Running command (damage, say)
+04/04/2013 10:29:38.325   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 10:29:40.775   Put command (<engine.Player instance at 0x00000000027C7888>, <engine.Room instance at 0x00000000027BFE48>, look, [], None, []) in the command queue
+04/04/2013 10:29:43.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:43.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:43.258   Closing npc action thread.
+04/04/2013 10:29:48.257   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:48.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:48.258   Closing npc action thread.
+04/04/2013 10:29:53.258   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 10:29:53.259   Put command (<engine.NPC instance at 0x00000000027C4708>, <engine.Room instance at 0x00000000027C4088>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 10:29:53.259   Closing npc action thread.
+04/04/2013 10:33:56.495   Initializing game state from default save state
+04/04/2013 10:33:56.569   Loaded global objects
+04/04/2013 10:33:56.575   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 10:33:56.580   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 10:33:56.583   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 10:33:56.587   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 10:33:56.590   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 10:33:56.591   Starting command thread
+04/04/2013 10:33:56.591   Starting spawn NPC thread
+04/04/2013 10:33:56.592   Starting NPC action thread
+04/04/2013 10:33:56.592   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x000000000280F908>
+04/04/2013 10:33:56.597   Put command (<engine.NPC instance at 0x000000000280F908>, <engine.Room instance at 0x000000000280F448>, go, ['south'], <engine.Portal instance at 0x0000000002809F48>, ['npc']) in the command queue
+04/04/2013 10:33:56.597   Closing npc action thread.
+04/04/2013 10:33:56.641   Running command (go, south)
+04/04/2013 11:01:05.299   Initializing game state from default save state
+04/04/2013 11:01:05.322   Loaded global objects
+04/04/2013 11:01:05.323   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 11:01:05.324   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 11:01:05.325   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 11:01:05.326   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 11:01:05.327   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 11:01:05.328   Starting command thread
+04/04/2013 11:01:05.328   Starting spawn NPC thread
+04/04/2013 11:01:05.329   Starting NPC action thread
+04/04/2013 11:01:05.329   Spawned NPC: (kanye) <engine.NPC instance at 0x00000000026BF8C8>
+04/04/2013 11:01:05.334   Put command (<engine.NPC instance at 0x00000000026BF8C8>, <engine.Room instance at 0x00000000026BF488>, go, ['south'], <engine.Portal instance at 0x00000000026B9F88>, ['npc']) in the command queue
+04/04/2013 11:01:05.335   Closing npc action thread.
+04/04/2013 11:01:05.378   Running command (go, south)
+04/04/2013 11:01:36.980   Initializing game state from default save state
+04/04/2013 11:01:36.997   Loaded global objects
+04/04/2013 11:01:36.998   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 11:01:36.999   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 11:01:36.999   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 11:01:37.   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 11:01:37.   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 11:01:37.1   Starting command thread
+04/04/2013 11:01:37.1   Starting spawn NPC thread
+04/04/2013 11:01:37.2   Starting NPC action thread
+04/04/2013 11:01:37.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:37.8   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002786148>, go, ['south'], <engine.Portal instance at 0x0000000002780888>, ['npc']) in the command queue
+04/04/2013 11:01:37.9   Closing npc action thread.
+04/04/2013 11:01:37.51   Running command (go, south)
+04/04/2013 11:01:37.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.652   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:37.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:37.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:37.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:37.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:37.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:38.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:38.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.202   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:38.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:38.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:38.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:38.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:38.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.52   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.252   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.702   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:39.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:39.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:39.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:40.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:40.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.252   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:40.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:40.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:40.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:40.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:41.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:41.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:41.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:41.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:41.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786148>, go, ['south'], <engine.Portal instance at 0x0000000002780888>, ['npc']) in the command queue
+04/04/2013 11:01:42.7   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780F48>, go, ['north'], <engine.Portal instance at 0x00000000027807C8>, ['npc']) in the command queue
+04/04/2013 11:01:42.7   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786148>, go, ['south'], <engine.Portal instance at 0x0000000002780888>, ['npc']) in the command queue
+04/04/2013 11:01:42.7   Closing npc action thread.
+04/04/2013 11:01:42.51   Running command (go, south)
+04/04/2013 11:01:42.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.101   Running command (go, north)
+04/04/2013 11:01:42.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.151   Running command (go, south)
+04/04/2013 11:01:42.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:42.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:42.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:42.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:43.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:43.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:43.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:43.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:43.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:43.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:43.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:43.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:43.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:43.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:43.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.152   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:44.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:44.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:44.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:45.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.152   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.352   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:45.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:45.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:45.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:45.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:45.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:45.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:46.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.97   Created player 'evan' at (0,0,1)
+04/04/2013 11:01:46.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.352   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:46.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.702   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:46.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:46.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:46.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:46.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:47.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002780F48>, go, ['south'], <engine.Portal instance at 0x0000000002780808>, ['npc']) in the command queue
+04/04/2013 11:01:47.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780F48>, go, ['south'], <engine.Portal instance at 0x0000000002780808>, ['npc']) in the command queue
+04/04/2013 11:01:47.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002780F48>, go, ['east'], <engine.Portal instance at 0x0000000002780788>, ['npc']) in the command queue
+04/04/2013 11:01:47.6   Closing npc action thread.
+04/04/2013 11:01:47.51   Running command (go, south)
+04/04/2013 11:01:47.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.61   Sending message to server: (evan, bill gates has entered the room.)
+04/04/2013 11:01:47.101   Running command (go, south)
+04/04/2013 11:01:47.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:47.111   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 11:01:47.151   Running command (go, east)
+04/04/2013 11:01:47.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:47.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.702   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:47.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:47.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.252   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:48.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:48.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.652   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:48.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:48.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:48.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:48.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.152   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:49.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:49.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:49.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:49.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:49.852   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:49.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.352   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:50.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:50.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:50.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:51.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:51.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.252   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:51.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:51.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:51.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:51.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:51.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002780C88>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:01:52.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002780C88>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:01:52.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780C88>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:01:52.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780C88>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:01:52.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786548>, go, ['west'], <engine.Portal instance at 0x0000000002780688>, ['npc']) in the command queue
+04/04/2013 11:01:52.6   Closing npc action thread.
+04/04/2013 11:01:52.51   Running command (say, something)
+04/04/2013 11:01:52.52   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.61   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:01:52.101   Running command (damage, say)
+04/04/2013 11:01:52.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.111   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:01:52.151   Running command (say, something)
+04/04/2013 11:01:52.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.161   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 11:01:52.201   Running command (damage, say)
+04/04/2013 11:01:52.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.211   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 11:01:52.251   Running command (go, west)
+04/04/2013 11:01:52.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:52.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.652   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:52.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:52.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:52.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.111   Put command (<engine.Player instance at 0x0000000002789908>, <engine.Room instance at 0x0000000002780C88>, go, ['east'], <engine.Portal instance at 0x00000000027806C8>, []) in the command queue
+04/04/2013 11:01:53.151   Running command (go, east)
+04/04/2013 11:01:53.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.161   Sending message to server: (evan, An old dining hall. You see Kanye West's sunglasses in the room. There is a wooden door to the west.)
+04/04/2013 11:01:53.161   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 11:01:53.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:53.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:53.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.652   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:53.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:53.852   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:53.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:53.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:54.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:54.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:54.202   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.352   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:54.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:54.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:54.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:54.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:54.852   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:54.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.52   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.152   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.252   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:55.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:55.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:55.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:55.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:55.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:56.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.52   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:56.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.202   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.302   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:56.552   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:56.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:56.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.902   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:56.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002780C88>, go, ['east'], <engine.Portal instance at 0x00000000027806C8>, ['npc']) in the command queue
+04/04/2013 11:01:57.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780C88>, go, ['north'], <engine.Portal instance at 0x0000000002780708>, ['npc']) in the command queue
+04/04/2013 11:01:57.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002780F48>, go, ['south'], <engine.Portal instance at 0x0000000002780808>, ['npc']) in the command queue
+04/04/2013 11:01:57.6   Closing npc action thread.
+04/04/2013 11:01:57.51   Running command (go, east)
+04/04/2013 11:01:57.52   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.61   Sending message to server: (evan, bill gates has entered the room.)
+04/04/2013 11:01:57.101   Running command (go, north)
+04/04/2013 11:01:57.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:57.151   Running command (go, south)
+04/04/2013 11:01:57.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.352   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:57.452   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:57.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:57.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:57.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:57.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:57.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.102   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.152   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.202   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:58.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:58.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.402   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.502   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.702   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:58.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:58.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:58.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.202   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:59.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.552   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.652   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.702   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:01:59.802   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:01:59.852   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:59.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:01:59.952   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:00.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:00.402   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.602   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:00.752   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:00.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:00.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:00.902   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:00.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.2   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.102   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.202   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.252   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.302   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.352   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.452   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.502   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.602   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.652   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.702   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:01.752   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.802   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.852   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:01.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:01.952   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.2   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:02.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:02.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780F48>, go, ['south'], <engine.Portal instance at 0x0000000002780808>, ['npc']) in the command queue
+04/04/2013 11:02:02.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002780C88>, go, ['east'], <engine.Portal instance at 0x00000000027806C8>, ['npc']) in the command queue
+04/04/2013 11:02:02.6   Closing npc action thread.
+04/04/2013 11:02:02.51   Running command (say, something)
+04/04/2013 11:02:02.52   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.61   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:02:02.101   Running command (damage, say)
+04/04/2013 11:02:02.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.111   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:02:02.151   Running command (go, south)
+04/04/2013 11:02:02.152   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.201   Running command (go, east)
+04/04/2013 11:02:02.202   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.211   Sending message to server: (evan, kanye has entered the room.)
+04/04/2013 11:02:02.252   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.302   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.352   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.402   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.452   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.502   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.552   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.602   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.652   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:02.702   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.752   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.802   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.852   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:02.902   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:02.952   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.2   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:03.52   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.102   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.152   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.203   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.253   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.303   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:03.353   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:03.403   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:03.453   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.503   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.553   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.603   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.653   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:03.703   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.753   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.803   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.853   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:03.903   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:03.953   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.3   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.103   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.153   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.203   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.253   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.303   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.353   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.403   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.453   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.503   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.553   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.603   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.703   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.753   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.803   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:04.853   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:04.903   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:04.953   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.3   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:05.103   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.153   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.203   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:05.253   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:05.303   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.353   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.403   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.453   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.503   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.553   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:05.603   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:05.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.703   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.753   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.803   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.853   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:05.903   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:05.953   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.3   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.103   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.153   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.203   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.253   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.303   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.353   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.403   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.453   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.503   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.553   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.603   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.703   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.753   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:06.803   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.853   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:06.903   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:06.953   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.3   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:07.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:07.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002780C88>, go, ['east'], <engine.Portal instance at 0x00000000027806C8>, ['npc']) in the command queue
+04/04/2013 11:02:07.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:07.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:07.6   Closing npc action thread.
+04/04/2013 11:02:07.52   Running command (say, something)
+04/04/2013 11:02:07.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.62   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:02:07.102   Running command (damage, say)
+04/04/2013 11:02:07.103   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.112   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:02:07.152   Running command (go, east)
+04/04/2013 11:02:07.153   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.162   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 11:02:07.202   Running command (say, something)
+04/04/2013 11:02:07.203   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.212   Sending message to server: (evan, kanye says something)
+04/04/2013 11:02:07.252   Running command (damage, say)
+04/04/2013 11:02:07.253   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.262   Sending message to server: (evan, Your Faith in Humanity is decreased by 6.)
+04/04/2013 11:02:07.303   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.353   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.403   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.453   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:07.503   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.553   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:07.603   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.653   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.703   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.753   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.803   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:07.853   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.903   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:07.953   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.3   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:08.53   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.103   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.153   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.203   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.253   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:08.303   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.353   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.403   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.453   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:08.503   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.553   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.603   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.703   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.753   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.803   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:08.853   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:08.903   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:08.953   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.3   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.53   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.103   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.153   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.203   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.253   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.303   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:09.353   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.403   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.453   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.503   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.553   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.603   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:09.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.703   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.753   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:09.803   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:09.853   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:09.903   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:09.953   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.3   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.53   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.103   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.153   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.203   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.253   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.303   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.353   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.403   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.453   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.503   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.553   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.603   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.653   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.703   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.753   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.803   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:10.853   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:10.903   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:10.953   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.3   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:11.53   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:11.103   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:11.153   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.203   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.253   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.303   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.353   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:11.403   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.453   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.503   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.553   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.603   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.653   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.703   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.753   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:11.803   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.853   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:11.903   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:11.953   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.3   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:12.6   Closing npc action thread.
+04/04/2013 11:02:12.52   Running command (say, something)
+04/04/2013 11:02:12.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.62   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:02:12.102   Running command (damage, say)
+04/04/2013 11:02:12.103   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.112   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:02:12.152   Running command (say, something)
+04/04/2013 11:02:12.153   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.162   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 11:02:12.202   Running command (damage, say)
+04/04/2013 11:02:12.203   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.212   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.)
+04/04/2013 11:02:12.252   Running command (say, something)
+04/04/2013 11:02:12.253   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.262   Sending message to server: (evan, kanye says something)
+04/04/2013 11:02:12.302   Running command (damage, say)
+04/04/2013 11:02:12.303   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.312   Sending message to server: (evan, Your Faith in Humanity is decreased by 6.)
+04/04/2013 11:02:12.353   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.403   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.453   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.503   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.553   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.603   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.653   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.703   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.753   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:12.803   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:12.853   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.903   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:12.953   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.3   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.53   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.103   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.153   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.204   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.254   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.304   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.354   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:13.404   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.454   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:13.504   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.554   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.604   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.654   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.704   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.754   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:13.804   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:13.854   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.904   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:13.954   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.4   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.54   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.104   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.154   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.204   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:14.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.304   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.354   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:14.404   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.454   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.504   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:14.554   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:14.604   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.654   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.704   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.754   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.804   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:14.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.904   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:14.954   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.4   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.54   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.104   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.154   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.204   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.304   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.354   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.404   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.454   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.504   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.554   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.604   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:15.654   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.704   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.754   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.804   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:15.904   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:15.954   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:16.4   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.54   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.104   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:16.154   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.204   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.304   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.354   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.404   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:16.454   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.504   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:16.554   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:16.604   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.654   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:16.704   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:16.754   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:16.804   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.854   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:16.904   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:16.954   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.4   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.5   Put command (<engine.NPC instance at 0x00000000027865C8>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.6   Put command (<engine.NPC instance at 0x0000000002786608>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.6   Put command (<engine.NPC instance at 0x0000000002786588>, <engine.Room instance at 0x0000000002786348>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:02:17.6   Closing npc action thread.
+04/04/2013 11:02:17.53   Running command (say, something)
+04/04/2013 11:02:17.54   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.63   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:02:17.103   Running command (damage, say)
+04/04/2013 11:02:17.104   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.113   Sending message to server: (evan, _play_ death)
+04/04/2013 11:02:17.114   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Gates, Bill Gates, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Gates, Bill Oreilly, Bill Oreilly, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Kanye, Bill Oreilly, Kanye, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, Bill Oreilly, and Bill Oreilly are in the room.)
+04/04/2013 11:02:17.153   Running command (say, something)
+04/04/2013 11:02:17.154   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.203   Running command (damage, say)
+04/04/2013 11:02:17.204   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.253   Running command (say, something)
+04/04/2013 11:02:17.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.303   Running command (damage, say)
+04/04/2013 11:02:17.304   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.354   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.404   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.454   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.504   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.554   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.604   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.654   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.704   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.754   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.804   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:17.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:17.904   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:17.954   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.4   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:18.54   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:18.104   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.154   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:18.204   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:18.304   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.354   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.404   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.454   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.504   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.554   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:18.604   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:18.654   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:18.704   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.754   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.804   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:18.904   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:18.954   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.4   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.54   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.104   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.154   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.204   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.304   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.354   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.404   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.454   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.504   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.554   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.604   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.654   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.704   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.754   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.804   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:19.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:19.904   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:19.954   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:20.4   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.54   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.104   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:20.154   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.204   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.254   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.304   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.354   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.404   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.454   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.504   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000027865C8>
+04/04/2013 11:02:20.554   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.604   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.654   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.704   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.754   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002786608>
+04/04/2013 11:02:20.804   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.854   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:02:20.904   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002786588>
+04/04/2013 11:03:02.786   Initializing game state from default save state
+04/04/2013 11:03:02.805   Loaded global objects
+04/04/2013 11:03:02.807   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 11:03:02.808   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 11:03:02.809   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 11:03:02.810   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 11:03:02.811   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 11:03:02.811   Starting command thread
+04/04/2013 11:03:02.811   Starting spawn NPC thread
+04/04/2013 11:03:02.812   Starting NPC action thread
+04/04/2013 11:03:02.812   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000028265C8>
+04/04/2013 11:03:02.817   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002826148>, go, ['south'], <engine.Portal instance at 0x0000000002820888>, ['npc']) in the command queue
+04/04/2013 11:03:02.817   Closing npc action thread.
+04/04/2013 11:03:02.861   Running command (go, south)
+04/04/2013 11:03:02.863   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000028265C8>
+04/04/2013 11:03:02.913   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002826588>
+04/04/2013 11:03:02.963   Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002826588>
+04/04/2013 11:03:03.13   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000028265C8>
+04/04/2013 11:03:03.63   Spawned NPC: (bill gates) <engine.NPC instance at 0x00000000028265C8>
+04/04/2013 11:03:03.113   Spawned NPC: (bill oreilly) <engine.NPC instance at 0x0000000002826608>
+04/04/2013 11:03:07.816   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, go, ['east'], <engine.Portal instance at 0x0000000002820788>, ['npc']) in the command queue
+04/04/2013 11:03:07.816   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002826148>, go, ['south'], <engine.Portal instance at 0x0000000002820888>, ['npc']) in the command queue
+04/04/2013 11:03:07.817   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002826148>, go, ['south'], <engine.Portal instance at 0x0000000002820888>, ['npc']) in the command queue
+04/04/2013 11:03:07.817   Closing npc action thread.
+04/04/2013 11:03:07.862   Running command (go, east)
+04/04/2013 11:03:07.912   Running command (go, south)
+04/04/2013 11:03:07.962   Running command (go, south)
+04/04/2013 11:03:11.32   Created player 'evan' at (0,0,1)
+04/04/2013 11:03:12.817   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002826548>, go, ['west'], <engine.Portal instance at 0x0000000002820688>, ['npc']) in the command queue
+04/04/2013 11:03:12.818   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820F48>, go, ['south'], <engine.Portal instance at 0x0000000002820808>, ['npc']) in the command queue
+04/04/2013 11:03:12.818   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, go, ['north'], <engine.Portal instance at 0x00000000028207C8>, ['npc']) in the command queue
+04/04/2013 11:03:12.818   Closing npc action thread.
+04/04/2013 11:03:12.862   Running command (go, west)
+04/04/2013 11:03:12.912   Running command (go, south)
+04/04/2013 11:03:12.919   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 11:03:12.962   Running command (go, north)
+04/04/2013 11:03:13.520   Put command (<engine.Player instance at 0x00000000028292C8>, <engine.Room instance at 0x0000000002820C88>, go, ['north'], <engine.Portal instance at 0x0000000002820708>, []) in the command queue
+04/04/2013 11:03:13.563   Running command (go, north)
+04/04/2013 11:03:13.570   Sending message to server: (evan, An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Bill Gates, Bill Gates, Bill Gates, Kanye, and Bill Gates are in the room.)
+04/04/2013 11:03:13.570   Sending message to server: (evan, _play_ bad2bone)
+04/04/2013 11:03:17.816   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:17.817   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:17.817   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820C88>, go, ['east'], <engine.Portal instance at 0x00000000028206C8>, ['npc']) in the command queue
+04/04/2013 11:03:17.818   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:17.818   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:17.818   Closing npc action thread.
+04/04/2013 11:03:17.863   Running command (say, something)
+04/04/2013 11:03:17.870   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:03:17.913   Running command (damage, say)
+04/04/2013 11:03:17.920   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:03:17.963   Running command (go, east)
+04/04/2013 11:03:18.13   Running command (say, something)
+04/04/2013 11:03:18.20   Sending message to server: (evan, kanye says something)
+04/04/2013 11:03:18.63   Running command (damage, say)
+04/04/2013 11:03:18.70   Sending message to server: (evan, Your Faith in Humanity is decreased by 6.)
+04/04/2013 11:03:22.816   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:22.817   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:22.817   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002826348>, go, ['west'], <engine.Portal instance at 0x00000000028208C8>, ['npc']) in the command queue
+04/04/2013 11:03:22.817   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:22.817   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:22.817   Closing npc action thread.
+04/04/2013 11:03:22.863   Running command (say, something)
+04/04/2013 11:03:22.870   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:03:22.913   Running command (damage, say)
+04/04/2013 11:03:22.920   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:03:22.963   Running command (go, west)
+04/04/2013 11:03:23.13   Running command (say, something)
+04/04/2013 11:03:23.20   Sending message to server: (evan, kanye says something)
+04/04/2013 11:03:23.63   Running command (damage, say)
+04/04/2013 11:03:23.70   Sending message to server: (evan, Your Faith in Humanity is decreased by 6.)
+04/04/2013 11:03:27.817   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:27.818   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:27.818   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820C88>, go, ['north'], <engine.Portal instance at 0x0000000002820708>, ['npc']) in the command queue
+04/04/2013 11:03:27.819   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:27.819   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:27.819   Closing npc action thread.
+04/04/2013 11:03:27.864   Running command (say, something)
+04/04/2013 11:03:27.871   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:03:27.914   Running command (damage, say)
+04/04/2013 11:03:27.921   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:03:27.964   Running command (go, north)
+04/04/2013 11:03:27.971   Sending message to server: (evan, bill oreilly has entered the room.)
+04/04/2013 11:03:28.14   Running command (say, something)
+04/04/2013 11:03:28.21   Sending message to server: (evan, kanye says something)
+04/04/2013 11:03:28.64   Running command (damage, say)
+04/04/2013 11:03:28.71   Sending message to server: (evan, Your Faith in Humanity is decreased by 6.)
+04/04/2013 11:03:32.818   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.818   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.819   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.819   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.819   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.820   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 11:03:32.820   Closing npc action thread.
+04/04/2013 11:03:32.864   Running command (say, something)
+04/04/2013 11:03:32.871   Sending message to server: (evan, bill gates says something)
+04/04/2013 11:03:32.914   Running command (damage, say)
+04/04/2013 11:03:32.921   Sending message to server: (evan, Your Faith in Humanity is decreased by 2.)
+04/04/2013 11:03:32.964   Running command (say, something)
+04/04/2013 11:03:32.971   Sending message to server: (evan, bill oreilly says something)
+04/04/2013 11:03:33.14   Running command (damage, say)
+04/04/2013 11:03:33.21   Sending message to server: (evan, _play_ death)
+04/04/2013 11:03:33.21   Sending message to server: (evan, Your Faith in Humanity is decreased by 4.
+Your Faith in Humanity has reached 0.
+You pass out from trying to make sense of everything. You are taken to the mental hospital for a quick round of shock therapy.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.)
+04/04/2013 11:03:33.64   Running command (say, something)
+04/04/2013 11:03:33.114   Running command (damage, say)
+04/04/2013 11:03:37.818   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002820F48>, go, ['east'], <engine.Portal instance at 0x0000000002820788>, ['npc']) in the command queue
+04/04/2013 11:03:37.818   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820F48>, go, ['north'], <engine.Portal instance at 0x00000000028207C8>, ['npc']) in the command queue
+04/04/2013 11:03:37.819   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, go, ['north'], <engine.Portal instance at 0x00000000028207C8>, ['npc']) in the command queue
+04/04/2013 11:03:37.819   Closing npc action thread.
+04/04/2013 11:03:37.865   Running command (go, east)
+04/04/2013 11:03:37.915   Running command (go, north)
+04/04/2013 11:03:37.965   Running command (go, north)
+04/04/2013 11:03:42.818   Put command (<engine.NPC instance at 0x00000000028265C8>, <engine.Room instance at 0x0000000002826548>, go, ['west'], <engine.Portal instance at 0x0000000002820688>, ['npc']) in the command queue
+04/04/2013 11:03:42.818   Put command (<engine.NPC instance at 0x0000000002826608>, <engine.Room instance at 0x0000000002820F48>, go, ['east'], <engine.Portal instance at 0x0000000002820788>, ['npc']) in the command queue
+04/04/2013 11:03:42.819   Put command (<engine.NPC instance at 0x0000000002826588>, <engine.Room instance at 0x0000000002820F48>, go, ['south'], <engine.Portal instance at 0x0000000002820808>, ['npc']) in the command queue
+04/04/2013 11:03:42.819   Closing npc action thread.
+04/04/2013 11:03:42.865   Running command (go, west)
+04/04/2013 11:03:42.915   Running command (go, east)
+04/04/2013 11:03:42.965   Running command (go, south)
+04/04/2013 11:03:42.972   Sending message to server: (evan, kanye has entered the room.)
