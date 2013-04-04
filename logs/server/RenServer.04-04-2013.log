@@ -472,3 +472,407 @@ An empty jail cell. You see a cruddy old toilet, and a key in the room. There is
 04/04/2013 11:03:41.37   Got input from: <evan>
 04/04/2013 11:03:41.42   Got a ping from <evan>
 04/04/2013 11:03:42.972   Sending message to <evan>: "kanye has entered the room."
+04/04/2013 11:10:26.671   Game State initialized
+04/04/2013 11:10:26.673   Log-in thread spawned
+04/04/2013 11:10:26.673   Login Socket created
+04/04/2013 11:10:26.674   Login Socket bound
+04/04/2013 11:10:26.674   Server action thread spawned
+04/04/2013 11:10:26.674   Player timeout thread spawned
+04/04/2013 11:10:26.674   Login socket listening
+04/04/2013 11:10:26.674   Entering main loop...
+04/04/2013 11:10:34.49   Connected with 172.16.248.75:56556
+04/04/2013 11:10:35.195   User <evan> logged in.
+04/04/2013 11:10:35.201   <evan> added to the game.
+04/04/2013 11:10:35.201   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:10:36.725   Sending message to <evan>: "bill gates has entered the room."
+04/04/2013 11:10:40.209   Got input from: <evan>
+04/04/2013 11:10:40.216   Got a ping from <evan>
+04/04/2013 11:10:41.725   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:10:41.782   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:10:41.840   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:10:45.206   Got input from: <evan>
+04/04/2013 11:10:45.213   Got a ping from <evan>
+04/04/2013 11:10:46.367   Got input from: <evan>
+04/04/2013 11:10:46.374   Putting in the command queue: <evan>; "n"
+04/04/2013 11:10:46.376   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 11:10:46.426   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Kanye is in the room."
+04/04/2013 11:10:46.826   Sending message to <evan>: "kanye says something"
+04/04/2013 11:10:46.884   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:10:50.206   Got input from: <evan>
+04/04/2013 11:10:50.213   Got a ping from <evan>
+04/04/2013 11:10:50.817   Got input from: <evan>
+04/04/2013 11:10:50.822   Putting in the command queue: <evan>; "e"
+04/04/2013 11:10:50.826   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 11:10:50.876   Sending message to <evan>: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 11:10:51.826   Sending message to <evan>: "kanye has entered the room."
+04/04/2013 11:10:52.376   Got input from: <evan>
+04/04/2013 11:10:52.383   Putting in the command queue: <evan>; "w"
+04/04/2013 11:10:52.426   Processing Command from Queue: <player>: evan <command>: w
+04/04/2013 11:10:52.476   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 11:10:55.206   Got input from: <evan>
+04/04/2013 11:10:55.213   Got a ping from <evan>
+04/04/2013 11:10:56.727   Sending message to <evan>: "bill gates has entered the room."
+04/04/2013 11:10:56.785   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:10:56.842   Sending message to <evan>: "kanye has entered the room."
+04/04/2013 11:11:00.206   Got input from: <evan>
+04/04/2013 11:11:00.213   Got a ping from <evan>
+04/04/2013 11:11:01.727   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:11:01.785   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:11:01.843   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:11:01.901   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:11:01.959   Sending message to <evan>: "kanye says something"
+04/04/2013 11:11:02.17   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:11:05.205   Got input from: <evan>
+04/04/2013 11:11:05.210   Got a ping from <evan>
+04/04/2013 11:11:06.728   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:11:06.787   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 11:11:06.846   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:11:06.904   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:11:06.961   Sending message to <evan>: "kanye says something"
+04/04/2013 11:11:07.19   Sending message to <evan>: "_play_ death"
+04/04/2013 11:11:07.77   Sending message to <evan>: "Your Faith in Humanity is decreased by 6.
+Your Faith in Humanity has reached 0.
+You cower in the corner of the room, rocking back and forth chanting 'I will let you finish...Fo heezi, I will let you finish. The nice men come and take you to the mental hospital.
+An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:11:10.205   Got input from: <evan>
+04/04/2013 11:11:10.212   Got a ping from <evan>
+04/04/2013 11:11:11.778   Sending message to <evan>: "bill oreilly has entered the room."
+04/04/2013 11:11:15.205   Got input from: <evan>
+04/04/2013 11:11:15.212   Got a ping from <evan>
+04/04/2013 11:11:16.779   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:11:16.836   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:11:16.893   Sending message to <evan>: "kanye has entered the room."
+04/04/2013 11:11:18.914   Got input from: <evan>
+04/04/2013 11:11:18.919   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 11:11:18.929   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 11:11:18.979   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 11:11:20.206   Got input from: <evan>
+04/04/2013 11:11:20.213   Got a ping from <evan>
+04/04/2013 11:11:21.779   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:11:21.838   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:11:21.895   Sending message to <evan>: "kanye says something"
+04/04/2013 11:11:21.953   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:11:25.206   Got input from: <evan>
+04/04/2013 11:11:25.210   Got a ping from <evan>
+04/04/2013 11:11:26.730   Sending message to <evan>: "bill gates has entered the room."
+04/04/2013 11:11:26.788   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:11:26.845   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:11:26.903   Sending message to <evan>: "kanye says something"
+04/04/2013 11:11:26.961   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 11:11:27.391   Got input from: <evan>
+04/04/2013 11:11:27.398   Putting in the command queue: <evan>; "drop toilet"
+04/04/2013 11:11:27.430   Processing Command from Queue: <player>: evan <command>: drop toilet
+04/04/2013 11:11:30.205   Got input from: <evan>
+04/04/2013 11:11:30.212   Got a ping from <evan>
+04/04/2013 11:11:35.206   Got input from: <evan>
+04/04/2013 11:11:35.213   Got a ping from <evan>
+04/04/2013 11:11:40.206   Got input from: <evan>
+04/04/2013 11:11:40.213   Got a ping from <evan>
+04/04/2013 11:11:45.206   Got input from: <evan>
+04/04/2013 11:11:45.214   Got a ping from <evan>
+04/04/2013 11:11:55.389   Game State initialized
+04/04/2013 11:11:55.391   Log-in thread spawned
+04/04/2013 11:11:55.391   Login Socket created
+04/04/2013 11:11:55.392   Login Socket bound
+04/04/2013 11:11:55.392   Server action thread spawned
+04/04/2013 11:11:55.392   Login socket listening
+04/04/2013 11:11:55.393   Player timeout thread spawned
+04/04/2013 11:11:55.393   Entering main loop...
+04/04/2013 11:12:03.319   Connected with 172.16.248.75:56674
+04/04/2013 11:12:04.414   User <evan> logged in.
+04/04/2013 11:12:04.420   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Kanye is in the room."
+04/04/2013 11:12:04.420   <evan> added to the game.
+04/04/2013 11:12:05.444   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:06.93   Got input from: <evan>
+04/04/2013 11:12:06.100   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 11:12:06.144   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 11:12:06.194   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 11:12:09.426   Got input from: <evan>
+04/04/2013 11:12:09.433   Got a ping from <evan>
+04/04/2013 11:12:10.432   Got input from: <evan>
+04/04/2013 11:12:10.437   Putting in the command queue: <evan>; "drop toilet"
+04/04/2013 11:12:10.444   Processing Command from Queue: <player>: evan <command>: drop toilet
+04/04/2013 11:12:10.444   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:10.544   Sending message to <evan>: "You have dropped the old toilet."
+04/04/2013 11:12:10.602   Sending message to <evan>: "_play_ drop"
+04/04/2013 11:12:14.426   Got input from: <evan>
+04/04/2013 11:12:14.430   Got a ping from <evan>
+04/04/2013 11:12:15.445   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:17.206   Got input from: <evan>
+04/04/2013 11:12:17.212   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 11:12:17.245   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 11:12:17.295   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 11:12:19.426   Got input from: <evan>
+04/04/2013 11:12:19.431   Got a ping from <evan>
+04/04/2013 11:12:19.551   Got input from: <evan>
+04/04/2013 11:12:19.558   Putting in the command queue: <evan>; "drop toilet"
+04/04/2013 11:12:19.595   Processing Command from Queue: <player>: evan <command>: drop toilet
+04/04/2013 11:12:19.645   Sending message to <evan>: "You have dropped the old toilet."
+04/04/2013 11:12:19.702   Sending message to <evan>: "_play_ drop"
+04/04/2013 11:12:20.445   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:25.446   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:26.448   Error making connection or sending message to <evan>
+04/04/2013 11:12:30.446   Sending message to <evan>: "kanye says something"
+04/04/2013 11:12:31.448   Error making connection or sending message to <evan>
+04/04/2013 11:12:54.518   Game State initialized
+04/04/2013 11:12:54.520   Log-in thread spawned
+04/04/2013 11:12:54.521   Login Socket created
+04/04/2013 11:12:54.522   Login Socket bound
+04/04/2013 11:12:54.522   Server action thread spawned
+04/04/2013 11:12:54.522   Login socket listening
+04/04/2013 11:12:54.522   Player timeout thread spawned
+04/04/2013 11:12:54.522   Entering main loop...
+04/04/2013 11:13:07.163   Connected with 172.16.248.75:56740
+04/04/2013 11:13:08.286   User <evan> logged in.
+04/04/2013 11:13:08.291   <evan> added to the game.
+04/04/2013 11:13:08.291   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 11:13:10.847   Got input from: <evan>
+04/04/2013 11:13:10.851   Putting in the command queue: <evan>; "n"
+04/04/2013 11:13:10.879   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 11:13:10.929   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 11:13:13.296   Got input from: <evan>
+04/04/2013 11:13:13.300   Got a ping from <evan>
+04/04/2013 11:13:14.24   Got input from: <evan>
+04/04/2013 11:13:14.28   Putting in the command queue: <evan>; "e"
+04/04/2013 11:13:14.30   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 11:13:14.80   Sending message to <evan>: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west. Bill Oreilly is in the room."
+04/04/2013 11:13:14.580   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:13:18.297   Got input from: <evan>
+04/04/2013 11:13:18.304   Got a ping from <evan>
+04/04/2013 11:13:19.580   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:13:20.582   Error making connection or sending message to <evan>
+04/04/2013 11:14:03.734   Game State initialized
+04/04/2013 11:14:03.736   Log-in thread spawned
+04/04/2013 11:14:03.737   Login Socket created
+04/04/2013 11:14:03.737   Login Socket bound
+04/04/2013 11:14:03.737   Server action thread spawned
+04/04/2013 11:14:03.738   Login socket listening
+04/04/2013 11:14:03.738   Player timeout thread spawned
+04/04/2013 11:14:03.738   Entering main loop...
+04/04/2013 11:14:11.741   Connected with 172.16.248.75:56790
+04/04/2013 11:14:12.754   User <evan> logged in.
+04/04/2013 11:14:12.760   <evan> added to the game.
+04/04/2013 11:14:12.760   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates is in the room."
+04/04/2013 11:14:13.790   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:14:18.790   Sending message to <evan>: "bill gates says something"
+04/04/2013 11:14:19.792   Error making connection or sending message to <evan>
+04/04/2013 11:14:30.129   Game State initialized
+04/04/2013 11:14:30.131   Log-in thread spawned
+04/04/2013 11:14:30.132   Login Socket created
+04/04/2013 11:14:30.133   Login Socket bound
+04/04/2013 11:14:30.133   Server action thread spawned
+04/04/2013 11:14:30.133   Login socket listening
+04/04/2013 11:14:30.134   Player timeout thread spawned
+04/04/2013 11:14:30.134   Entering main loop...
+04/04/2013 11:14:36.671   Connected with 172.16.248.75:56814
+04/04/2013 11:14:37.726   User <evan> logged in.
+04/04/2013 11:14:37.733   <evan> added to the game.
+04/04/2013 11:14:37.733   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Oreilly is in the room."
+04/04/2013 11:14:40.186   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 11:14:40.244   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 11:14:42.741   Got input from: <evan>
+04/04/2013 11:14:42.746   Got a ping from <evan>
+04/04/2013 13:55:42.895   Game State initialized
+04/04/2013 13:55:42.898   Log-in thread spawned
+04/04/2013 13:55:42.899   Login Socket created
+04/04/2013 13:55:42.900   Login Socket bound
+04/04/2013 13:55:42.900   Server action thread spawned
+04/04/2013 13:55:42.901   Login socket listening
+04/04/2013 13:55:42.902   Player timeout thread spawned
+04/04/2013 13:55:42.902   Entering main loop...
+04/04/2013 13:55:59.697   Game State initialized
+04/04/2013 13:55:59.699   Log-in thread spawned
+04/04/2013 13:55:59.699   Login Socket created
+04/04/2013 13:55:59.700   Login Socket bound
+04/04/2013 13:55:59.701   Server action thread spawned
+04/04/2013 13:55:59.701   Login socket listening
+04/04/2013 13:55:59.701   Player timeout thread spawned
+04/04/2013 13:55:59.701   Entering main loop...
+04/04/2013 13:56:09.505   Connected with 172.16.248.75:63060
+04/04/2013 13:56:10.467   User <evan> logged in.
+04/04/2013 13:56:10.473   <evan> added to the game.
+04/04/2013 13:56:10.473   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 13:56:14.754   Sending message to <evan>: "Bill Oreilly has entered the room."
+04/04/2013 13:56:15.485   Got input from: <evan>
+04/04/2013 13:56:15.489   Got a ping from <evan>
+04/04/2013 13:56:19.651   Got input from: <evan>
+04/04/2013 13:56:19.656   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 13:56:19.704   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 13:56:19.754   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 13:56:19.810   Sending message to <evan>: "_play_ talking"
+04/04/2013 13:56:19.866   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 13:56:19.922   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 13:56:19.978   Sending message to <evan>: "_play_ sound"
+04/04/2013 13:56:20.34   Sending message to <evan>: "evan has taken the old toilet."
+04/04/2013 13:56:20.477   Got input from: <evan>
+04/04/2013 13:56:20.481   Got a ping from <evan>
+04/04/2013 13:56:24.754   Sending message to <evan>: "bill oreilly says something"
+04/04/2013 13:56:24.811   Sending message to <evan>: "_play_ talking"
+04/04/2013 13:56:24.867   Sending message to <evan>: "Your Faith in Humanity is decreased by 4."
+04/04/2013 13:56:25.476   Got input from: <evan>
+04/04/2013 13:56:25.480   Got a ping from <evan>
+04/04/2013 14:00:00.933   Game State initialized
+04/04/2013 14:00:00.935   Log-in thread spawned
+04/04/2013 14:00:00.935   Login Socket created
+04/04/2013 14:00:00.936   Login Socket bound
+04/04/2013 14:00:00.936   Server action thread spawned
+04/04/2013 14:00:00.937   Login socket listening
+04/04/2013 14:00:00.937   Player timeout thread spawned
+04/04/2013 14:00:00.937   Entering main loop...
+04/04/2013 14:00:12.614   Connected with 172.16.248.75:63229
+04/04/2013 14:00:13.744   User <evan> logged in.
+04/04/2013 14:00:13.749   <evan> added to the game.
+04/04/2013 14:00:13.749   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east. Bill Gates is in the room."
+04/04/2013 14:00:15.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:16.43   Sending message to <evan>: "_play_ talking"
+04/04/2013 14:00:16.99   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 14:00:16.452   Got input from: <evan>
+04/04/2013 14:00:16.457   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 14:00:16.487   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 14:00:16.537   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 14:00:16.593   Sending message to <evan>: "_play_ sound"
+04/04/2013 14:00:18.754   Got input from: <evan>
+04/04/2013 14:00:18.758   Got a ping from <evan>
+04/04/2013 14:00:20.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:21.43   Sending message to <evan>: "_play_ talking"
+04/04/2013 14:00:21.98   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 14:00:23.754   Got input from: <evan>
+04/04/2013 14:00:23.762   Got a ping from <evan>
+04/04/2013 14:00:25.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:26.43   Sending message to <evan>: "_play_ talking"
+04/04/2013 14:00:26.99   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 14:00:28.562   Got input from: <evan>
+04/04/2013 14:00:28.566   Putting in the command queue: <evan>; "dtop toilet"
+04/04/2013 14:00:28.587   Processing Command from Queue: <player>: evan <command>: dtop toilet
+04/04/2013 14:00:28.637   Sending message to <evan>: "That is not a valid command."
+04/04/2013 14:00:28.693   Sending message to <evan>: "_play_ outlaw"
+04/04/2013 14:00:28.754   Got input from: <evan>
+04/04/2013 14:00:28.758   Got a ping from <evan>
+04/04/2013 14:00:30.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:31.43   Sending message to <evan>: "_play_ talking"
+04/04/2013 14:00:31.99   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 14:00:33.754   Got input from: <evan>
+04/04/2013 14:00:33.758   Got a ping from <evan>
+04/04/2013 14:00:35.129   Got input from: <evan>
+04/04/2013 14:00:35.134   Putting in the command queue: <evan>; "drop toilet"
+04/04/2013 14:00:35.137   Processing Command from Queue: <player>: evan <command>: drop toilet
+04/04/2013 14:00:35.187   Sending message to <evan>: "You have dropped the old toilet."
+04/04/2013 14:00:35.244   Sending message to <evan>: "_play_ drop"
+04/04/2013 14:00:35.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:36.43   Sending message to <evan>: "_play_ talking"
+04/04/2013 14:00:36.99   Sending message to <evan>: "Your Faith in Humanity is decreased by 2."
+04/04/2013 14:00:38.754   Got input from: <evan>
+04/04/2013 14:00:38.758   Got a ping from <evan>
+04/04/2013 14:00:40.987   Sending message to <evan>: "bill gates says something"
+04/04/2013 14:00:41.987   Error making connection or sending message to <evan>
+04/04/2013 14:00:42.37   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:55:35.912   Game State initialized
+04/04/2013 15:55:35.915   Log-in thread spawned
+04/04/2013 15:55:35.916   Login Socket created
+04/04/2013 15:55:35.917   Server action thread spawned
+04/04/2013 15:55:35.917   Login Socket bound
+04/04/2013 15:55:35.917   Player timeout thread spawned
+04/04/2013 15:55:35.917   Entering main loop...
+04/04/2013 15:55:35.918   Login socket listening
+04/04/2013 15:55:56.216   Connected with 172.16.248.75:55490
+04/04/2013 15:55:57.337   User <evan> failed to authenticate.
+04/04/2013 15:56:00.91   Connected with 172.16.248.75:55498
+04/04/2013 15:56:00.96   User <evan> logged in.
+04/04/2013 15:56:00.105   <evan> added to the game.
+04/04/2013 15:56:00.105   Sending message to <evan>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 15:56:00.972   Sending message to <evan>: "Kanye has entered the room."
+04/04/2013 15:56:05.6   Got input from: <evan>
+04/04/2013 15:56:05.11   Putting in the command queue: <evan>; "take toilet"
+04/04/2013 15:56:05.22   Processing Command from Queue: <player>: evan <command>: take toilet
+04/04/2013 15:56:05.72   Sending message to <evan>: "You have taken the old toilet."
+04/04/2013 15:56:05.110   Got input from: <evan>
+04/04/2013 15:56:05.117   Got a ping from <evan>
+04/04/2013 15:56:05.130   Sending message to <evan>: "_play_ sound"
+04/04/2013 15:56:05.972   Sending message to <evan>: "kanye says something"
+04/04/2013 15:56:06.30   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:56:06.88   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 15:56:07.987   Got input from: <evan>
+04/04/2013 15:56:07.992   Putting in the command queue: <evan>; "drop toilet"
+04/04/2013 15:56:08.22   Processing Command from Queue: <player>: evan <command>: drop toilet
+04/04/2013 15:56:08.72   Sending message to <evan>: "You have dropped the old toilet."
+04/04/2013 15:56:08.130   Sending message to <evan>: "_play_ drop"
+04/04/2013 15:56:10.110   Got input from: <evan>
+04/04/2013 15:56:10.117   Got a ping from <evan>
+04/04/2013 15:56:10.974   Sending message to <evan>: "kanye says something"
+04/04/2013 15:56:11.32   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:56:11.89   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 15:56:13.332   Got input from: <evan>
+04/04/2013 15:56:13.339   Putting in the command queue: <evan>; "take key"
+04/04/2013 15:56:13.374   Processing Command from Queue: <player>: evan <command>: take key
+04/04/2013 15:56:13.424   Sending message to <evan>: "You have taken the key."
+04/04/2013 15:56:13.482   Sending message to <evan>: "_play_ sound"
+04/04/2013 15:56:15.110   Got input from: <evan>
+04/04/2013 15:56:15.117   Got a ping from <evan>
+04/04/2013 15:56:15.975   Sending message to <evan>: "kanye says something"
+04/04/2013 15:56:16.33   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:56:16.91   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 15:56:17.51   Got input from: <evan>
+04/04/2013 15:56:17.59   Putting in the command queue: <evan>; "take key"
+04/04/2013 15:56:17.74   Processing Command from Queue: <player>: evan <command>: take key
+04/04/2013 15:56:17.124   Sending message to <evan>: "There is no key to take."
+04/04/2013 15:56:17.183   Sending message to <evan>: "_play_ outlaw"
+04/04/2013 15:56:20.110   Got input from: <evan>
+04/04/2013 15:56:20.117   Got a ping from <evan>
+04/04/2013 15:56:20.506   Got input from: <evan>
+04/04/2013 15:56:20.513   Putting in the command queue: <evan>; "n"
+04/04/2013 15:56:20.525   Processing Command from Queue: <player>: evan <command>: n
+04/04/2013 15:56:20.575   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 15:56:21.503   Got input from: <evan>
+04/04/2013 15:56:21.509   Putting in the command queue: <evan>; "w"
+04/04/2013 15:56:21.525   Processing Command from Queue: <player>: evan <command>: w
+04/04/2013 15:56:21.575   Sending message to <evan>: "You can't go that way."
+04/04/2013 15:56:25.110   Got input from: <evan>
+04/04/2013 15:56:25.117   Got a ping from <evan>
+04/04/2013 15:56:28.102   Got input from: <evan>
+04/04/2013 15:56:28.109   Putting in the command queue: <evan>; "open chest"
+04/04/2013 15:56:28.126   Processing Command from Queue: <player>: evan <command>: open chest
+04/04/2013 15:56:28.176   Sending message to <evan>: "You can't open the chest, it is locked."
+04/04/2013 15:56:28.234   Sending message to <evan>: "_play_ outlaw"
+04/04/2013 15:56:30.110   Got input from: <evan>
+04/04/2013 15:56:30.117   Got a ping from <evan>
+04/04/2013 15:56:30.977   Sending message to <evan>: "Kanye has entered the room."
+04/04/2013 15:56:34.132   Got input from: <evan>
+04/04/2013 15:56:34.139   Putting in the command queue: <evan>; "e"
+04/04/2013 15:56:34.177   Processing Command from Queue: <player>: evan <command>: e
+04/04/2013 15:56:34.227   Sending message to <evan>: "An empty lavatory You see a cruddy old toilet in the room. There is a wooden door to the west."
+04/04/2013 15:56:35.110   Got input from: <evan>
+04/04/2013 15:56:35.116   Got a ping from <evan>
+04/04/2013 15:56:40.110   Got input from: <evan>
+04/04/2013 15:56:40.117   Got a ping from <evan>
+04/04/2013 15:56:40.872   Got input from: <evan>
+04/04/2013 15:56:40.880   Putting in the command queue: <evan>; "drop key"
+04/04/2013 15:56:40.928   Processing Command from Queue: <player>: evan <command>: drop key
+04/04/2013 15:56:40.978   Sending message to <evan>: "You have dropped the key."
+04/04/2013 15:56:41.37   Sending message to <evan>: "_play_ drop"
+04/04/2013 15:56:45.110   Got input from: <evan>
+04/04/2013 15:56:45.118   Got a ping from <evan>
+04/04/2013 15:56:45.244   Got input from: <evan>
+04/04/2013 15:56:45.251   Putting in the command queue: <evan>; "w"
+04/04/2013 15:56:45.278   Processing Command from Queue: <player>: evan <command>: w
+04/04/2013 15:56:45.329   Sending message to <evan>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north. Kanye is in the room."
+04/04/2013 15:56:45.930   Sending message to <evan>: "kanye says something"
+04/04/2013 15:56:45.988   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:56:46.46   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 15:56:50.110   Got input from: <evan>
+04/04/2013 15:56:50.117   Got a ping from <evan>
+04/04/2013 15:56:50.930   Sending message to <evan>: "kanye says something"
+04/04/2013 15:56:50.989   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:56:51.47   Sending message to <evan>: "Your Faith in Humanity is decreased by 6.
+Your Faith in Humanity has reached 0.
+You attempt suicide with a straight razor. You fail, but a quick trip to the mental hospital will fix you right up.
+An empty jail cell. You see a cruddy old toilet in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 15:56:55.110   Got input from: <evan>
+04/04/2013 15:56:55.117   Got a ping from <evan>
+04/04/2013 15:57:00.109   Got input from: <evan>
+04/04/2013 15:57:00.116   Got a ping from <evan>
+04/04/2013 15:57:00.931   Sending message to <evan>: "Kanye has entered the room."
+04/04/2013 15:57:05.110   Got input from: <evan>
+04/04/2013 15:57:05.117   Got a ping from <evan>
+04/04/2013 15:57:05.931   Sending message to <evan>: "kanye says something"
+04/04/2013 15:57:05.990   Sending message to <evan>: "_play_ talking"
+04/04/2013 15:57:06.47   Sending message to <evan>: "Your Faith in Humanity is decreased by 6."

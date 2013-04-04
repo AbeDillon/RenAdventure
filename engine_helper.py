@@ -25,30 +25,8 @@ def do_command(player, room, verb, nouns, object, tags):
                 engine.put_commands([command], script=True) # Push the command to the command queue
     else:
         noun_string = ' '.join(nouns)
-
         script = verb + "(room, player, object, noun_string, tags)"
-
-        text, alt_text, player_messages = eval(script) # player_messages are player specific messages, needed when a different message is sent to each player
-
-        if len(text) > 0 and player.name in room.players:
-            messages.append((player.name, text))
-
-        if len(player_messages) > 0:
-            for player, message in player_messages:
-                messages.append((player.name, message))
-        elif len(alt_text) > 0:
-            for alt_player in room.players:
-                if alt_player != player.name:
-                    messages.append((alt_player, alt_text))
-
-            if verb == 'go': # Player entered a new room, pass messages to all players in the new room
-                room = engine._Rooms[player.coords]
-                if len(text) > 0 and player.name in room.players:
-                    messages.append((player.name, text))
-
-                for alt_player in room.players:
-                    if alt_player != player.name:
-                        messages.append((alt_player, "%s has entered the room." % player.name))
+        messages = eval(script)
 
     return messages
 
@@ -346,10 +324,11 @@ def look(room, player, object, noun, tags):
     else:
         text = object.inspect_desc
 
-    return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at something
+    return [(player.name, text)]
 
 def take(room, player, object, noun, tags):
     alt_text = ''
+    sound = '_play_ outlaw'
 
     if object == None:
         text = "There is no %s to take." % noun
@@ -359,11 +338,21 @@ def take(room, player, object, noun, tags):
         rem_item(room, object.name)
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
+        sound = '_play_ sound' # NEEDS A VALID SOUND
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))    # Message to send to the player
+    messages.append((player.name, sound))
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+
+    return messages
 
 def open(room, player, object, noun, tags):
     alt_text = ''
+    sound = '_play_ outlaw'
 
     if object == None:
         text = "There is no %s to open." % noun
@@ -372,6 +361,7 @@ def open(room, player, object, noun, tags):
     elif not object.container:
         text = "You can't open the %s." % object.name
     else:
+        sound = '_play_ open' # NEEDS A VALID SOUND
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
             alt_text = "%s has opened the %s, inside there is:" % (player.name, object.name)
@@ -398,7 +388,15 @@ def open(room, player, object, noun, tags):
             if 'script' in tags:
                 text = alt_text = "The %s has opened, but there is nothing inside." % object.name
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))
+    messages.append((player.name, sound))
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+
+    return messages
 
 def go(room, player, object, noun, tags):
     alt_text = ''
@@ -418,28 +416,47 @@ def go(room, player, object, noun, tags):
             engine._Rooms[player.coords].npcs.append(player.name) # Add the NPC to the new room
 
         text = get_room_text(player.name, player.coords)
-        alt_text = "%s has left the room through the %s door." % (player.name, noun)
+        alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))
+
+    for alt_player in room.players: # Give players in room that was left a message
+        messages.append((alt_player, alt_text))
+
+    for alt_player in engine._Rooms[player.coords].players: # Give players in the new room a message
+        if alt_player != player.name:
+            messages.append((alt_player, '%s has entered the room.' % player.name.title()))
+
+    return messages
 
 def drop(room, player, object, noun, tags):
     alt_text = ''
-    player_messages = []
 
     if object == None:
         text = "You have no %s to drop." % noun
+        sound = '_play_ outlaw'
     else:
         # Move item from player to the room
         add_item(room, object.name)
         rem_item(player, object.name)
         text = "You have dropped the %s." % object.name
         alt_text = "%s has dropped a %s." % (player.name, object.name)
-        player_messages.append((player.name, '_play_ drop'))
+        sound = '_play_ drop'
 
-    return text, alt_text, player_messages
+    messages = []
+    messages.append((player.name, text))
+    messages.append((player.name, sound)) # Sound to send to the player
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+
+    return messages
 
 def unlock(room, player, object, noun, tags):
     alt_text = ''
+    sound = '_play_ outlaw'
 
     if object == None:
         text = "There is no %s to unlock." % noun
@@ -457,16 +474,26 @@ def unlock(room, player, object, noun, tags):
 
             text = "You have unlocked the %s." % object.name
             alt_text = "%s has unlocked the %s." % (player.name, object.name)
+            sound = '_play_ unlock' #NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has unlocked." % object.name
         else:
             text = "You don't have the key to unlock the %s." % object.name
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))
+    messages.append((player.name, sound))
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+
+    return messages
 
 def lock(room, player, object, noun, tags):
     alt_text = ''
+    sound = '_play_ outlaw'
 
     if object == None:
         text = "There is no %s to lock." % noun
@@ -483,13 +510,22 @@ def lock(room, player, object, noun, tags):
 
             text = "You have locked the %s." % object.name
             alt_text = "%s has locked the %s." % (player.name, object.name)
+            sound = '_play_ lock' # NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has locked." % object.name
         else:
             text = "You don't have the key to lock the %s." % object.name
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))
+    messages.append((player.name, sound))
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+
+    return messages
 
 def inventory(room, player, object, noun, tags):
     if len(player.items) > 0:
@@ -502,13 +538,21 @@ def inventory(room, player, object, noun, tags):
     else:
         text = "Your inventory is empty."
 
-    return text, '', [] # Empty string is alt_text, we don't need to tell other players about a player looking at their inventory
+    return [(player.name, text)]
 
 def say(room, player, object, noun, tags):
     text = "You say %s" % noun
     alt_text = "%s says %s" % (player.name, noun)
 
-    return text, alt_text, []
+    messages = []
+    messages.append((player.name, text))
+
+    for alt_player in room.players:
+        if alt_player != player.name:
+            messages.append((alt_player, alt_text))
+            messages.append((alt_player, '_play_ talking')) # Needs a valid sound
+
+    return messages
 
 def shout(room, player, object, noun, tags):
     text = "You shout %s" % noun
@@ -524,15 +568,18 @@ def shout(room, player, object, noun, tags):
         if coords in engine._Rooms and len(engine._Rooms[coords].players) > 0:
             trimmed_bubble.append(coords)
 
-    player_messages = []
+    messages = []
+    messages.append((player.name, text))
+
     for coords in trimmed_bubble:
         for alt_player in engine._Rooms[coords].players.values():
-            player_messages.append((alt_player, alt_text))
+            if alt_player != player.name:
+                messages.append((alt_player, alt_text))
 
-    return text, alt_text, player_messages
+    return messages
 
 def damage(room, attacker, object, noun, tags):
-    player_messages = []
+    messages = []
 
     for player_name in room.players:
         player = engine._Players[player_name]
@@ -567,14 +614,18 @@ def damage(room, attacker, object, noun, tags):
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
             text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
-            player_messages.append((player, '_play_ death'))    # Send the death sound
+            messages.append((player, '_play_ death'))    # Send the death sound
 
-        player_messages.append((player, text))
+        messages.append((player.name, text))
 
-    return '', '', player_messages
+    return messages
 
 def bad_command(room, player, object, noun, tags):
-    return "That is not a valid command.", '', [] # Empty string is alt_text, we don't need to tell other players about a failed command execution.
+    messages = []
+    messages.append((player.name, "That is not a valid command."))
+    messages.append((player.name, '_play_ outlaw'))
+
+    return messages
 ############# SCRIPT METHODS ##########
 def script_delay(player, script):
     # Runs the remainder of a script after a delay
@@ -597,11 +648,19 @@ def reveal(room, player, object, noun, tags):
     object.hidden = False
     text = "A %s appears in the room." % object.name
 
-    return text, text
+    messages = []
+    for player in room.players:
+        messages.append((player, text))
+
+    return messages
 
 def hide(room, player, object, noun, tags):
     # Hides an object
     object.hidden = True
     text = "The %s disappears from the room." % object.name
 
-    return text, tex
+    messages = []
+    for player in room.players:
+        messages.append((player, text))
+
+    return messages
