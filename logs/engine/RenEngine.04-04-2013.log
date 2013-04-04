@@ -246,3 +246,129 @@
 04/04/2013 10:07:34.645   Running command (go, south)
 04/04/2013 10:07:34.695   Sending message to server: (matt, bill oreilly has entered the room.)
 04/04/2013 10:07:35.405   Removed player 'matt'
+04/04/2013 13:27:23.26   Initializing game state from default save state
+04/04/2013 13:27:23.73   Loaded global objects
+04/04/2013 13:27:23.88   Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/04/2013 13:27:23.88   Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/04/2013 13:27:23.88   Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/04/2013 13:27:23.88   Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/04/2013 13:27:23.88   Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/04/2013 13:27:23.88   Starting command thread
+04/04/2013 13:27:23.88   Starting spawn NPC thread
+04/04/2013 13:27:23.88   Spawned NPC: (kanye) <engine.NPC instance at 0x02A55698>
+04/04/2013 13:27:23.88   Starting NPC action thread
+04/04/2013 13:27:23.88   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A55120>, go, ['south'], <engine.Portal instance at 0x02A4EAF8>, ['npc']) in the command queue
+04/04/2013 13:27:23.88   Closing npc action thread.
+04/04/2013 13:27:23.151   Running command (go, south)
+04/04/2013 13:27:28.96   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, go, ['south'], <engine.Portal instance at 0x02A4EA80>, ['npc']) in the command queue
+04/04/2013 13:27:28.96   Closing npc action thread.
+04/04/2013 13:27:28.143   Running command (go, south)
+04/04/2013 13:27:33.103   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4ED00>, go, ['north'], <engine.Portal instance at 0x02A4E968>, ['npc']) in the command queue
+04/04/2013 13:27:33.103   Closing npc action thread.
+04/04/2013 13:27:33.135   Running command (go, north)
+04/04/2013 13:27:38.111   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, go, ['east'], <engine.Portal instance at 0x02A4E9E0>, ['npc']) in the command queue
+04/04/2013 13:27:38.111   Closing npc action thread.
+04/04/2013 13:27:38.127   Running command (go, east)
+04/04/2013 13:27:43.119   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A55620>, go, ['west'], <engine.Portal instance at 0x02A4E8F0>, ['npc']) in the command queue
+04/04/2013 13:27:43.119   Closing npc action thread.
+04/04/2013 13:27:43.181   Running command (go, west)
+04/04/2013 13:27:43.275   Created player 'matt' at (0,0,1)
+04/04/2013 13:27:48.126   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4ED00>, take, ['toilet'], <engine.Item instance at 0x02A4E8C8>, []) in the command queue
+04/04/2013 13:27:48.126   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, go, ['south'], <engine.Portal instance at 0x02A4EA80>, ['npc']) in the command queue
+04/04/2013 13:27:48.126   Closing npc action thread.
+04/04/2013 13:27:48.173   Running command (take, toilet)
+04/04/2013 13:27:48.189   Sending message to server: (matt, You have taken the old toilet.)
+04/04/2013 13:27:48.235   Running command (go, south)
+04/04/2013 13:27:48.251   Sending message to server: (matt, kanye has entered the room.)
+04/04/2013 13:27:50.310   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4ED00>, drop, ['toilet'], <engine.Item instance at 0x02A4E8C8>, []) in the command queue
+04/04/2013 13:27:50.357   Running command (drop, toilet)
+04/04/2013 13:27:50.373   Sending message to server: (matt, You have dropped the old toilet.)
+04/04/2013 13:27:52.931   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4ED00>, go, ['north'], <engine.Portal instance at 0x02A4E968>, []) in the command queue
+04/04/2013 13:27:52.978   Running command (go, north)
+04/04/2013 13:27:52.993   Sending message to server: (matt, An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.)
+04/04/2013 13:27:53.134   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4ED00>, go, ['north'], <engine.Portal instance at 0x02A4E968>, ['npc']) in the command queue
+04/04/2013 13:27:53.134   Closing npc action thread.
+04/04/2013 13:27:53.165   Running command (go, north)
+04/04/2013 13:27:53.181   Sending message to server: (matt, kanye has entered the room.)
+04/04/2013 13:27:57.174   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4EEE0>, go, ['south'], <engine.Portal instance at 0x02A4EA80>, []) in the command queue
+04/04/2013 13:27:57.221   Running command (go, south)
+04/04/2013 13:27:57.237   Sending message to server: (matt, An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east.)
+04/04/2013 13:27:58.141   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, go, ['east'], <engine.Portal instance at 0x02A4E9E0>, ['npc']) in the command queue
+04/04/2013 13:27:58.141   Closing npc action thread.
+04/04/2013 13:27:58.157   Running command (go, east)
+04/04/2013 13:27:58.672   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4ED00>, take, ['key'], <engine.Item instance at 0x02A4E990>, []) in the command queue
+04/04/2013 13:27:58.719   Running command (take, key)
+04/04/2013 13:27:58.734   Sending message to server: (matt, You have taken the key.)
+04/04/2013 13:27:59.545   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4ED00>, go, ['north'], <engine.Portal instance at 0x02A4E968>, []) in the command queue
+04/04/2013 13:27:59.592   Running command (go, north)
+04/04/2013 13:27:59.608   Sending message to server: (matt, An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north.)
+04/04/2013 13:28:02.104   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4EEE0>, unlock, ['chest'], <engine.Item instance at 0x02A4EAA8>, []) in the command queue
+04/04/2013 13:28:02.151   Running command (unlock, chest)
+04/04/2013 13:28:02.166   Sending message to server: (matt, You have unlocked the chest.)
+04/04/2013 13:28:03.149   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A55620>, go, ['west'], <engine.Portal instance at 0x02A4E8F0>, ['npc']) in the command queue
+04/04/2013 13:28:03.149   Closing npc action thread.
+04/04/2013 13:28:03.211   Running command (go, west)
+04/04/2013 13:28:03.227   Sending message to server: (matt, kanye has entered the room.)
+04/04/2013 13:28:04.475   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4EEE0>, open, ['chest'], <engine.Item instance at 0x02A4EAA8>, []) in the command queue
+04/04/2013 13:28:04.522   Running command (open, chest)
+04/04/2013 13:28:04.537   Sending message to server: (matt, You have opened the chest, inside you find:
+	small apple)
+04/04/2013 13:28:07.720   Put command (<engine.Player instance at 0x02A5A3C8>, <engine.Room instance at 0x02A4EEE0>, take, ['small', 'apple'], <engine.Item instance at 0x02A4EB98>, []) in the command queue
+04/04/2013 13:28:07.767   Running command (take, small apple)
+04/04/2013 13:28:07.782   Sending message to server: (matt, You have taken the small apple.)
+04/04/2013 13:28:08.157   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:08.157   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:08.157   Closing npc action thread.
+04/04/2013 13:28:08.203   Running command (say, something)
+04/04/2013 13:28:08.219   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:08.266   Running command (damage, say)
+04/04/2013 13:28:08.281   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:13.164   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:13.164   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:13.164   Closing npc action thread.
+04/04/2013 13:28:13.195   Running command (say, something)
+04/04/2013 13:28:13.211   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:13.258   Running command (damage, say)
+04/04/2013 13:28:13.273   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:18.172   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:18.172   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:18.172   Closing npc action thread.
+04/04/2013 13:28:18.187   Running command (say, something)
+04/04/2013 13:28:18.203   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:18.250   Running command (damage, say)
+04/04/2013 13:28:18.265   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:23.179   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:23.179   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:23.179   Closing npc action thread.
+04/04/2013 13:28:23.242   Running command (say, something)
+04/04/2013 13:28:23.257   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:23.304   Running command (damage, say)
+04/04/2013 13:28:23.320   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:28.187   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:28.187   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:28.187   Closing npc action thread.
+04/04/2013 13:28:28.234   Running command (say, something)
+04/04/2013 13:28:28.249   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:28.296   Running command (damage, say)
+04/04/2013 13:28:28.312   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:33.195   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:33.195   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:33.195   Closing npc action thread.
+04/04/2013 13:28:33.226   Running command (say, something)
+04/04/2013 13:28:33.241   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:33.288   Running command (damage, say)
+04/04/2013 13:28:33.304   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:38.202   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:38.202   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:38.202   Closing npc action thread.
+04/04/2013 13:28:38.218   Running command (say, something)
+04/04/2013 13:28:38.233   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:38.280   Running command (damage, say)
+04/04/2013 13:28:38.296   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)
+04/04/2013 13:28:43.210   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, say, ['something'], None, ['npc']) in the command queue
+04/04/2013 13:28:43.210   Put command (<engine.NPC instance at 0x02A55698>, <engine.Room instance at 0x02A4EEE0>, damage, ['say'], None, ['npc']) in the command queue
+04/04/2013 13:28:43.210   Closing npc action thread.
+04/04/2013 13:28:43.272   Running command (say, something)
+04/04/2013 13:28:43.288   Sending message to server: (matt, kanye says something)
+04/04/2013 13:28:43.335   Running command (damage, say)
+04/04/2013 13:28:43.350   Sending message to server: (matt, Your Faith in Humanity is decreased by 6.)

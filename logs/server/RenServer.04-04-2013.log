@@ -203,3 +203,99 @@
 04/04/2013 10:07:35.405   Got input from: <matt>
 04/04/2013 10:07:35.405   Removing <matt> from _Logged_in
 04/04/2013 10:07:35.455   Input thread for player <matt> ending
+04/04/2013 13:27:23.88   Game State initialized
+04/04/2013 13:27:23.88   Login Socket created
+04/04/2013 13:27:23.88   Log-in thread spawned
+04/04/2013 13:27:23.104   Login Socket bound
+04/04/2013 13:27:23.104   Login socket listening
+04/04/2013 13:27:23.104   Server action thread spawned
+04/04/2013 13:27:23.104   Player timeout thread spawned
+04/04/2013 13:27:23.104   Entering main loop...
+04/04/2013 13:27:29.671   Connected with 172.16.248.23:56764
+04/04/2013 13:27:30.61   Required user affiliation from <matt>
+04/04/2013 13:27:40.170   Connected with 172.16.248.23:56766
+04/04/2013 13:27:40.170   Required user affiliation from <matt>
+04/04/2013 13:27:43.259   Connected with 172.16.248.23:56767
+04/04/2013 13:27:43.259   Creating user: <matt>
+04/04/2013 13:27:43.275   <matt> added to the game.
+04/04/2013 13:27:43.275   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 13:27:48.64   Got input from: <matt>
+04/04/2013 13:27:48.79   Putting in the command queue: <matt>; "take toilet"
+04/04/2013 13:27:48.126   Processing Command from Queue: <player>: matt <command>: take toilet
+04/04/2013 13:27:48.189   Sending message to <matt>: "You have taken the old toilet."
+04/04/2013 13:27:48.251   Sending message to <matt>: "kanye has entered the room."
+04/04/2013 13:27:48.282   Got input from: <matt>
+04/04/2013 13:27:48.282   Got a ping from <matt>
+04/04/2013 13:27:50.295   Got input from: <matt>
+04/04/2013 13:27:50.295   Putting in the command queue: <matt>; "drop toilet"
+04/04/2013 13:27:50.310   Processing Command from Queue: <player>: matt <command>: drop toilet
+04/04/2013 13:27:50.373   Sending message to <matt>: "You have dropped the old toilet."
+04/04/2013 13:27:52.884   Got input from: <matt>
+04/04/2013 13:27:52.884   Putting in the command queue: <matt>; "go n"
+04/04/2013 13:27:52.931   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 13:27:52.993   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 13:27:53.181   Sending message to <matt>: "kanye has entered the room."
+04/04/2013 13:27:53.290   Got input from: <matt>
+04/04/2013 13:27:53.290   Got a ping from <matt>
+04/04/2013 13:27:57.143   Got input from: <matt>
+04/04/2013 13:27:57.143   Putting in the command queue: <matt>; "go s"
+04/04/2013 13:27:57.174   Processing Command from Queue: <player>: matt <command>: go s
+04/04/2013 13:27:57.237   Sending message to <matt>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/04/2013 13:27:58.297   Got input from: <matt>
+04/04/2013 13:27:58.297   Got a ping from <matt>
+04/04/2013 13:27:58.609   Got input from: <matt>
+04/04/2013 13:27:58.625   Putting in the command queue: <matt>; "take key"
+04/04/2013 13:27:58.672   Processing Command from Queue: <player>: matt <command>: take key
+04/04/2013 13:27:58.734   Sending message to <matt>: "You have taken the key."
+04/04/2013 13:27:59.514   Got input from: <matt>
+04/04/2013 13:27:59.514   Putting in the command queue: <matt>; "go n"
+04/04/2013 13:27:59.545   Processing Command from Queue: <player>: matt <command>: go n
+04/04/2013 13:27:59.608   Sending message to <matt>: "An abandoned guard room. You see a chest in the room. There is a metal door to the south, a wooden door to the east, and an iron door to the north."
+04/04/2013 13:28:02.57   Got input from: <matt>
+04/04/2013 13:28:02.57   Putting in the command queue: <matt>; "unlock chest"
+04/04/2013 13:28:02.104   Processing Command from Queue: <player>: matt <command>: unlock chest
+04/04/2013 13:28:02.166   Sending message to <matt>: "You have unlocked the chest."
+04/04/2013 13:28:03.227   Sending message to <matt>: "kanye has entered the room."
+04/04/2013 13:28:03.305   Got input from: <matt>
+04/04/2013 13:28:03.305   Got a ping from <matt>
+04/04/2013 13:28:04.428   Got input from: <matt>
+04/04/2013 13:28:04.428   Putting in the command queue: <matt>; "open chest"
+04/04/2013 13:28:04.475   Processing Command from Queue: <player>: matt <command>: open chest
+04/04/2013 13:28:04.537   Sending message to <matt>: "You have opened the chest, inside you find:
+	small apple"
+04/04/2013 13:28:07.657   Got input from: <matt>
+04/04/2013 13:28:07.673   Putting in the command queue: <matt>; "take small apple"
+04/04/2013 13:28:07.720   Processing Command from Queue: <player>: matt <command>: take small apple
+04/04/2013 13:28:07.782   Sending message to <matt>: "You have taken the small apple."
+04/04/2013 13:28:08.219   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:08.281   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:08.313   Got input from: <matt>
+04/04/2013 13:28:08.313   Got a ping from <matt>
+04/04/2013 13:28:13.211   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:13.273   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:13.320   Got input from: <matt>
+04/04/2013 13:28:13.320   Got a ping from <matt>
+04/04/2013 13:28:18.203   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:18.265   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:18.328   Got input from: <matt>
+04/04/2013 13:28:18.328   Got a ping from <matt>
+04/04/2013 13:28:23.257   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:23.320   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:23.335   Got input from: <matt>
+04/04/2013 13:28:23.335   Got a ping from <matt>
+04/04/2013 13:28:28.249   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:28.312   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:28.343   Got input from: <matt>
+04/04/2013 13:28:28.343   Got a ping from <matt>
+04/04/2013 13:28:33.241   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:33.304   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:33.351   Got input from: <matt>
+04/04/2013 13:28:33.351   Got a ping from <matt>
+04/04/2013 13:28:38.233   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:38.296   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:38.358   Got input from: <matt>
+04/04/2013 13:28:38.358   Got a ping from <matt>
+04/04/2013 13:28:43.288   Sending message to <matt>: "kanye says something"
+04/04/2013 13:28:44.317   Error making connection or sending message to <matt>
+04/04/2013 13:28:44.380   Sending message to <matt>: "Your Faith in Humanity is decreased by 6."
+04/04/2013 13:28:45.409   Error making connection or sending message to <matt>
