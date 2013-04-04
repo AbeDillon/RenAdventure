@@ -50,7 +50,6 @@ for filename in filelist:
 # converts it to a dictionary. Saves that dictionary to the text file named after the twitter handle.
 # Loop runs (twitter info for next handle) every 45 seconds.
 while(1):
-        loops = 0
         for user in handles:
             allInfo = api.GetUserTimeline(user, count=100, exclude_replies=True)
             allInfoDicts = []
