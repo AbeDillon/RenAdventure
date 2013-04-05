@@ -5,7 +5,28 @@ import time
 import twitter
 import Queue
 import Q2logging
+import threading
 
+class feedGetter(threading.Thread):
+
+    def __init__(self, user, api):
+        """
+
+        """
+        threading.Thread.__init__(self)
+        self.user = user
+        self.api = api
+
+    def run(self):
+        """
+
+        """
+        print 'getting ' + self.user + '\'s status!'
+        statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
+        twitTimeline = open('twitterfeeds\\' + self.user + ".txt", 'w')
+        pickle.dump(statuses, twitTimeline)
+        twitTimeline.close()
+        return None
 
 #===============================================entry==============================================
 
@@ -51,11 +72,8 @@ def main():
         if user != None:
             oldNamesQ.put(user)
 
-            statuses = api.GetUserTimeline(user, count=100, exclude_replies=True)
-
-            twitTimeline = open('twitterfeeds\\' + user + ".txt", 'w')
-            pickle.dump(statuses, twitTimeline)
-            twitTimeline.close()
+            feedGetterThread = feedGetter(user, api)
+            feedGetterThread.start()
 
             finishTime = time.time()
             loopTime = finishTime - startTime
