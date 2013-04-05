@@ -283,7 +283,7 @@ class Login(threading.Thread):
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
-                oqueue.put(engine.get_room_text(player_name, location))
+                oqueue.put(engine.engine_helper.get_room_text(player_name, location))
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
