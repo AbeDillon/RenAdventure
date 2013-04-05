@@ -27,8 +27,6 @@ class BuilderThread(threading.Thread):
         self.prototype = {}
         if self.type == "room":
             self.prototype["name"] = room_coords
-
-        print self.cmd_queue, self.msg_queue, self.game_cmd_cue
         
     def run(self):
         """

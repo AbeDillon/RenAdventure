@@ -443,7 +443,7 @@ def go(room, player, object, noun, tags):
         del engine._Characters[player.name]
         engine._Characters_Lock.release()
 
-        engine._BuilderQueues[player.name] = Queue.Queue    # Create builder queue for the player to use
+        engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
         builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
         builder_thread.start()  # Spin off builder thread
 

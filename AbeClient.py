@@ -323,7 +323,7 @@ class OutThread(threading.Thread):
             except:
                 pass
 
-            if message != "":
+            if message != "":               
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
