@@ -10,6 +10,7 @@ def load_player(path):
     root = xml.getroot()
     
     player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
+    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']))
     player_attributes['fih'] = int(root.attrib['fih'])
     player_attributes['name'] = root.attrib['name']
     player_attributes['items'] = []
@@ -132,6 +133,9 @@ def save_player(player):
     attributes['x'] = str(player.coords[0])
     attributes['y'] = str(player.coords[1])
     attributes['z'] = str(player.coords[2])
+    attributes['prev_x'] = str(player.prev_coords[0])
+    attributes['prev_y'] = str(player.prev_coords[1])
+    attributes['prev_z'] = str(player.prev_coords[2])
     attributes['name'] = player.name
     attributes['fih'] = str(player.fih)
 

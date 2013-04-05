@@ -7,7 +7,6 @@ import thread, threading, Queue
 #import logging
 import Q2logging ###TEST
 
-
 class Room:
     '''
     Attributes:
@@ -106,9 +105,10 @@ class Player:
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, affiliation, items = {}, fih = 30):
+    def __init__(self, name, coords, prev_coords, affiliation, items = {}, fih = 30):
         self.name = name.lower()
         self.coords = coords
+        self.prev_coords = prev_coords
         self.fih = fih
         self.affiliation = affiliation
 
@@ -131,8 +131,8 @@ class NPC:
         self.coords = coords
         self.affiliation = affiliation
 
-#logger = logging.getLogger(__name__.title())
 logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
+
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
@@ -198,9 +198,9 @@ def init_game(save_state = 0):
     #logger.debug("Starting command thread")
     logger.write_line("Starting command thread") ###TEST
 
-    thread.start_new_thread(spawn_npc_thread, (10,))
-    #logger.debug("Starting spawn NPC thread")
-    logger.write_line("Starting spawn NPC thread") ###TEST
+#    thread.start_new_thread(spawn_npc_thread, (10,))
+#    #logger.debug("Starting spawn NPC thread")
+#    logger.write_line("Starting spawn NPC thread") ###TEST
 
     thread.start_new_thread(npc_thread, ())
     #logger.debug("Starting NPC action thread")
@@ -246,7 +246,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        player = Player(name, coords, affiliation)
+        player = Player(name, coords, coords, affiliation)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game
@@ -267,7 +267,7 @@ def remove_player(name):
 
     _Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
     del _Characters[name] # Remove the player from the list of players in the game
-    _Objects_Lock.release()
+    _Characters_Lock.release()
 
     #logger.debug("Removed player '%s'" % player.name)
     logger.write_line("Removed player '%s'"%player.name) ###TEST
@@ -282,7 +282,7 @@ def put_commands(commands, script=False, npc=False):
         tags = []
         player = _Characters[command[0]]
 
-        room = _Rooms[player.coords]
+        room = _Rooms.get(player.coords, "Build")
         verb, nouns = parse_command(command[1])
 
         if not npc and verb == 'damage': # Only NPCs can use the command damage (for now)
