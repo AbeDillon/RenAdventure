@@ -6,9 +6,33 @@ import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
 
-def do_command(player, room, verb, nouns, object, tags):
+def do_command(player_name, command, tags):
+    player = engine._Characters[player_name]
+    room = engine._Rooms[player.coords]
+
+    verb, nouns = parse_command(command)
+
+    if verb == 'damage' and 'npc' not in tags: # Only NPCs can use the damage command
+        verb = 'bad_command'
+
+    if 'script' in tags:
+        all_objects = get_all_objects(player, verb) # tuple of all objects and the room they are in
+
+        valid_objects = []
+        for object_room, object in all_objects:
+            valid_objects.append(object)
+    else:
+        valid_objects = get_valid_objects(player, room, verb) # Find the valid objects in the room that can be acted on by the verb
+
+    object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
+
+    if 'script' in tags: # We need to find which room the object is in
+        for room, new_object in all_objects:
+            if object is new_object:
+                break
+
     messages = []
-    if 'start_script' in tags: # Object has a script for this verb, break it into multiple commands
+    if object != None and verb in object.scripts and 'script' not in tags: # Object has a script for this verb, break it into multiple commands
         for n, action in enumerate(object.scripts[verb]):
             action_verb = action[0]
             noun = action[1]
@@ -20,8 +44,8 @@ def do_command(player, room, verb, nouns, object, tags):
                 timer.start()
                 break
             else:
-                command = [player.name, action_verb + ' ' + noun]
-                engine.put_commands([command], script=True) # Push the command to the command queue
+                command = [player.name, action_verb + ' ' + noun, ['script']]
+                engine.put_commands([command]) # Push the command to the command queue
     else:
         noun_string = ' '.join(nouns)
         script = verb + "(room, player, object, noun_string, tags)"
@@ -184,9 +208,9 @@ def npc_action(npc):
     if len(room.players) > 0: # There are players in the room, talk to them
         message = "Something" # Replace with tweet
         commands = []
-        commands.append((npc.name, 'say %s' % message))
-        commands.append((npc.name, 'damage say'))
-        engine.put_commands(commands, npc=True)
+        commands.append((npc.name, 'say %s' % message, ['npc']))
+        commands.append((npc.name, 'damage say', ['npc']))
+        engine.put_commands(commands)
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go')
 
@@ -194,8 +218,8 @@ def npc_action(npc):
             portal = random.choice(valid_portals)
             direction = portal.direction
             command_str = 'go %s' % direction
-            command = (npc.name, command_str)
-            engine.put_commands([command], npc=True)
+            command = (npc.name, command_str, ['npc'])
+            engine.put_commands([command])
 
 #Flags  'p' = portals
 #       'r' = room items
@@ -419,7 +443,7 @@ def go(room, player, object, noun, tags):
         del engine._Characters[player.name]
         engine._Characters_Lock.release()
 
-        engine._BuilderQueues[player.name] = Queue.Queue    # Create builder queue for the player to use
+        engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
         builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
         builder_thread.start()  # Spin off builder thread
 
@@ -583,7 +607,7 @@ def say(room, player, object, noun, tags):
     for alt_player in room.players:
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
-            messages.append((alt_player, '_play_ talking')) # Needs a valid sound
+            #messages.append((alt_player, '_play_ talking')) # Needs a valid sound
 
     return messages
 
@@ -676,8 +700,8 @@ def script_delay(player, script):
             timer.start()
             break
         else:
-            command = [player.name, verb + ' ' + noun]
-            engine.put_commands([command], script=True) # Push the command to the command queue
+            command = (player.name, verb + ' ' + noun, ['script'])
+            engine.put_commands([command]) # Push the command to the command queue
 
 def reveal(room, player, object, noun, tags):
     # Reveals a hidden object
