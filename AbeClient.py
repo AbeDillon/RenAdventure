@@ -105,8 +105,7 @@ def LogIn():
                     while 1:
                         rank = raw_input('On a scale of 1 to 5, where would you rank %s?\r\n'%person)
                         logger.write_line('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person)
-                        #logging.debug('Input: %s' % rank)
-                        logger.write_line('Input: %s' % rank) ###TEST
+                        logger.write_line('Input: %s' % rank)
                         rank = int(rank)
                         if rank in used_ranks: #This is okay
                             rank_list[person] = rank
@@ -114,8 +113,7 @@ def LogIn():
                             break
                         else:
                             print >>sys.stdout, 'Sorry, you may only give each person a different ranking'
-                            #logging.debug('Output: Sorry, you may only give each person a different ranking')
-                            logger.write_line('Output: Sorry, you may only give each person a different ranking') ###TEST
+                            logger.write_line('Output: Sorry, you may only give each person a different ranking')
                 for person in rank_list:
                     line = line+' '+person+' '+str(rank_list[person]) #Add all the people and their ranking to line
 
@@ -124,13 +122,11 @@ def LogIn():
                 
                     
             else:
-                #logging.debug('Hidden: Connection to server made, connecting on ports %s' % ports)
-                logger.write_line('Hidden: Connection to server made, connecting on ports %s' % ports) ###TEST
+                logger.write_line('Hidden: Connection to server made, connecting on ports %s' % ports)
 
 
     print >>sys.stdout, "\nLogged in"
-    #logging.debug('Output: Logged in.')
-    logger.write_line('Output: Logged in.') ###TEST
+    logger.write_line('Output: Logged in.')
 
     return ports
 
@@ -142,16 +138,15 @@ def connect_to_server(line):
     global _Login_Port
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
-    ssl_sock.connect((_Server_Host, _Login_Port)) ###TEST
+    ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
+    ssl_sock.connect((_Server_Host, _Login_Port))
 
-    RAProtocol.sendMessage(line, ssl_sock)  ###TEST
-    #logging.debug('Hidden: Making connection with remote server')
-    logger.write_line('Hidden: Making connection with remote server') ###TEST
+    RAProtocol.sendMessage(line, ssl_sock)
+    logger.write_line('Hidden: Making connection with remote server')
 
-    message = RAProtocol.receiveMessage(ssl_sock) ###TEST
+    message = RAProtocol.receiveMessage(ssl_sock)
 
-    ssl_sock.close()  ###TEST
+    ssl_sock.close()
 
     return message
 def play_sound(sound):
@@ -224,8 +219,7 @@ class ReadLineThread(threading.Thread):
             try:
                 _CMD_Queue.put(line)
                 if line != '':
-                    #logging.debug('Input from user: %s' % line)
-                    logger.write_line('Input from user: %s' % line) ###TEST
+                    logger.write_line('Input from user: %s' % line)
             except:
                 pass
             _Quit_Lock.acquire()
@@ -264,8 +258,7 @@ class InThread(threading.Thread):
         while not done:
             conn, addr = sock.accept()
 
-            #logging.debug('Hidden: Got connection from %s' % str(addr))
-            logger.write_line('Hidden: Got connection from %s' % str(addr)) ###TEST
+            logger.write_line('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
             connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True)
             thread.start_new_thread(self.handleInput, (connstream, ))
@@ -281,8 +274,7 @@ class InThread(threading.Thread):
         """
         global _Sound_Playing
         message = RAProtocol.receiveMessage(conn)
-        #logging.debug('Hidden: Got the following message from the server: "%s"' % message)
-        logger.write_line('Hidden: Got the following message from the server: "%s"'%message) ###TEST
+        logger.write_line('Hidden: Got the following message from the server: "%s"'%message)
         conn.close()
         if '_play_'in message and not _Sound_Playing: 
         #Format from engine for a play sound message is: "_play_ soundname" where soundname is the name of a file you wish to play from the sounds directory
@@ -294,8 +286,7 @@ class InThread(threading.Thread):
             
         elif not '_play_' in message: #This isn't a playsound message, we can print it.
             print >>sys.stdout, "\n" + message
-            #logging.debug('Output: %s' % message)
-            logger.write_line('Output: %s' % message) ###TEST
+            logger.write_line('Output: %s' % message)
 
         return True
 
@@ -335,15 +326,14 @@ class OutThread(threading.Thread):
             if message != "":
                 # Create Socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') ###TEST
+                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
                 # connect to player
-                ssl_sock.connect((self.host, self.port))  ###TEST
+                ssl_sock.connect((self.host, self.port))
                 # send message
-                RAProtocol.sendMessage(message, ssl_sock)  ###TEST
-                #logging.debug('Hidden: Sending message "%s" to server' % message)
-                logger.write_line('Hidden: Sending message "%s" to server' % message) ###TEST
+                RAProtocol.sendMessage(message, ssl_sock)
+                logger.write_line('Hidden: Sending message "%s" to server' % message)
                 # close connection
-                ssl_sock.close()  ###TEST
+                ssl_sock.close()
                 # check for quit
                 if message.lower() == "quit":
                     _Quit_Lock.acquire()
@@ -354,8 +344,7 @@ class OutThread(threading.Thread):
             time.sleep(0.05)
 
 if __name__ == "__main__":
-    main()
-    #logging.debug('Output: Game quit. Please close the program.')       
-    logger.write_line('Output: Game quit. Please close the program') ###TEST
+    main()      
+    logger.write_line('Output: Game quit. Please close the program')
     logger.shutdown()
     sys.exit('Game quit. Please close the program.') 
