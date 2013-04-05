@@ -1,0 +1,264 @@
+04/05/2013 02:20:51 PM: <Engine> Initializing game state from default save state
+04/05/2013 02:20:51 PM: <Engine> Loaded global objects
+04/05/2013 02:20:51 PM: <Engine> Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/05/2013 02:20:51 PM: <Engine> Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/05/2013 02:20:51 PM: <Engine> Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/05/2013 02:20:51 PM: <Engine> Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/05/2013 02:20:51 PM: <Engine> Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/05/2013 02:20:51 PM: <Engine> Starting command thread
+04/05/2013 02:20:51 PM: <Engine> Starting spawn NPC thread
+04/05/2013 02:20:51 PM: <Engine> Starting NPC action thread
+04/05/2013 02:20:51 PM: <Engine> Spawned NPC: (kanye) <engine.NPC instance at 0x000000000273D548>
+04/05/2013 02:20:51 PM: <Server> Game State initialized
+04/05/2013 02:20:51 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273D088>, go, ['south'], <engine.Portal instance at 0x000000000273A708>, ['npc']) in the command queue
+04/05/2013 02:20:51 PM: <Engine> Closing npc action thread.
+04/05/2013 02:20:51 PM: <Server> Login Socket created
+04/05/2013 02:20:51 PM: <Server> Log-in thread spawned
+04/05/2013 02:20:51 PM: <Server> Server action thread spawned
+04/05/2013 02:20:51 PM: <Server> Login Socket bound
+04/05/2013 02:20:51 PM: <Server> Login socket listening
+04/05/2013 02:20:51 PM: <Server> Player timeout thread spawned
+04/05/2013 02:20:51 PM: <Server> Entering main loop...
+04/05/2013 02:20:51 PM: <Engine> Running command (go, south)
+04/05/2013 02:20:56 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['north'], <engine.Portal instance at 0x000000000273A648>, ['npc']) in the command queue
+04/05/2013 02:20:56 PM: <Engine> Closing npc action thread.
+04/05/2013 02:20:56 PM: <Engine> Running command (go, north)
+04/05/2013 02:21:01 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['east'], <engine.Portal instance at 0x000000000273A608>, ['npc']) in the command queue
+04/05/2013 02:21:01 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:01 PM: <Engine> Running command (go, east)
+04/05/2013 02:21:06 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273D508>, go, ['west'], <engine.Portal instance at 0x000000000273A508>, ['npc']) in the command queue
+04/05/2013 02:21:06 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:06 PM: <Engine> Running command (go, west)
+04/05/2013 02:21:11 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['east'], <engine.Portal instance at 0x000000000273A608>, ['npc']) in the command queue
+04/05/2013 02:21:11 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:11 PM: <Engine> Running command (go, east)
+04/05/2013 02:21:16 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273D508>, go, ['west'], <engine.Portal instance at 0x000000000273A508>, ['npc']) in the command queue
+04/05/2013 02:21:16 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:16 PM: <Engine> Running command (go, west)
+04/05/2013 02:21:21 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['north'], <engine.Portal instance at 0x000000000273A648>, ['npc']) in the command queue
+04/05/2013 02:21:21 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:21 PM: <Engine> Running command (go, north)
+04/05/2013 02:21:26 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['east'], <engine.Portal instance at 0x000000000273A608>, ['npc']) in the command queue
+04/05/2013 02:21:26 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:26 PM: <Engine> Running command (go, east)
+04/05/2013 02:21:29 PM: <Server> Connected with 172.16.248.59:52522
+04/05/2013 02:21:30 PM: <Server> Required user affiliation from <Andy>
+04/05/2013 02:21:31 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273D508>, go, ['west'], <engine.Portal instance at 0x000000000273A508>, ['npc']) in the command queue
+04/05/2013 02:21:31 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:31 PM: <Engine> Running command (go, west)
+04/05/2013 02:21:36 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['east'], <engine.Portal instance at 0x000000000273A608>, ['npc']) in the command queue
+04/05/2013 02:21:36 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:36 PM: <Engine> Running command (go, east)
+04/05/2013 02:21:41 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273D508>, go, ['west'], <engine.Portal instance at 0x000000000273A508>, ['npc']) in the command queue
+04/05/2013 02:21:41 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:41 PM: <Engine> Running command (go, west)
+04/05/2013 02:21:46 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['north'], <engine.Portal instance at 0x000000000273A648>, ['npc']) in the command queue
+04/05/2013 02:21:46 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:46 PM: <Engine> Running command (go, north)
+04/05/2013 02:21:51 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AE48>, go, ['south'], <engine.Portal instance at 0x000000000273A688>, ['npc']) in the command queue
+04/05/2013 02:21:51 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:51 PM: <Engine> Running command (go, south)
+04/05/2013 02:21:52 PM: <Server> Connected with 172.16.248.59:52523
+04/05/2013 02:21:52 PM: <Server> Creating user: <Andy>
+04/05/2013 02:21:52 PM: <Engine> Created player 'andy' at (0,0,1)
+04/05/2013 02:21:56 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:21:56 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:21:56 PM: <Engine> Closing npc action thread.
+04/05/2013 02:21:56 PM: <Engine> Running command (say, something)
+04/05/2013 02:21:56 PM: <Engine> Sending message to server: (andy, kanye says something)
+04/05/2013 02:21:57 PM: <Engine> Running command (damage, say)
+04/05/2013 02:21:57 PM: <Engine> Sending message to server: (andy, Your Faith in Humanity is decreased by 6.)
+04/05/2013 02:22:01 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:01 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:01 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:01 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:01 PM: <Engine> Sending message to server: (andy, kanye says something)
+04/05/2013 02:22:02 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:02 PM: <Engine> Sending message to server: (andy, Your Faith in Humanity is decreased by 6.)
+04/05/2013 02:22:06 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:06 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:06 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:06 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:06 PM: <Engine> Sending message to server: (andy, kanye says something)
+04/05/2013 02:22:07 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:07 PM: <Engine> Sending message to server: (andy, Your Faith in Humanity is decreased by 6.)
+04/05/2013 02:22:07 PM: <Server> Removing <Andy> from game: Timed out
+04/05/2013 02:22:11 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:11 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:11 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:11 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:11 PM: <Engine> Sending message to server: (andy, kanye says something)
+04/05/2013 02:22:12 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:16 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:16 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:16 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:16 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:17 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:21 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:21 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:21 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:21 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:22 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:26 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:26 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:26 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:26 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:27 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:31 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:31 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:31 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:31 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:32 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:36 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:36 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:36 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:36 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:37 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:41 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:41 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:41 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:41 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:42 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:46 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:46 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:46 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:46 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:47 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:51 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:51 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:51 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:51 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:52 PM: <Engine> Running command (damage, say)
+04/05/2013 02:22:56 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:22:56 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:22:56 PM: <Engine> Closing npc action thread.
+04/05/2013 02:22:56 PM: <Engine> Running command (say, something)
+04/05/2013 02:22:57 PM: <Engine> Running command (damage, say)
+04/05/2013 02:23:01 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:23:01 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:23:01 PM: <Engine> Closing npc action thread.
+04/05/2013 02:23:01 PM: <Engine> Running command (say, something)
+04/05/2013 02:23:02 PM: <Engine> Running command (damage, say)
+04/05/2013 02:23:06 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, say, ['something'], None, ['npc']) in the command queue
+04/05/2013 02:23:06 PM: <Engine> Put command (<engine.NPC instance at 0x000000000273D548>, <engine.Room instance at 0x000000000273AB48>, damage, ['say'], None, ['npc']) in the command queue
+04/05/2013 02:23:06 PM: <Engine> Closing npc action thread.
+04/05/2013 02:23:06 PM: <Engine> Running command (say, something)
+04/05/2013 02:23:53 PM: <Engine> Initializing game state from default save state
+04/05/2013 02:23:53 PM: <Engine> Loaded global objects
+04/05/2013 02:23:53 PM: <Engine> Loaded room at (0,0,1) from 'rooms/0_0_1.xml'
+04/05/2013 02:23:53 PM: <Engine> Loaded room at (0,1,1) from 'rooms/0_1_1.xml'
+04/05/2013 02:23:53 PM: <Engine> Loaded room at (0,2,1) from 'rooms/0_2_1.xml'
+04/05/2013 02:23:53 PM: <Engine> Loaded room at (1,0,1) from 'rooms/1_0_1.xml'
+04/05/2013 02:23:53 PM: <Engine> Loaded room at (1,1,1) from 'rooms/1_1_1.xml'
+04/05/2013 02:23:53 PM: <Engine> Starting command thread
+04/05/2013 02:23:53 PM: <Engine> Starting spawn NPC thread
+04/05/2013 02:23:53 PM: <Engine> Starting NPC action thread
+04/05/2013 02:23:53 PM: <Engine> Spawned NPC: (kanye) <engine.NPC instance at 0x0000000002774808>
+04/05/2013 02:23:53 PM: <Server> Game State initialized
+04/05/2013 02:23:53 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774348>, go, ['south'], <engine.Portal instance at 0x00000000027719C8>, ['npc']) in the command queue
+04/05/2013 02:23:53 PM: <Engine> Closing npc action thread.
+04/05/2013 02:23:53 PM: <Server> Log-in thread spawned
+04/05/2013 02:23:53 PM: <Server> Login Socket created
+04/05/2013 02:23:53 PM: <Server> Login Socket bound
+04/05/2013 02:23:53 PM: <Server> Server action thread spawned
+04/05/2013 02:23:53 PM: <Server> Player timeout thread spawned
+04/05/2013 02:23:53 PM: <Server> Login socket listening
+04/05/2013 02:23:53 PM: <Server> Entering main loop...
+04/05/2013 02:23:53 PM: <Engine> Running command (go, south)
+04/05/2013 02:23:58 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['south'], <engine.Portal instance at 0x0000000002771948>, ['npc']) in the command queue
+04/05/2013 02:23:58 PM: <Engine> Closing npc action thread.
+04/05/2013 02:23:58 PM: <Engine> Running command (go, south)
+04/05/2013 02:24:03 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002771E08>, go, ['north'], <engine.Portal instance at 0x0000000002771848>, ['npc']) in the command queue
+04/05/2013 02:24:03 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:03 PM: <Engine> Running command (go, north)
+04/05/2013 02:24:08 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:24:08 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:08 PM: <Engine> Running command (go, north)
+04/05/2013 02:24:13 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['south'], <engine.Portal instance at 0x0000000002771948>, ['npc']) in the command queue
+04/05/2013 02:24:13 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:13 PM: <Engine> Running command (go, south)
+04/05/2013 02:24:18 PM: <Server> Connected with 172.16.248.59:52527
+04/05/2013 02:24:18 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002771E08>, go, ['north'], <engine.Portal instance at 0x0000000002771848>, ['npc']) in the command queue
+04/05/2013 02:24:18 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:18 PM: <Engine> Running command (go, north)
+04/05/2013 02:24:19 PM: <Server> Required user affiliation from <andy>
+04/05/2013 02:24:23 PM: <Server> Connected with 172.16.248.59:52528
+04/05/2013 02:24:23 PM: <Server> Creating user: <andy>
+04/05/2013 02:24:23 PM: <Engine> Created player 'andy' at (0,0,1)
+04/05/2013 02:24:23 PM: <Server> <andy> added to the game.
+04/05/2013 02:24:23 PM: <Server> Sending message to <andy>: "An empty jail cell. You see a cruddy old toilet, and a key in the room. There is a metal door to the north, and a wooden door to the east."
+04/05/2013 02:24:23 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['east'], <engine.Portal instance at 0x00000000027718C8>, ['npc']) in the command queue
+04/05/2013 02:24:23 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:23 PM: <Engine> Running command (go, east)
+04/05/2013 02:24:28 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:28 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:28 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x00000000027747C8>, go, ['west'], <engine.Portal instance at 0x00000000027717C8>, ['npc']) in the command queue
+04/05/2013 02:24:28 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:28 PM: <Engine> Running command (go, west)
+04/05/2013 02:24:29 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:29 PM: <Server> Putting in the command queue: <andy>; "s"
+04/05/2013 02:24:29 PM: <Server> Processing Command from Queue: <player>: andy <command>: s
+04/05/2013 02:24:29 PM: <Engine> Put command (<engine.Player instance at 0x0000000002777548>, <engine.Room instance at 0x0000000002771E08>, go, ['south'], None, []) in the command queue
+04/05/2013 02:24:29 PM: <Engine> Running command (go, south)
+04/05/2013 02:24:29 PM: <Engine> Sending message to server: (andy, You can't go that way.)
+04/05/2013 02:24:29 PM: <Server> Sending message to <andy>: "You can't go that way."
+04/05/2013 02:24:33 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:33 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:33 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:24:33 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:33 PM: <Engine> Running command (go, north)
+04/05/2013 02:24:38 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:38 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:38 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:24:38 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:38 PM: <Engine> Running command (go, north)
+04/05/2013 02:24:43 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:43 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:43 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['east'], <engine.Portal instance at 0x00000000027718C8>, ['npc']) in the command queue
+04/05/2013 02:24:43 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:43 PM: <Engine> Running command (go, east)
+04/05/2013 02:24:48 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:48 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:48 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x00000000027747C8>, go, ['west'], <engine.Portal instance at 0x00000000027717C8>, ['npc']) in the command queue
+04/05/2013 02:24:48 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:48 PM: <Engine> Running command (go, west)
+04/05/2013 02:24:53 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:53 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:53 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['east'], <engine.Portal instance at 0x00000000027718C8>, ['npc']) in the command queue
+04/05/2013 02:24:53 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:53 PM: <Engine> Running command (go, east)
+04/05/2013 02:24:58 PM: <Server> Got input from: <andy>
+04/05/2013 02:24:58 PM: <Server> Got a ping from <andy>
+04/05/2013 02:24:58 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x00000000027747C8>, go, ['west'], <engine.Portal instance at 0x00000000027717C8>, ['npc']) in the command queue
+04/05/2013 02:24:58 PM: <Engine> Closing npc action thread.
+04/05/2013 02:24:58 PM: <Engine> Running command (go, west)
+04/05/2013 02:25:03 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:03 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:03 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:25:03 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:03 PM: <Engine> Running command (go, north)
+04/05/2013 02:25:08 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:08 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:08 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:25:08 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:08 PM: <Engine> Running command (go, north)
+04/05/2013 02:25:13 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:13 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:13 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['east'], <engine.Portal instance at 0x00000000027718C8>, ['npc']) in the command queue
+04/05/2013 02:25:13 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:13 PM: <Engine> Running command (go, east)
+04/05/2013 02:25:18 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:18 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:18 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x00000000027747C8>, go, ['west'], <engine.Portal instance at 0x00000000027717C8>, ['npc']) in the command queue
+04/05/2013 02:25:18 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:18 PM: <Engine> Running command (go, west)
+04/05/2013 02:25:23 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:23 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:23 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['north'], <engine.Portal instance at 0x0000000002771908>, ['npc']) in the command queue
+04/05/2013 02:25:23 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:23 PM: <Engine> Running command (go, north)
+04/05/2013 02:25:28 PM: <Server> Got input from: <andy>
+04/05/2013 02:25:28 PM: <Server> Got a ping from <andy>
+04/05/2013 02:25:28 PM: <Engine> Put command (<engine.NPC instance at 0x0000000002774808>, <engine.Room instance at 0x0000000002774148>, go, ['east'], <engine.Portal instance at 0x00000000027718C8>, ['npc']) in the command queue
+04/05/2013 02:25:28 PM: <Engine> Closing npc action thread.
+04/05/2013 02:25:28 PM: <Engine> Running command (go, east)
