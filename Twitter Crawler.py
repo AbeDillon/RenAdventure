@@ -6,7 +6,6 @@ update comments
 """
 
 import os
-import pickle
 import time
 import twitter
 import Queue
@@ -25,15 +24,15 @@ class feedGetter(threading.Thread):
 
     def run(self):
         """
-
+        Scrapes twitter for (count) number of tweets.  It likely won't return that many.  They are returned as classes.
         """
-        print 'getting ' + self.user + '\'s status!'
         statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
         self.twitterSave(statuses)
 
-
         return None
 
+    # twitter.api returns the data as a class.  twittersave strips out
+    # the tweet, converts it to UTF-8 and saves it to a file.
     def twitterSave(self, statuses):
         fout = open('twitterfeeds\\' + self.user + ".txt", 'w')
         for status in statuses:
@@ -44,10 +43,11 @@ class feedGetter(threading.Thread):
             fout.write('\n')
         fout.close()
 
+
 #===============================================entry==============================================
 
 
-logger = Q2logging.out_file_instance('logs/TwitterCrawler/TwitterCrawler') ###TEST
+# logger = Q2logging.out_file_instance('logs/TwitterCrawler/TwitterCrawler')
 
 
 def getNames(path):
@@ -70,11 +70,11 @@ def main():
     newNamesQ = Queue.Queue()
 
     oldNamesQ = Queue.Queue()
-    # Need to update below note!
 
-    # Gets the info from twitter based on the "handles" list.  Takes the twitter info (it's returned as a class) and
-    # converts it to a dictionary. Saves that dictionary to the text file named after the twitter handle.
-    # Loop runs (twitter info for next handle) every 45 seconds.
+    # Looks at the two queues, pulls from newNamesQ first if available, and gets the twitter feed for that name.
+    # If there's nothing in the queues it looks in the "twitterfeeds" folder and adds those names to the newNamesQ queue.
+    # Each name gets spun off on it's own thread to get the tweets, new threads are spun off at no less than
+    # 45 second intervals.
     startTime = time.time()
     while(1):
         try:
@@ -102,6 +102,7 @@ def main():
             startTime = time.time()
 
 
+        # Opens "twitterfeeds" folder, parses names and adds them to the newNamesQ queue.
         tempList = getNames(os.listdir(os.getcwd() + "\\twitterfeeds"))
         for name in tempList:
             if name not in Names:
