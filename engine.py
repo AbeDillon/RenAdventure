@@ -1,7 +1,6 @@
 __author__ = 'eking, adillon'
 
-import loader
-from engine_helper import *
+import loader, engine_helper
 import os, random, time
 import thread, threading, Queue
 import Q2logging
@@ -55,7 +54,7 @@ class Portal:
         self.desc = desc
         self.inspect_desc = inspect_desc
         self.coords = coords
-        self.scripts = scrub(scripts)
+        self.scripts = engine_helper.scrub(scripts)
         self.locked = locked
         self.hidden = hidden
         self.key = key
@@ -84,7 +83,7 @@ class Item:
         self.container = container
         self.locked = locked
         self.key = key
-        self.scripts = scrub(scripts)
+        self.scripts = engine_helper.scrub(scripts)
 
         self.items = {}
         for item in items:
@@ -125,10 +124,14 @@ class NPC:
     - Coordinates
     - Affiliation (dictionary of opinion of each person)
     '''
-    def __init__(self, name, coords, affiliation):
+    def __init__(self, name, coords, affiliation, tweets = None):
         self.name = name.lower()
         self.coords = coords
         self.affiliation = affiliation
+        self.tweets = []
+
+        twitter_file = open('twitterfeeds/%s.feed' % self.name, 'a')
+        twitter_file.close()
 
 logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
 
@@ -182,21 +185,12 @@ def init_game(save_state = 0):
         coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
 
         _Rooms[coords] = loader.load_room(path)
-        #logger.debug("Loaded room at (%d,%d,%d) from '%s'" % (coords[0], coords[1], coords[2], path))
-        logger.write_line("Loaded room at (%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], path)) ###TEST
+        logger.write_line("Loaded room at (%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], path))
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-    kanye = NPC('kanye', (0,2,1), affiliation)
+    kanye = NPC('@kanyewest', (0,2,1), affiliation)
     _NPCBucket.append(kanye)
-
-    affiliation = {'Obama': 3, 'Gottfried': 2, 'OReilly': 4, 'Kanye': 1, 'Burbiglia': 5}
-    gates = NPC('bill gates', (0,2,1), affiliation)
-    _NPCBucket.append(gates)
-
-    affiliation = {'Obama': 2, 'Gottfried': 4, 'OReilly': 1, 'Kanye': 5, 'Burbiglia': 3}
-    oreilly = NPC('bill oreilly', (0,2,1), affiliation)
-    _NPCBucket.append(oreilly)
 
     thread.start_new_thread(command_thread, ())
     #logger.debug("Starting command thread")
@@ -317,7 +311,7 @@ def command_thread():
             tags = command[2]
 
             if player_name in _Characters:
-                messages = do_command(player_name, command_str, tags)
+                messages = engine_helper.do_command(player_name, command_str, tags)
 
                 logger.write_line("Running command (%s, %s)" % (player_name, command))
 
@@ -348,7 +342,7 @@ def npc_thread():
         _Characters_Lock.release()
 
         for npc in npcs.values():
-            npc_action(npc)
+            engine_helper.npc_action(npc)
 
     #logger.debug("Closing npc action thread.")
     logger.write_line("Closing npc action thread.") ###TEST
@@ -368,19 +362,27 @@ def spawn_npc_thread(n):
 
         if ((len(_Rooms) / n) + 1) > len(npcs):
             npc = random.choice(_NPCBucket)
-            _Characters[npc.name] = npc
-            _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
 
-            #logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
-            logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc)) ###TEST
+            # Get the NPCs tweets
+            twitter_file = open('twitterfeeds/%s.feed' % npc.name)
+            for line in twitter_file.readlines():
+                npc.tweets.append(line.strip())
+
+            if len(npc.tweets) > 0:
+                _Characters[npc.name] = npc
+                _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
+
+                logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
+
+
         elif ((len(_Rooms) / n) + 1) < len(npcs):
             name = random.choice(npcs.keys())
             npc = npcs[name]
             del _Characters[name] # Remove from the NPC list
             del _Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
-            logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc)) ###TEST
+            logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc))
 
         _Characters_Lock.release()
         time.sleep(.05) # Sleep for 50ms
 
-    logger.write_line("Closing spawn npc thread.") ###TEST
+    logger.write_line("Closing spawn npc thread.")

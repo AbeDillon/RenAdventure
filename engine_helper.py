@@ -206,7 +206,7 @@ def npc_action(npc):
     room = engine._Rooms[npc.coords]
 
     if len(room.players) > 0: # There are players in the room, talk to them
-        message = "Something" # Replace with tweet
+        message = random.choice(npc.tweets)
         commands = []
         commands.append((npc.name, 'say %s' % message, ['npc']))
         commands.append((npc.name, 'damage say', ['npc']))
