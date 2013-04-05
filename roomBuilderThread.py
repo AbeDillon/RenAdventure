@@ -211,17 +211,18 @@ class BuilderThread(threading.Thread):
         if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
             name_accept = False
             while name_accept == False:
-                engine._Objects_Lock.accuire()
-                if name not in engine._Objects:
-                    engine._Objects_Lock.release()
-                    engine._Characters_Lock.accuire()
-                    if name not in engine._Characters:
-                        engine._Characters_Lock.release()
+                
+                engine._Characters_Lock.accuire()
+                if name not in engine._Characters:
+                    engine._Characters_Lock.release()
+                    engine._Objects_Lock.accuire()                
+                    if name not in engine._Objects:
                         engine._Objects[name] = None
+                        engine._Objects_Lock.release()                        
                         self.send_message_to_player(accept)
                         name_accept = True                
                 else:
-                    engine._Objects_Lock.release()
+                    engine._Characters_Lock.release()
                     self.send_message_to_player(deny)
                 # prompt player again            
                 name = self.get_cmd_from_player()
@@ -243,12 +244,17 @@ class BuilderThread(threading.Thread):
         
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
+        exist_flag = False
         
         engine._Objects_Lock.accuire()
-        exist_flag = False
-        if name in engine_Objects:            
+        if name in engine._Objects:            
             exist_flag = True
         engine_Objects_Lock.release()
+        
+        engine._Characters_Lock.accuire()
+        if name in engine._Characters:
+            exist_flag = True
+        engine._Characters_Lock.accuire()        
         
         if exist_flag == True:
             return (name,True)
