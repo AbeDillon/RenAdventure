@@ -4,23 +4,24 @@ import Queue
 import time
 import copy
 import engine
-
+import Q2logging
 
 class BuilderThread(threading.Thread):
     """
     Room builder thread
     """
 
-    def __init__(self, type_of_object, cmd_queue, msg_queue,  game_state, game_state_lock, room_coords=None, player_name=""):
+    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_cue, room_coords=None, player_name=""):
         """
         Initialize a Room Builder thread
         """
+        logger = Q2logging.out_file_instance('logs/builder/builder')
+        
         threading.Thread.__init__(self)
         self.type = type_of_object # being built
         self.cmd_queue = cmd_queue
         self.msg_queue = msg_queue
-        self.game_state  = game_state
-        self.game_state_lock = game_state_lock
+        self.game_cmd_cue = game_cmd_cue
         self.room_coords = room_coords
         self.player = player_name
         self.prototype = {}
@@ -217,35 +218,49 @@ class BuilderThread(threading.Thread):
         """
         text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
         deny = '\n' + textwrap.fill('That name has already been used try again.',  width=100).strip()
-        
+        accept = '\n' + textwrap.fill('The name has been accepted... moving on.')
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
-                
-        while name in game_state._Objects: #  ****CHANGE WHEN GAMESTATE PASSING IS KNOWN
-            self.send_message_to_player(deny + text)
-            name = self.get_cmd_from_player()
+        
+        if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
+            name_accept = False
+            while name_accept == False:
+                engine._Objects_Lock.accuire()     
+                if name not in engine._Objects:
+                    engine._Objects[name] = None
+                    engine._Objects_Lock.release()
+                    self.send_message_to_player(accept)
+                    name_accept = True                
+                else:
+                    engine._Objects_Lock.release()
+                    self.send_message_to_player(deny)
+                # prompt player again            
+                name = self.get_cmd_from_player()
             
         self.prototype['name'] = name
-            
+
     def checkName(self):
         """
         Function for checking name when player wants to add items by name
         Only allows names that do exist
         
-        RETURNS name that has been found in list.
         """
         # Get desired name
         text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
-        deny = '\n' + textwrap.fill('That item does not exist try again.',  width=100).strip()
         
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
         
-        while name not in game_state._Objects:    #  *****CHANGE WHEN LOCATION IS KNOWN FOR LIST/DICT
-            self.send_message_to_player(deny)
-            name = self.get_cmd_from_player()
+        engine._Objects_Lock.accuire()
+        exist_flag = False
+        if name in engine_Objects:            
+            exist_flag = True
+        engine_Objects_Lock.release()
         
-        return name
+        if exist_flag == True:
+            return (name,True)
+        else:
+            return (name,False)
     
     # begin room creation
     def addDescription(self):
@@ -421,33 +436,36 @@ class BuilderThread(threading.Thread):
         
     def addItems(self):
         """
-        
+        Function for adding items to room or container item.
         """
         items = {}
         
         #  confirm they want to add item(s)
-        text1 = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
+        prompt = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
+        
         valid_responses = (("new", "n"), ("existing", "e"), ("exit", "x"))
         
         # save the current room prototype because calling the buildItem function will clobber it
         temp_prototype = copy.deepcopy(self.prototype)
         temp_type = copy.copy(self.type)
         self.type = "item"
-        ans = self.get_valid_response(text1, validResponses=valid_responses)
+        ans = self.get_valid_response(prompt, validResponses=valid_responses)
         while ans not in ("exit", "x"):
             # add an item by name
             if ans == "existing":
-                # ask them what item
-                text = '\n' + textwrap.fill('Enter the name of the item.',  width=100).strip()
-                self.send_message_to_player(text)
-                # get response                   
-                item_name = self.get_cmd_from_player()
-                # check if that item exists
-                if item_name not in self.game_state.names:  #  Not sure this is right place to validate
-                    text = '\n' + textwrap.fill('That item was not found. Try again',  width=100).strip()
-                    self.send_message_to_player(text)
-                else:
+                # ask them item name
+                check_name = self.checkName() # check name returns Tuple (name, T/F)
+                name = check_name[0]
+                flag = check_name[1]
+                if flag == True: #name was accepted
+                    #append name to item dict
                     items[name] = items.get(name, 0) + 1
+                    accept = '\n' + textwrap.fill('The '+name+ ' has been added to your '+temp_type+'.', width=100).strip()        
+                    self.send_message_to_player(accept)
+                else:
+                    deny = '\n' +textwrap.fill('We cannot find that ', width=100).strip()
+                    self.send_message_to_player(deny)
+            
             # build your item
             else:
                 # initialize the prototype for the buildItem function
@@ -486,24 +504,9 @@ class BuilderThread(threading.Thread):
             
         self.send_message_to_player(text)
         
-    def validate(self):
-        """
-        
-        """
-        object_name = self.prototype['name']
-        obj = self.makePrototype()
-        
-        fail = False
-                
-        self.game_state_lock.accuire()
-        if object_name not in self.game_state:
-            self.game_state[object_name] = obj
-        else:
-            fail = True
-        self.game_state_lock.release()
-        
     def makeRoom(self):
         """
+        need to change NPC list when the npc builder is complete.
         """
         desc = self.prototype['description']
         portals = self.prototype['portals']
@@ -550,8 +553,6 @@ class BuilderThread(threading.Thread):
         item = engine.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
         
         return item
-    
-    
                 
     def get_valid_response(self, prompt, validResponses=(("yes", "y"), ("no", "n"))):
         """
@@ -575,15 +576,15 @@ class BuilderThread(threading.Thread):
             else:
                 text = '\n' + textwrap.fill('Invalid response. Please respond with: ' + str(translate.keys()),  width=100).strip()
                 self.send_message_to_player(text + prompt)
-                
+    
     def get_cmd_from_player(self):
         """
-        
+        command from player is sent in 3 part tuple (player_name, message, [tag])
         """
         command = self.cmd_queue.get()
         message = command[1]
         return message
-        
+
     def send_message_to_player(self, message):
         """
         Packages a message in the (name, msg, tags) format and puts it on the msg_queue
@@ -592,5 +593,3 @@ class BuilderThread(threading.Thread):
         message_tuple = (self.player_name, message, [])
         
         self.msg_queue.put(message_tuple)
-        
-    
