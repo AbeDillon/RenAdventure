@@ -77,7 +77,7 @@ class Item:
     - Key
     - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = []):
+    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = {}):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
@@ -106,7 +106,7 @@ class Player:
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, affiliation, items = [], fih = 30):
+    def __init__(self, name, coords, affiliation, items = {}, fih = 30):
         self.name = name.lower()
         self.coords = coords
         self.fih = fih
