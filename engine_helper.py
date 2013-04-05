@@ -1,10 +1,10 @@
 __author__ = 'EKing'
 
-import engine
-import threading, random
+import engine, roomBuilderThread
+import thread, threading, random
+import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
-
 
 def do_command(player, room, verb, nouns, object, tags):
     messages = []
@@ -403,33 +403,60 @@ def open(room, player, object, noun, tags):
 
 def go(room, player, object, noun, tags):
     alt_text = ''
-
-    if object == None:
-        text = "You can't go that way."
-    elif object.locked and 'script' not in tags:
-        text = "That way is locked."
-    else:
-        # Move player to the coordinates the portal leads to
-        player.coords = object.coords
-        if 'npc' not in tags:
-            room.players.remove(player.name) # Remove player from last room
-            engine._Rooms[player.coords].players.append(player.name) # Add player to new room
-        else:
-            room.npcs.remove(player.name) # Remove NPC from the last room
-            engine._Rooms[player.coords].npcs.append(player.name) # Add the NPC to the new room
-
-        text = get_room_text(player.name, player.coords)
-        alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
-
     messages = []
-    messages.append((player.name, text))
+    new_room = engine._Rooms.get(object.coords, "Build")
 
-    for alt_player in room.players: # Give players in room that was left a message
-        messages.append((alt_player, alt_text))
+    if new_room == "Build": # Room does not exist, spin off builder thread
+        room.players.remove(player.name)    # Remove player from the room
+        player.coords = object.coords   # Change player coordinates to new room
+        engine._Rooms[object.coords] = None # Set new room to None
 
-    for alt_player in engine._Rooms[player.coords].players: # Give players in the new room a message
-        if alt_player != player.name:
-            messages.append((alt_player, '%s has entered the room.' % player.name.title()))
+        engine._Characters_In_Builder_Lock.acquire()
+        engine._Characters_In_Builder[player.name] = player
+        engine._Characters_In_Builder_Lock.release()
+
+        engine._Characters_Lock.acquire()
+        del engine._Characters[player.name]
+        engine._Characters_Lock.release()
+
+        engine._BuilderQueues[player.name] = Queue.Queue    # Create builder queue for the player to use
+        builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+        builder_thread.start()  # Spin off builder thread
+
+        # Just for testing
+#        player.coords = player.prev_coords
+#        room.players.append(player.name)
+#        del engine._Rooms[object.coords]
+#        messages.append((player.name, "You have entered an unbuilt room, kicking you out."))
+    elif new_room == None: # Room is being built, cannot enter the room
+        messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
+    else: # Room is built, enter it
+        if object == None:
+            text = "You can't go that way."
+        elif object.locked and 'script' not in tags:
+            text = "That way is locked."
+        else:
+            # Move player to the coordinates the portal leads to
+            player.prev_coords = player.coords
+            player.coords = object.coords
+            if 'npc' not in tags:
+                room.players.remove(player.name) # Remove player from last room
+                engine._Rooms[player.coords].players.append(player.name) # Add player to new room
+            else:
+                room.npcs.remove(player.name) # Remove NPC from the last room
+                engine._Rooms[player.coords].npcs.append(player.name) # Add the NPC to the new room
+
+            text = get_room_text(player.name, player.coords)
+            alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
+
+        messages.append((player.name, text))
+
+        for alt_player in room.players: # Give players in room that was left a message
+            messages.append((alt_player, alt_text))
+
+        for alt_player in engine._Rooms[player.coords].players: # Give players in the new room a message
+            if alt_player != player.name:
+                messages.append((alt_player, '%s has entered the room.' % player.name.title()))
 
     return messages
 
