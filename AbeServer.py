@@ -442,8 +442,10 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
                     print 'Player timed out: <%s>' % player
                     logger.write_line('Removing <%s> from game: Timed out' % player)
-                    if player in engine._Players:
+                    engine._Characters_Lock.acquire()
+                    if player in engine._Characters:
                         engine.remove_player(player)
+                    engine._Characters_Lock.release()
                     if player in _Logged_in:
                         _Logged_in.remove(player)
                     to_rem.append(player)
