@@ -8,14 +8,12 @@ import time
 import string
 import Queue
 import RAProtocol
-#import logging
 import ssl
 import winsound
-import Q2logging   ###TEST
+import Q2logging
 
-#logging.basicConfig(filename='RenClient.log', level=logging.DEBUG, format = '%(asctime)s: %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
 
-logger = Q2logging.out_file_instance('logs/client/RenClient') ###TEST
+logger = Q2logging.out_file_instance('logs/client/RenClient')
 
 _Local_Host = socket.gethostname() # replace with actual host address
 _Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
@@ -77,46 +75,36 @@ def LogIn():
     while ports == None:
 
         line1 = raw_input('Please enter your username:\r\n') #Name
-        #logging.debug('Output: Please enter your username:')
-        #logging.debug('Input: %s' % line1)
         logger.write_line('Output: Please enter your username:')
         logger.write_line('Input: %s' % line1)
         line2 = raw_input('Please enter your password:\r\n') #Pass
-        #logging.debug('Output: Please enter your password:')
-        #logging.debug('Input: %s' % line2)
-        logger.write_line('Output: Please enter your password:') ###TEST
-        logger.write_line('Input: %s' % line2)   ###TEST
+        logger.write_line('Output: Please enter your password:')
+        logger.write_line('Input: %s' % line2)
         
         line = line1 + ' ' + line2
         if line != "":
             
             ports = connect_to_server(line)
             if ports == 'invalid': #Failed login
-                #logging.debug('Output: Error, failed to log in. Please try again')
-                logger.write_line('Output: Error, failed to log in. Please try again') ###TEST
+                logger.write_line('Output: Error, failed to log in. Please try again')
                 print >>sys.stdout, 'Error, failed to log in. Please try again'
                 ports = None
             elif ports == 'banned_name': #Invalid username
-                #logging.debug('Output: Error, illegal player name. Please choose an appropriate name.')
-                logger.write_line('Output: Error, illegal player name. Please choose an appropriate name.') ###TEST
+                logger.write_line('Output: Error, illegal player name. Please choose an appropriate name.')
                 print >>sys.stdout, 'Error, illegal player name. Please choose an appropriate name.'
                 ports = None
             elif ports == 'affiliation_get': #Get user affiliation set
                 print >>sys.stdout, 'This is a new player, which requires you to rank your affiliation with people.'
-                #logging.debug('Output: This is a new player, which requires you to rank your affiliation with people.')
-                logger.write_line('Output: This is a new player, which requires you to rank your affiliation with people.') ###TEST
+                logger.write_line('Output: This is a new player, which requires you to rank your affiliation with people.')
                 print >>sys.stdout, 'Please rank the following people 1 through 5 in order of preference:'
-                #logging.debug('Output: Please rank the following people 1 through 5 in order of preference:')
-                logger.write_line('Output: Please rank the following people 1 through 5 in order of preference:') ###TEST
+                logger.write_line('Output: Please rank the following people 1 through 5 in order of preference:')
                 for person in rank_list:
                     print >>sys.stdout, '\t'+person
-                    #logging.debug(person)
-                    logger.write_line(person) ###TEST
+                    logger.write_line(person)
                 for person in rank_list:
                     while 1:
                         rank = raw_input('On a scale of 1 to 5, where would you rank %s?\r\n'%person)
-                        #logging.debug('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person)
-                        logger.write_line('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person) ###TEST
+                        logger.write_line('Output: On a scale of 1 to 5, where would you rank %s?\r\n' % person)
                         #logging.debug('Input: %s' % rank)
                         logger.write_line('Input: %s' % rank) ###TEST
                         rank = int(rank)
