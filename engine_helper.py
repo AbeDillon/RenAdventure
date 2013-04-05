@@ -582,7 +582,7 @@ def damage(room, attacker, object, noun, tags):
     messages = []
 
     for player_name in room.players:
-        player = engine._Players[player_name]
+        player = engine._Characters[player_name]
         difference = 0
         for person in attacker.affiliation: # Calculate the total difference between the player and the npc
             difference += -abs(attacker.affiliation[person] - player.affiliation[person])

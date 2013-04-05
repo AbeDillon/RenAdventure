@@ -136,8 +136,7 @@ logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
-_Players = {} # Players currently in the game
-_NPCs = {} # NPCs currently in the game
+_Characters = {} # All NPCs and Players currently in the game
 _Rooms = {} # Rooms currently in the game
 _Objects = {} # All Objects currently in the game
 _NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
@@ -232,7 +231,7 @@ def shutdown_game():
 
 def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
     global _Rooms
-    global _Players
+    global _Characters
 
     path = 'players/%s.xml' % name
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
@@ -240,7 +239,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     else:
         player = Player(name, coords, affiliation)
 
-    _Players[player.name] = player # Add to list of players in the game
+    _Characters[player.name] = player # Add to list of players in the game
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
     #logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
@@ -248,13 +247,13 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
 
 def remove_player(name):
     global _Rooms
-    global _Players
+    global _Characters
 
-    player = _Players[name]
+    player = _Characters[name]
     loader.save_player(player)  # Save the player
 
     _Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
-    del _Players[name] # Remove the player from the list of players in the game
+    del _Characters[name] # Remove the player from the list of players in the game
 
     #logger.debug("Removed player '%s'" % player.name)
     logger.write_line("Removed player '%s'"%player.name) ###TEST
@@ -262,15 +261,12 @@ def remove_player(name):
 def put_commands(commands, script=False, npc=False):
     # Takes a list of commands and pushes them to the command queue (player, room, verb, object, tags)
     global _CommandQueue
-    global _Players
+    global _Characters
     global _Rooms
 
     for command in commands:
         tags = []
-        if npc:
-            player = _NPCs[command[0]]
-        else:
-            player = _Players[command[0]]
+        player = _Characters[command[0]]
 
         room = _Rooms[player.coords]
         verb, nouns = parse_command(command[1])
@@ -354,12 +350,17 @@ def command_thread():
 def npc_thread():
     # Runs the commands for all NPC's in the game
     global _StillAlive
-    global _NPCs
+    global _Characters
 
     if _StillAlive:
         threading.Timer(5.0, npc_thread).start()
 
-        for npc in _NPCs.values():
+        npcs = {}
+        for character in _Characters:
+            if isinstance(character, NPC):
+                npcs[character] = _Characters[character]
+
+        for npc in npcs.values():
             npc_action(npc)
 
     #logger.debug("Closing npc action thread.")
@@ -368,22 +369,26 @@ def npc_thread():
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game
     global _StillAlive
-    global _Players
+    global _Characters
     global _NPCBucket
-    global _NPCs
 
     while _StillAlive:
-        if ((len(_Rooms) / n) + 1) > len(_NPCs):
+        npcs = {}
+        for character in _Characters:
+            if isinstance(character, NPC):
+                npcs[character] = _Characters[character]
+
+        if ((len(_Rooms) / n) + 1) > len(npcs):
             npc = random.choice(_NPCBucket)
-            _NPCs[npc.name] = npc
+            _Characters[npc.name] = npc
             _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
 
             #logger.debug("Spawned NPC: (%s) %s" % (npc.name, npc))
             logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc)) ###TEST
-        elif ((len(_Rooms) / n) + 1) < len(_NPCs):
-            name = random.choice(_NPCs.keys())
-            npc = _NPCs[name]
-            del _NPCs[name] # Remove from the NPC list
+        elif ((len(_Rooms) / n) + 1) < len(npcs):
+            name = random.choice(npcs.keys())
+            npc = npcs[name]
+            del _Characters[name] # Remove from the NPC list
             del _Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
 
             #logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
