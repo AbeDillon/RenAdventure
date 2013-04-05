@@ -487,11 +487,20 @@ class PlayerOutput(threading.Thread):
             try:
                 # get message
                 message = self.queue.get()
+                
             except:
                 # this should handle exceptions
                 pass
             if message != "" and message != 'Error, it appears this person has timed out.':
                 print message
+                #if "<sight>" in message: #Some identifier that the sense of sight is involved ###DIRECTIVE
+                    #pass
+                    #sense_state = player.sight
+                    #if sense_state == 'impaired':
+                        #Do something to replace part of the sentence with ellipses?
+                    #elif sense_state == 'blind':
+                        #Do something to replace the whole message with ellipses?
+                    
                 logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem')
