@@ -156,6 +156,25 @@ class BuilderThread(threading.Thread):
         intro_text = '\n' +textwrap.fill('You can [b]uild a script for this '+self.type+', e[x]it scripts, or get [h]elp?  What is your preference?', width=100).strip()
         valid_responses = (('build', 'b'), ('exit', 'x'), ('help', 'h'))
         
+        
+        #get user
+        ans = self.get_valid_response(intro_text, validResponses=valid_responses)
+        while ans != 'exit':
+            if ans == 'build':
+               ans = 'exit'
+               script = {}
+               scripts = script.get(script,0)
+#               text = 'Enter the verb you want to override.'
+#               verb = self.get_cmd 
+            else:
+                # User wants help
+                self.scriptsHelp()
+                ans = self.get_valid_response(intro_text, validResponses=valid_responses)
+        
+        self.prototype['scripts'] = scripts
+        
+    def scriptsHelp(self):
+        
         help_text = '\n' +textwrap.fill('Scripts are commands that run in place of the command given on this '+self.type+'.   For example if you are '
                                         'making an apple you could make it so that if they say "take apple" you can have it open a portal in the room and/or '
                                         'reveal a chest.  Remember if you do this if you still wanted to have the player take the apple you have to include '
@@ -171,22 +190,7 @@ class BuilderThread(threading.Thread):
                                         'would have the player that issued the command take apple to take the apple immediately, wait 3 seconds and move north, '
                                         'wait another 2 seconds and drop the apple.  As you can see this could be rather interesting.  Have fun but try not to '
                                         'ruin things for everyone else while you are at it.',width=100)
-        #get user
-        ans = self.get_valid_response(intro_text, validResponses=valid_responses)
-        while ans != 'exit':
-            if ans == 'build':
-               ans = 'exit'
-               script = {}
-               scripts = script.get(script,0)
-#               text = 'Enter the verb you want to override.'
-#               verb = self.get_cmd 
-            else:
-                # User wants help
-                self.send_message_to_player(help_text + help_text2 + help_text3)
-                ans = self.get_valid_response(intro_text, validResponses=valid_responses)
-        
-        self.prototype['scripts'] = scripts
-        
+        self.send_message_to_player(help_text + help_text2 + help_text3)
     
     def buildNPC(self):
         """
@@ -253,10 +257,11 @@ class BuilderThread(threading.Thread):
             exist_flag = True
         engine_Objects_Lock.release()
         
-        engine._Characters_Lock.accuire()
-        if name in engine._Characters:
-            exist_flag = True
-        engine._Characters_Lock.accuire()        
+        if exist_flag == False:
+            engine._Characters_Lock.accuire()
+            if name in engine._Characters:
+                exist_flag = True
+            engine._Characters_Lock.accuire()        
         
         if exist_flag == True:
             return (name,True)
