@@ -1,7 +1,6 @@
 __author__ = 'EKing'
 
 import engine
-from math import *
 import threading, random
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
@@ -95,7 +94,9 @@ def get_visible(object_names):
 
     for name in object_names:
         for i in range(object_names[name]): # Appends the item name once for each item with that name
+            engine._Objects_Lock.acquire()
             objects.append(engine._Objects[name])
+            engine._Objects_Lock.release()
 
     for object in objects:
         if not object.hidden:
@@ -229,7 +230,9 @@ def get_valid_objects(player, room, verb):
             object_names.append(item)
 
     for name in object_names:
+        engine._Objects_Lock.acquire()
         valid_objects.append(engine._Objects[name])
+        engine._Objects_Lock.release()
 
     for object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -468,7 +471,10 @@ def unlock(room, player, object, noun, tags):
 
             if isinstance(object, engine.Portal):
                 for portal_name in engine._Rooms[object.coords].portals: # Unlock the portal from the other side as well
+                    engine._Objects_Lock.acquire()
                     portal = engine._Objects[portal_name]
+                    engine._Objects_Lock.release()
+
                     if portal.coords == player.coords:
                         portal.locked = False
 
@@ -582,7 +588,10 @@ def damage(room, attacker, object, noun, tags):
     messages = []
 
     for player_name in room.players:
+        engine._Characters_Lock.acquire()
         player = engine._Characters[player_name]
+        engine._Characters_Lock.release()
+
         difference = 0
         for person in attacker.affiliation: # Calculate the total difference between the player and the npc
             difference += -abs(attacker.affiliation[person] - player.affiliation[person])

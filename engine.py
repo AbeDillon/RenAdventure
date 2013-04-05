@@ -136,9 +136,15 @@ logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
-_Characters = {} # All NPCs and Players currently in the game
+
 _Rooms = {} # Rooms currently in the game
+
+_Characters = {} # All NPCs and Players currently in the game
+_Characters_Lock = threading.RLock()
+
 _Objects = {} # All Objects currently in the game
+_Objects_Lock = threading.RLock()
+
 _NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
 
 def init_game(save_state = 0):
@@ -159,7 +165,10 @@ def init_game(save_state = 0):
         #logger.debug('Initializing game state from default save state')
         logger.write_line('Initializing game state from default save state') ###TEST
 
+    _Objects_Lock.acquire()
     _Objects = loader.load_objects('objects/objects.xml') # Load the global objects
+    _Objects_Lock.release()
+
     #logger.debug("Loaded global objects")
     logger.write_line("Loaded global objects") ###TEST
 
@@ -239,7 +248,10 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     else:
         player = Player(name, coords, affiliation)
 
+    _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game
+    _Characters_Lock.release()
+
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
     #logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
@@ -249,11 +261,13 @@ def remove_player(name):
     global _Rooms
     global _Characters
 
+    _Characters_Lock.acquire()
     player = _Characters[name]
     loader.save_player(player)  # Save the player
 
     _Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
     del _Characters[name] # Remove the player from the list of players in the game
+    _Objects_Lock.release()
 
     #logger.debug("Removed player '%s'" % player.name)
     logger.write_line("Removed player '%s'"%player.name) ###TEST
@@ -356,9 +370,11 @@ def npc_thread():
         threading.Timer(5.0, npc_thread).start()
 
         npcs = {}
+        _Characters_Lock.acquire()
         for character in _Characters:
-            if isinstance(character, NPC):
+            if isinstance(_Characters[character], NPC):
                 npcs[character] = _Characters[character]
+        _Characters_Lock.release()
 
         for npc in npcs.values():
             npc_action(npc)
@@ -374,8 +390,9 @@ def spawn_npc_thread(n):
 
     while _StillAlive:
         npcs = {}
+        _Characters_Lock.acquire()
         for character in _Characters:
-            if isinstance(character, NPC):
+            if isinstance(_Characters[character], NPC):
                 npcs[character] = _Characters[character]
 
         if ((len(_Rooms) / n) + 1) > len(npcs):
@@ -390,11 +407,9 @@ def spawn_npc_thread(n):
             npc = npcs[name]
             del _Characters[name] # Remove from the NPC list
             del _Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
-
-            #logger.debug("Removed NPC: (%s) %s" % (npc.name, npc))
             logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc)) ###TEST
 
+        _Characters_Lock.release()
         time.sleep(.05) # Sleep for 50ms
 
-    #logger.debug("Closing spawn npc thread.")
     logger.write_line("Closing spawn npc thread.") ###TEST
