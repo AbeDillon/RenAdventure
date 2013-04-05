@@ -4,8 +4,7 @@ import loader
 from engine_helper import *
 import os, random, time
 import thread, threading, Queue
-#import logging
-import Q2logging ###TEST
+import Q2logging
 
 class Room:
     '''
@@ -137,10 +136,15 @@ _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
 _MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
 
+_BuilderQueues = {} # Dictionary of builder queues, 'player name' => Queue
+
 _Rooms = {} # Rooms currently in the game
 
 _Characters = {} # All NPCs and Players currently in the game
 _Characters_Lock = threading.RLock()
+
+_Characters_In_Builder = {} # All Players that are currently in a builder thread
+_Characters_In_Builder_Lock = threading.RLock()
 
 _Objects = {} # All Objects currently in the game
 _Objects_Lock = threading.RLock()
