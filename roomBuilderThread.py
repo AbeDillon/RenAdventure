@@ -23,7 +23,7 @@ class BuilderThread(threading.Thread):
         self.msg_queue = msg_queue
         self.game_cmd_cue = game_cmd_cue
         self.room_coords = room_coords
-        self.player = player_name
+        self.player_name = player_name
         self.prototype = {}
         if self.type == "room":
             self.prototype["name"] = room_coords
@@ -42,14 +42,6 @@ class BuilderThread(threading.Thread):
             self.buildNPC()
         else:
             pass # replace with error logging
-        
-        while 1:
-            pass
-            # build the prototype
-            # send it to the validator
-            # wait for a response
-            # if validation failed: get new names
-            # else exit the thread
             
     def buildRoom(self):
         
@@ -68,8 +60,6 @@ class BuilderThread(threading.Thread):
         #add functionality for placing NPCs
         
         self.reviewObject()
-        
-        self.validate()
         
         self.makeRoom()
         
@@ -109,8 +99,6 @@ class BuilderThread(threading.Thread):
         self.buildScripts()
         
         self.reviewObject()
-        
-        self.validate()
         
         self.makePortal()
         
@@ -153,8 +141,6 @@ class BuilderThread(threading.Thread):
         
         self.reviewObject()
         
-        self.validate()
-        
         self.makeItem()
         
     def buildScripts(self):
@@ -188,8 +174,8 @@ class BuilderThread(threading.Thread):
         while ans != 'exit':
             if ans == 'build':
                ans = 'exit'
-               
-#               script = {}
+               script = {}
+               scripts = script.get(script,0)
 #               text = 'Enter the verb you want to override.'
 #               verb = self.get_cmd 
             else:
@@ -225,18 +211,25 @@ class BuilderThread(threading.Thread):
         if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
             name_accept = False
             while name_accept == False:
-                engine._Objects_Lock.accuire()     
+                engine._Objects_Lock.accuire()
                 if name not in engine._Objects:
-                    engine._Objects[name] = None
                     engine._Objects_Lock.release()
-                    self.send_message_to_player(accept)
-                    name_accept = True                
+                    engine._Characters_Lock.accuire()
+                    if name not in engine._Characters:
+                        engine._Characters_Lock.release()
+                        engine._Objects[name] = None
+                        self.send_message_to_player(accept)
+                        name_accept = True                
                 else:
                     engine._Objects_Lock.release()
                     self.send_message_to_player(deny)
                 # prompt player again            
                 name = self.get_cmd_from_player()
-            
+        
+        if self.type == 'npc':
+            pass
+            #  finish when we determine more about building npcs
+        
         self.prototype['name'] = name
 
     def checkName(self):
@@ -288,6 +281,10 @@ class BuilderThread(threading.Thread):
         
         self.prototype['inspection_description'] = i_desc
 
+    def getDirection(self):
+        """
+        """
+    
     def assignCoords(self, direction):    
         """ function to assign coordinates for item based upon 
         room coordinates and direction given.  Typical use portal
@@ -343,20 +340,31 @@ class BuilderThread(threading.Thread):
             
             if ans == 'name':
                 # get key name
-                key = checkName() #checks name is in gamestate list
+                check_name = self.checkName() # check name returns Tuple (name, T/F)
+                name = check_name[0]
+                flag = check_name[1]
+                if flag == True: #name was accepted
+                    key = name
+                    self.prototype['key'] = key
+                    accept = '\n' + textwrap.fill('The '+name+ ' is now the key to your '+orig_type+'.', width=100).strip()        
+                    self.send_message_to_player(accept)
+                else:
+                    deny = '\n' +textwrap.fill('We cannot find '+name+'.', width=100).strip()
+                    self.send_message_to_player(deny)
             else:
-                # build item for key
-                temp_prototype = copy.deepcopy(self.prototype)  #  temp2 is now the portal dict
-                self.prototype = {} # key dict
-                # build key
-                self.builditem(sentTo=True) # Builds item without it being a container
-                # get name of key
-                key = self.prototype['name']
-                # restore portal prototype
-                self.prototype = temp_prototype
-                
-        # reset temp type
-        self.type = orig_type  # set type back to original type
+                # copy dict we were working on before side tracking to the new object creator
+                temp_prototype = copy.deepcopy(self.prototype)
+                self.prototype = {} # open new dict for the new item
+                self.builditem()
+                # get name of key (item just built
+                key = self.prototype['name']               
+                # restore original prototype
+                self.prototype = temp_prototype        
+        
+            # reset temp type
+            self.type = orig_type  # set type back to original type
+        
+        # set value of original prototype key
         self.prototype['key'] = key
         
     def isPortable(self):
@@ -463,7 +471,7 @@ class BuilderThread(threading.Thread):
                     accept = '\n' + textwrap.fill('The '+name+ ' has been added to your '+temp_type+'.', width=100).strip()        
                     self.send_message_to_player(accept)
                 else:
-                    deny = '\n' +textwrap.fill('We cannot find that ', width=100).strip()
+                    deny = '\n' +textwrap.fill('We cannot find '+name+'.', width=100).strip()
                     self.send_message_to_player(deny)
             
             # build your item
