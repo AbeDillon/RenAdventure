@@ -202,9 +202,9 @@ def init_game(save_state = 0):
     #logger.debug("Starting command thread")
     logger.write_line("Starting command thread") ###TEST
 
-#    thread.start_new_thread(spawn_npc_thread, (10,))
-#    #logger.debug("Starting spawn NPC thread")
-#    logger.write_line("Starting spawn NPC thread") ###TEST
+    thread.start_new_thread(spawn_npc_thread, (10,))
+    #logger.debug("Starting spawn NPC thread")
+    logger.write_line("Starting spawn NPC thread") ###TEST
 
     thread.start_new_thread(npc_thread, ())
     #logger.debug("Starting NPC action thread")
@@ -276,51 +276,16 @@ def remove_player(name):
     #logger.debug("Removed player '%s'" % player.name)
     logger.write_line("Removed player '%s'"%player.name) ###TEST
 
-def put_commands(commands, script=False, npc=False):
-    # Takes a list of commands and pushes them to the command queue (player, room, verb, object, tags)
+def put_commands(commands):
+    # Takes a list of commands and pushes them to the command queue
     global _CommandQueue
-    global _Characters
-    global _Rooms
 
     for command in commands:
-        tags = []
-        player = _Characters[command[0]]
+        if len(command) < 3: # Add tags if the command is missing them, THIS WILL NEED REPLACING
+            command = (command[0], command[1], [])
 
-        room = _Rooms.get(player.coords, "Build")
-        verb, nouns = parse_command(command[1])
-
-        if not npc and verb == 'damage': # Only NPCs can use the command damage (for now)
-            verb = 'bad_command'
-
-        if not script:
-            valid_objects = get_valid_objects(player, room, verb) # Find the valid objects in the room that can be acted on by the verb
-        else: # Find all valid objects in the game for the verb
-            all_objects = get_all_objects(player, verb) # tuple of all objects and the room they are in
-
-            valid_objects = []
-            for object_room, object in all_objects:
-                valid_objects.append(object)
-
-        object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
-
-        if script: # We need to find which room the object is in
-            for room, new_object in all_objects:
-                if object is new_object:
-                    break
-
-        if object != None and verb in object.scripts and not script: # Object has a script to override the verb
-            tags.append('start_script')
-
-        if script:
-            tags.append('script')
-        if npc:
-            tags.append('npc')
-
-        command = [player, room, verb, nouns, object, tags]
         _CommandQueue.put(command)
-
-        #logger.debug("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command))
-        logger.write_line("Put command (%s, %s, %s, %s, %s, %s) in the command queue" % tuple(command)) ###TEST
+        logger.write_line("Put command (%s, %s) in the command queue" % (command[0], command[1]))
 
 def get_messages():
     # Returns all messages currently in the message queue
@@ -332,7 +297,7 @@ def get_messages():
         messages.append(message)
 
         #logger.debug("Sending message to server: (%s, %s)" % message)
-        logger.write_line("Sending message to server: (%s, %s)"%message) ###TEST
+        logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1])) ###TEST
 
     return messages
 
@@ -341,29 +306,31 @@ def command_thread():
     global _StillAlive
     global _CommandQueue
     global _MessageQueue
+    global _Characters
+    global _BuilderQueues
 
     while _StillAlive:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
-            player = command[0]
-            room = command[1]
-            verb = command[2]
-            nouns = command[3]
-            object = command[4]
-            tags = command[5]
+            player_name = command[0]
+            command_str = command[1]
+            tags = command[2]
 
-            messages = do_command(player, room, verb, nouns, object, tags)
+            if player_name in _Characters:
+                messages = do_command(player_name, command_str, tags)
 
-            #logger.debug("Running command (%s, %s)" % (verb, ' '.join(nouns)))
-            logger.write_line("Running command (%s, %s)" % (verb, ' '.join(nouns))) ###TEST
+                logger.write_line("Running command (%s, %s)" % (player_name, command))
 
-            for message in messages:
-                _MessageQueue.put(message)
+                for message in messages:
+                    _MessageQueue.put(message)
+            elif player_name in _BuilderQueues:
+                _BuilderQueues[player_name].put(command)
+
+                logger.write_line("Forwarded command to builder queue (%s, %s)" % (player_name, command))
 
         time.sleep(.05) # Sleep for 50ms
 
-    #logger.debug("Closing command thread.")
-    logger.write_line("Closing command thread.") ###TEST
+    logger.write_line("Closing command thread.")
 
 def npc_thread():
     # Runs the commands for all NPC's in the game
