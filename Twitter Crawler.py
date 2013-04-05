@@ -1,4 +1,10 @@
 
+"""
+add logging
+    logger.write_line('Initializing game state from save state %d' % save_state) ###TEST
+update comments
+"""
+
 import os
 import pickle
 import time
@@ -23,12 +29,25 @@ class feedGetter(threading.Thread):
         """
         print 'getting ' + self.user + '\'s status!'
         statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
-        twitTimeline = open('twitterfeeds\\' + self.user + ".txt", 'w')
-        pickle.dump(statuses, twitTimeline)
-        twitTimeline.close()
+        self.twitterSave(statuses)
+
+
         return None
 
+    def twitterSave(self, statuses):
+        fout = open('twitterfeeds\\' + self.user + ".txt", 'w')
+        for status in statuses:
+            text = status.text
+            text = text.encode('utf-8')
+            text = text.replace('\n', '')
+            fout.write(text)
+            fout.write('\n')
+        fout.close()
+
 #===============================================entry==============================================
+
+
+logger = Q2logging.out_file_instance('logs/TwitterCrawler/TwitterCrawler') ###TEST
 
 
 def getNames(path):
