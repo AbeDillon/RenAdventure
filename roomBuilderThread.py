@@ -75,16 +75,16 @@ class BuilderThread(threading.Thread):
         self.addDescription()
         
         # Inspection Description
-        self.addInspectionDescription
+        self.addInspectionDescription()
         
         # Direction
         if direction == "":
             direction = self.getDirection()  # need to have variable set to pass into coords if direction = ""
         else:
             self.prototype['direction'] = direction
-        
+            self.send_message_to_player(str(self.prototype))
         # Coords
-        self.assignCoords(self, direction)
+        self.assignCoords(direction)
         
         # Locked
         self.isLocked()
@@ -160,8 +160,8 @@ class BuilderThread(threading.Thread):
         while ans != 'exit':
             if ans == 'build':
                ans = 'exit'
-               script = {}
-               scripts = script.get(script,0)
+#               script = {}
+#               scripts = script.get(script,0)
 #               text = 'Enter the verb you want to override.'
 #               verb = self.get_cmd 
             else:
@@ -215,11 +215,11 @@ class BuilderThread(threading.Thread):
         if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
             name_accept = False
             while name_accept == False:
-                
-                engine._Characters_Lock.accuire()
+            
+                engine._Characters_Lock.acquire()
                 if name not in engine._Characters:
                     engine._Characters_Lock.release()
-                    engine._Objects_Lock.accuire()                
+                    engine._Objects_Lock.acquire()                
                     if name not in engine._Objects:
                         engine._Objects[name] = None
                         engine._Objects_Lock.release()                        
@@ -228,14 +228,16 @@ class BuilderThread(threading.Thread):
                 else:
                     engine._Characters_Lock.release()
                     self.send_message_to_player(deny)
-                # prompt player again            
-                name = self.get_cmd_from_player()
+                    # prompt player again            
+                    name = self.get_cmd_from_player()
         
         if self.type == 'npc':
             pass
             #  finish when we determine more about building npcs
         
         self.prototype['name'] = name
+        msg = str(self.prototype)
+        self.send_message_to_player(msg)
 
     def checkName(self):
         """
@@ -250,16 +252,16 @@ class BuilderThread(threading.Thread):
         name = self.get_cmd_from_player()
         exist_flag = False
         
-        engine._Objects_Lock.accuire()
+        engine._Objects_Lock.acquire()
         if name in engine._Objects:            
             exist_flag = True
         engine_Objects_Lock.release()
         
         if exist_flag == False:
-            engine._Characters_Lock.accuire()
+            engine._Characters_Lock.acquire()
             if name in engine._Characters:
                 exist_flag = True
-            engine._Characters_Lock.accuire()        
+            engine._Characters_Lock.release()        
         
         if exist_flag == True:
             return (name,True)
@@ -278,6 +280,7 @@ class BuilderThread(threading.Thread):
         desc = self.get_cmd_from_player()
         
         self.prototype['description'] = desc
+        self.send_message_to_player(str(self.prototype))
  
     def addInspectionDescription(self):
         """
@@ -291,10 +294,12 @@ class BuilderThread(threading.Thread):
         i_desc = self.get_cmd_from_player()
         
         self.prototype['inspection_description'] = i_desc
-
+        self.send_message_to_player(str(self.prototype))
+        
     def getDirection(self):
         """
         """
+        pass
     
     def assignCoords(self, direction):    
         """ function to assign coordinates for item based upon 
@@ -302,7 +307,7 @@ class BuilderThread(threading.Thread):
         destination assignment
         """
         coords = self.room_coords
-        x,y,z,d = coords
+        x,y,z = coords
         if direction == 'north':
             coords = (x, y+1, z) 
         elif direction == 'south':
@@ -315,12 +320,13 @@ class BuilderThread(threading.Thread):
             coords = (x, y,z+1)
         elif direction == 'down':
             coords = (x,y,z-1)
-        elif direction == 'in':
-            coords = (x,y,z,d+1)
-        elif direction == 'out':
-            coords = (x,y,z,d-1)
+#        elif direction == 'in':
+#            coords = (x,y,z,d+1)
+#        elif direction == 'out':
+#            coords = (x,y,z,d-1)
     
         self.prototype['coords'] = coords
+        self.send_message_to_player(str(self.prototype))
         
     def isLocked(self):
         """
@@ -333,7 +339,9 @@ class BuilderThread(threading.Thread):
         if lock_state == 'unlocked':
             self.prototype['locked'] = False
         else:
-            self.prototype['locked'] = True        
+            self.prototype['locked'] = True
+            
+        self.send_message_to_player(str(self.prototype))        
     
     def addKey(self):
         """
@@ -377,6 +385,8 @@ class BuilderThread(threading.Thread):
         
         # set value of original prototype key
         self.prototype['key'] = key
+        self.send_message_to_player(str(self.prototype))
+        
         
     def isPortable(self):
         """
@@ -391,20 +401,24 @@ class BuilderThread(threading.Thread):
             self.prototype['portable'] = True
         else:
             self.prototype['portable'] = False
-    
+            
+        self.send_message_to_player(str(self.prototype))
+            
     def isHidden(self):
         """
         Function sets hidden state
         """
         
         hidden_text = '\n' + textwrap.fill('This ' +self.type+ ' can be [h]idden or [v]isible.  Which do you prefer?',  width=100).strip()
-        valid_responses = (('hidden', 'v'), ('visible', 'v'))
+        valid_responses = (('hidden', 'h'), ('visible', 'v'))
         
         hidden_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
         if hidden_state == "hidden":
             self.prototype['hidden'] = True
         else:
             self.prototype['hidden'] = False
+            
+        self.send_message_to_player(str(self.prototype))
     
     def isContainer(self):
         """
@@ -419,6 +433,8 @@ class BuilderThread(threading.Thread):
         else:
             self.prototype['container'] = False
     
+        self.send_message_to_player(str(self.prototype))
+            
     def addPortals(self):
         """
         
@@ -443,7 +459,8 @@ class BuilderThread(threading.Thread):
             # get the portal's name
             name = self.prototype["name"]
             # add that portal's direction : name to the dictionary of portals for the room
-            portals[ans] = name
+            portals[direction] = name
+            self.send_message_to_player(str(portals))
             # prompt the user again
             direction = self.get_valid_response(text, validResponses=valid_responses)
                 
@@ -510,6 +527,7 @@ class BuilderThread(threading.Thread):
         """
         function to display the object created and allow for the player to make edits.
         """
+        self.send_message_to_player('Here is a look at the characteristics of your '+self.type+'.')
         self.printObject()
         #I want to add editing capabilities here later hence the review object and print object functions
     
@@ -519,7 +537,7 @@ class BuilderThread(threading.Thread):
         """
         text = ""
         for key in self.prototype:
-            text += key + '=   ' + str(prototype[key]) + "\n"
+            text += key + '=   ' + str(self.prototype[key]) + "\n"
             
         self.send_message_to_player(text)
         
@@ -539,6 +557,7 @@ class BuilderThread(threading.Thread):
         """
         
         """
+        self.send_message_to_player('Your Portal is now being built.')
         name = self.prototype['name']
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
@@ -552,6 +571,7 @@ class BuilderThread(threading.Thread):
         # Build Portal
         portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
         
+        self.send_message_to_player('Your Portal has now been built.')
         return portal
     
     def makeItem(self):
@@ -584,14 +604,15 @@ class BuilderThread(threading.Thread):
         translate = {}
         for response in validResponses:
             word = response[0]
-            for synonym in response:
-                translate[synonym] = word
+            synonym = response[1]
+            translate[synonym] = word
+            
         
         while 1:
             response = self.get_cmd_from_player()
             if response in translate: # if the response is in the list of inputs that can be translated to a valid response
-                return translate(response) # translate the response and return the result
-            
+                return translate[response] # translate the response and return the result
+
             else:
                 text = '\n' + textwrap.fill('Invalid response. Please respond with: ' + str(translate.keys()),  width=100).strip()
                 self.send_message_to_player(text + prompt)
