@@ -255,7 +255,7 @@ class BuilderThread(threading.Thread):
         engine._Objects_Lock.acquire()
         if name in engine._Objects:            
             exist_flag = True
-        engine_Objects_Lock.release()
+        engine._Objects_Lock.release()
         
         if exist_flag == False:
             engine._Characters_Lock.acquire()
@@ -360,6 +360,7 @@ class BuilderThread(threading.Thread):
             if ans == 'name':
                 # get key name
                 check_name = self.checkName() # check name returns Tuple (name, T/F)
+                self.send_message_to_player(str(check_name))
                 name = check_name[0]
                 flag = check_name[1]
                 if flag == True: #name was accepted
@@ -367,18 +368,21 @@ class BuilderThread(threading.Thread):
                     self.prototype['key'] = key
                     accept = '\n' + textwrap.fill('The '+name+ ' is now the key to your '+orig_type+'.', width=100).strip()        
                     self.send_message_to_player(accept)
+                    ans = 'keyless'
                 else:
                     deny = '\n' +textwrap.fill('We cannot find '+name+'.', width=100).strip()
                     self.send_message_to_player(deny)
+                    
             else:
                 # copy dict we were working on before side tracking to the new object creator
                 temp_prototype = copy.deepcopy(self.prototype)
                 self.prototype = {} # open new dict for the new item
-                self.builditem()
+                self.buildItem()
                 # get name of key (item just built
                 key = self.prototype['name']               
                 # restore original prototype
-                self.prototype = temp_prototype        
+                self.prototype = temp_prototype
+                ans = 'keyless'       
         
             # reset temp type
             self.type = orig_type  # set type back to original type
@@ -396,7 +400,7 @@ class BuilderThread(threading.Thread):
         portable_text = '\n' + textwrap.fill('Items can be [p]ortable or [n]on portable affecting players ability to pick them up.  Which do you prefer?',  width=100).strip()
         valid_responses = (('portable', 'p'), ('non portable', 'n'))
         
-        portable_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
+        portable_state = self.get_valid_response(portable_text, validResponses=valid_responses)
         if portable_state == "portable":
             self.prototype['portable'] = True
         else:
@@ -425,9 +429,9 @@ class BuilderThread(threading.Thread):
         Function sets Container flag (bool)
         """
         
-        container_text = '\n' + textwrap.fill('Items can containers and hold other items. Do you want to make it a container?  [y]es or [n]',  width=100).strip()
+        container_text = '\n' + textwrap.fill('Items can be containers that hold other items. Do you want to make it a container?  [y]es or [n]',  width=100).strip()
                 
-        container_state = self.get_valid_response(container_text, validResponses)
+        container_state = self.get_valid_response(container_text)
         if container_state == "yes":
             self.prototype['container'] = True
         else:
@@ -486,7 +490,7 @@ class BuilderThread(threading.Thread):
         temp_type = copy.copy(self.type)
         self.type = "item"
         ans = self.get_valid_response(prompt, validResponses=valid_responses)
-        while ans not in ("exit", "x"):
+        while ans != 'exit':
             # add an item by name
             if ans == "existing":
                 # ask them item name
@@ -498,9 +502,11 @@ class BuilderThread(threading.Thread):
                     items[name] = items.get(name, 0) + 1
                     accept = '\n' + textwrap.fill('The '+name+ ' has been added to your '+temp_type+'.', width=100).strip()        
                     self.send_message_to_player(accept)
+                    ans = 'exit'
                 else:
-                    deny = '\n' +textwrap.fill('We cannot find '+name+'.', width=100).strip()
+                    deny = '\n' +textwrap.fill('We cannot find the '+name+', try again.', width=100).strip()
                     self.send_message_to_player(deny)
+                    ans = 'exit'
             
             # build your item
             else:
