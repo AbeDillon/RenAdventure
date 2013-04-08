@@ -22,7 +22,7 @@ class feedGetter(threading.Thread):
         """
         statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
         self.twitterSave(statuses)
-        logger.write_line('Init thread to get tweets for %d ' % self.user)
+        logger.write_line('Init thread to get tweets for %s ' % self.user)
 
         return None
 
@@ -38,7 +38,7 @@ class feedGetter(threading.Thread):
             fout.write('\n')
         fout.close()
 
-        logger.write_line("twitterFeeds file saved for %d" % self.user)
+        logger.write_line("twitterFeeds file saved for %s" % self.user)
 
 
 #===============================================entry==============================================
@@ -62,7 +62,7 @@ def getNames(path):
         name = filename.split('.')
         name = name[0]
         handles.append(name)
-        logger.write_line('Appended the handle %d to the handles list' % name)
+        logger.write_line('Appended the handle %s to the handles list' % name)
     return handles
 
 
@@ -98,11 +98,11 @@ def main():
 
         if user != None:
             oldNamesQ.put(user)
-            logger.write_line('Appended %d to oldNamesQ' % user)
+            logger.write_line('Appended %s to oldNamesQ' % user)
 
             feedGetterThread = feedGetter(user, api)
             feedGetterThread.start()
-            logger.write_line('Sent name %d to feedGetter' % user)
+            logger.write_line('Sent name %s to feedGetter' % user)
 
             finishTime = time.time()
             loopTime = finishTime - startTime
@@ -118,7 +118,7 @@ def main():
             if name not in Names:
                 Names.append(name)
                 newNamesQ.put(name)
-                logger.write_line('Appended %d to newNamesQ' % name)
+                logger.write_line('Appended %s to newNamesQ' % name)
 
 
 if __name__ == "__main__":
