@@ -6,12 +6,13 @@ import copy
 import engine
 import Q2logging
 
+
 class BuilderThread(threading.Thread):
     """
     Room builder thread
     """
 
-    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_cue, room_coords=None, player_name=""):
+    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_queue, room_coords=None, player_name=""):
         """
         Initialize a Room Builder thread
         """
@@ -21,7 +22,7 @@ class BuilderThread(threading.Thread):
         self.type = type_of_object # being built
         self.cmd_queue = cmd_queue
         self.msg_queue = msg_queue
-        self.game_cmd_cue = game_cmd_cue
+        self.game_cmd_queue = game_cmd_queue
         self.room_coords = room_coords
         self.player_name = player_name
         self.prototype = {}
@@ -143,59 +144,123 @@ class BuilderThread(threading.Thread):
         
         self.makeItem()
         
+    def buildNPC(self):
+        """
+        Function for Building Non Player Characters
+        name = 
+        coords = 
+        affiliation = 
+        twitter feed = 
+        """
+        # name NPC
+        self.addName()
+        
+        # Get starting coords
+        self.getValidCoords()
+        
+        #Twitter handle
+    
     def buildScripts(self):
         """
         Function to build out Action scripts for Items and Portals
         """
         # list of valid verbs (populate when builder is run) from engine
-        verbs = []
+        valid_verbs = ['take', 'drop', 'move']  # this list needs to be made dynamic
         scripts = {}
         
         intro_text = '\n' +textwrap.fill('You can [b]uild a script for this '+self.type+', e[x]it scripts, or get [h]elp?  What is your preference?', width=100).strip()
         valid_responses = (('build', 'b'), ('exit', 'x'), ('help', 'h'))
-        
-        
-        #get user
+        #get user input
         ans = self.get_valid_response(intro_text, validResponses=valid_responses)
         while ans != 'exit':
             if ans == 'build':
-               ans = 'exit'
-#               script = {}
-#               scripts = script.get(script,0)
-#               text = 'Enter the verb you want to override.'
-#               verb = self.get_cmd 
-            else:
+               # get verb
+               while 1:
+                   verb_text = '\n'+textwrap.fill('Enter the verb you wish to replace.')
+                   self.send_message_to_player(verb_text)
+                   verb = self.get_cmd_from_player()
+                   if verb in valid_verbs:
+                       break
+                   else:
+                       self.send_message_to_player('The verb must be in list of valid verbs try again.')
+               # get actions
+               action_list = []
+               self.send_message_to_player(action_list)
+               action_text = '\n' + textwrap.fill('Enter the a action(s) you want to happen. Example - take apple 3 or take apple 3, take knife 0').strip()
+               actions_complete = False
+               while actions_complete == False:    
+                   self.send_message_to_player(action_text)
+                   actions = self.get_cmd_from_player().strip().split(', ')
+                   for action in actions:
+                       valid_action = self.validateAction(action)
+                       if valid_action != None:
+                           action_list.append(valid_action)
+                   done_action_text = '\n'+textwrap.fill('Do you want to [a]dd more action(s) for this verb or are you [d]one with actions?', width=100).strip()
+                   done_valid_response = (('add', 'a'), ('done', 'd'))
+                   ans = self.get_valid_response(done_action_text,validResponses=done_valid_response)
+                   if ans == 'done':
+                       actions_complete = True        
+               scripts[verb] = tuple(action_list)
+               #prompt scripts again for another one
+               ans = self.get_valid_response(intro_text, validResponses=valid_responses)
+            elif ans == 'help':
                 # User wants help
                 self.scriptsHelp()
                 ans = self.get_valid_response(intro_text, validResponses=valid_responses)
         
         self.prototype['scripts'] = scripts
+        self.send_message_to_player(str(self.prototype['scripts']))
         
     def scriptsHelp(self):
         
         help_text = '\n' +textwrap.fill('Scripts are commands that run in place of the command given on this '+self.type+'.   For example if you are '
                                         'making an apple you could make it so that if they say "take apple" you can have it open a portal in the room and/or '
-                                        'reveal a chest.  Remember if you do this if you still wanted to have the player take the apple you have to include '
-                                        'that in the list of actions.', width=100).strip()
+                                        'reveal a chest.  Remember, if you do this and  you still want to have the player take the apple you have to include '
+                                        'that in the list of actions to be performed.', width=100).strip()+'\n'
     
-        help_text2 = '\n'+textwrap.fill('Here is how it works.  You give us a verb (the first word of a command) that you want to replace with other '
-                                        'actions.  Then you give us the action(s) you want to happen along with a whole number that will represent '
+        help_text2 = '\n'+textwrap.fill('Here is how it works.  You give us a verb (the first word of a command) that you want to replace with another action or '
+                                        'actions.  Then you give us the action(s) you want to happen along with a number that will represent '
                                         'a delay (in seconds) that will occur before that action happens. You can add an unlimited number of actions '
-                                        'for each verb replaced.', width=100).strip()
+                                        'for each verb replaced.  Each action will be entered in a sentence type format with a space between each portion.  '
+                                        'The standard format is verb object delay which could look like.... take apple 2 or drop red bucket 0.', width=100).strip()+ '\n'
         
-        help_text3 = '\n'+textwrap.fill('And finally, a word about how delays work.  Delays will not begin until all the delays before them have completed.  '
-                                        'For example -  if you were to replace the verb "take" on the item "apple" take apple 0, go north 3, drop apple 2 '
-                                        'would have the player that issued the command take apple to take the apple immediately, wait 3 seconds and move north, '
-                                        'wait another 2 seconds and drop the apple.  As you can see this could be rather interesting.  Have fun but try not to '
-                                        'ruin things for everyone else while you are at it.',width=100)
-        self.send_message_to_player(help_text + help_text2 + help_text3)
+        help_text3 = '\n'+textwrap.fill('Now a word about delays.  Delays will not start until all the delays before them have completed.  '
+                                        'For example -  if you were to replace the verb "take" on the item "apple" with take apple 0, go north 3, drop apple 2 '
+                                        'The player that issued the command "take apple" would instead take the apple immediately, wait 3 seconds and move north, '
+                                        'wait another 2 seconds and drop the apple.  As you can see this could get rather interesting.',width=100) + '\n'
+        
+        help_text4 = '\n'+textwrap.fill('And finally, if you want to add multiple actions that happen you can enter each individual action seperated by a comma.  '
+                                        'For example 3 actions would be entered like this take apple 0, drop apple 5, go north 3.  We hope that helps and you are '
+                                        'well on your way to making this game extra fun for everyone!', width=100).strip() + '\n'
+        
+        self.send_message_to_player(str(help_text + help_text2 + help_text3 + help_text4))
+                                    
+        
+        
+    def validateAction(self, action):
+        """  function to validate actions portion f a script 
+        returns None for invalid action and tuple (verb, object, delay) for valid actions
+        """
+
+        print_action = action
+        action = action.split(" ")    
+        verb = action[0]
+        object = str(action[1:-1]).strip('[]').replace("'", "").replace(",", "")
+        delay = action[-1]
+        
+        if len(action) < 3:
+            noAccept = '\n'+print_action+' was not accepted.  It must contain 3 parts verb object delay.'
+            self.send_message_to_player(noAccept)
+            return None
+        else:
+            try:
+                delay = int(delay)
+                return (verb, object, delay)
+            except:
+                noAccept = '\n'+print_action+' was not accepted.  The delay portion must be a whole number integer.'
+                self.send_message_to_player(noAccept)
+                return None
     
-    def buildNPC(self):
-        """
-        
-        """
-        
-        
     def review_room():
         """
         
@@ -204,7 +269,7 @@ class BuilderThread(threading.Thread):
     def addName(self):
         """
         function for adding a name
-        does not all names that have already been used.
+        does not allow names that have already been used.
         """
         text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
         deny = '\n' + textwrap.fill('That name has already been used try again.',  width=100).strip()
@@ -241,9 +306,8 @@ class BuilderThread(threading.Thread):
 
     def checkName(self):
         """
-        Function for checking name when player wants to add items by name
-        Only allows names that do exist
-        
+        function to make sure a name being entered is a name that exists
+        returns (name entered, T/F flag) tuple        
         """
         # Get desired name
         text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
@@ -300,6 +364,34 @@ class BuilderThread(threading.Thread):
         """
         """
         pass
+    
+    def getValidCoords(self):
+        """
+        function to get valid Coords
+        """
+        ask_coords = '\n' + textwrap.fill('Enter your 4 part coordinates seperated by a space. For Example  - 4 3 12 5', width=100).strip()
+        coords = self.get_cmd_from_player(ask_coords).split(" ")
+        
+        valid_coords = False
+        while valid_coords == False:
+            if len(coords) != 4:
+                deny_text = '\n' + textwrap.fill('Your input must be 4 whole numbers seperated by a space.')
+                self.send_message_to_player(deny_text)
+                # prompt again
+                coords = self.get_cmd_from_player(ask_coords).split(" ")
+            else:
+                try:
+                    x, y, z, d = coords
+                    (int(x), int(y), int(z), int(d))
+                    self.prototype['coords'] = (x,y,z,d)
+                    self.send_message_to_player('\nYour coordinates have been accepted')
+                    valid_coords = True
+                except:
+                    self.send_message_to_player(deny_text)
+                    coords = self.get_cmd_from_player(ask_coords).split(" ")
+        
+        
+        
     
     def assignCoords(self, direction):    
         """ function to assign coordinates for item based upon 
@@ -507,7 +599,6 @@ class BuilderThread(threading.Thread):
                     deny = '\n' +textwrap.fill('We cannot find the '+name+', try again.', width=100).strip()
                     self.send_message_to_player(deny)
                     
-            
             # build an item
             else:                
                 # save the current prototype because calling the buildItem function will clobber it
@@ -553,23 +644,30 @@ class BuilderThread(threading.Thread):
         
     def makeRoom(self):
         """
-        need to change NPC list when the npc builder is complete.
+        parses the current protoype dict and instantiates a room
         """
         self.send_message_to_player('Your '+self.type+' is being built.')
         
         desc = self.prototype['description']
         portals = self.prototype['portals']
         items = self.prototype['items']
-        players = []
-        npcs = []
+        players = [] # updated only by engine
+        npcs = []   # when NPC builder complete we need to have this list populated by builder.
         
         room = engine.Room(desc, portals, items, players, npcs)
         
         self.send_message_to_player("Your "+self.type+" has been built.")
+        
+        #add room to list of rooms
+        engine._Rooms[self.coords()] = room
+        
+        # send messsage to game_cmd_queue signaling done with builder.
+        self.game_cmd_queue.put((self.player_name, 'done_building'))
+        
     
     def makePortal(self):
         """
-        
+        Parses the current Prototype dict and instantiates a portal
         """
         self.send_message_to_player('Your '+self.type+' is now being built.')
         
@@ -591,7 +689,7 @@ class BuilderThread(threading.Thread):
     
     def makeItem(self):
         """
-        
+        parses current prototype Dict and Instantiates an item.
         """
         self.send_message_to_player('Your '+self.type+ ' is being built.')
         
@@ -624,8 +722,7 @@ class BuilderThread(threading.Thread):
         for response in validResponses:
             word = response[0]
             synonym = response[1]
-            translate[synonym] = word
-            
+            translate[synonym] = word            
         
         while 1:
             response = self.get_cmd_from_player()
