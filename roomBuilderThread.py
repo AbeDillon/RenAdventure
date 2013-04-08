@@ -12,7 +12,7 @@ class BuilderThread(threading.Thread):
     Room builder thread
     """
 
-    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_cue, room_coords=None, player_name=""):
+    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_queue, room_coords=None, player_name=""):
         """
         Initialize a Room Builder thread
         """
@@ -22,7 +22,7 @@ class BuilderThread(threading.Thread):
         self.type = type_of_object # being built
         self.cmd_queue = cmd_queue
         self.msg_queue = msg_queue
-        self.game_cmd_cue = game_cmd_cue
+        self.game_cmd_queue = game_cmd_queue
         self.room_coords = room_coords
         self.player_name = player_name
         self.prototype = {}
@@ -657,6 +657,13 @@ class BuilderThread(threading.Thread):
         room = engine.Room(desc, portals, items, players, npcs)
         
         self.send_message_to_player("Your "+self.type+" has been built.")
+        
+        #add room to list of rooms
+        engine._Rooms[self.coords()] = room
+        
+        # send messsage to game_cmd_queue signaling done with builder.
+        self.game_cmd_queue.put((self.player_name, 'done_building'))
+        
     
     def makePortal(self):
         """
