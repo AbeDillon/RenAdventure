@@ -551,6 +551,8 @@ class BuilderThread(threading.Thread):
         """
         need to change NPC list when the npc builder is complete.
         """
+        self.send_message_to_player('Your '+self.type+' is being built.')
+        
         desc = self.prototype['description']
         portals = self.prototype['portals']
         items = self.prototype['items']
@@ -558,12 +560,15 @@ class BuilderThread(threading.Thread):
         npcs = []
         
         room = engine.Room(desc, portals, items, players, npcs)
+        
+        self.send_message_to_player("Your '+self.type+' has been built.")
     
     def makePortal(self):
         """
         
         """
-        self.send_message_to_player('Your Portal is now being built.')
+        self.send_message_to_player('Your '+self.type+' is now being built.')
+        
         name = self.prototype['name']
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
@@ -577,13 +582,15 @@ class BuilderThread(threading.Thread):
         # Build Portal
         portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
         
-        self.send_message_to_player('Your Portal has now been built.')
+        self.send_message_to_player('Your '+self.type+' has been built.')
         return portal
     
     def makeItem(self):
         """
         
         """
+        self.send_message_to_player('Your '+self.type+ ' is being built.')
+        
         name = self.prototype['name']
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
@@ -596,6 +603,8 @@ class BuilderThread(threading.Thread):
         items = self.prototype['items']
          
         item = engine.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
+        
+        self.send_message_to_player('Your '+self.type+ ' has been built.')
         
         return item
                 
