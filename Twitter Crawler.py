@@ -1,9 +1,4 @@
 
-"""
-add logging
-    logger.write_line('Initializing game state from save state %d' % save_state)
-"""
-
 import os
 import time
 import twitter
