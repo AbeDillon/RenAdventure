@@ -99,17 +99,18 @@ class Player:
     - Coordinates
     - Faith in Humanity
     - Affiliation (dictionary of opinion of each person)
-    - Senses (Sight, Sound,
+    - Senses (Sight, Sound, Smell, Seeing Dead People)
     
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, prev_coords, affiliation, items = {}, fih = 30):
+    def __init__(self, name, coords, prev_coords, affiliation, senses, items = {}, fih = 30):
         self.name = name.lower()
         self.coords = coords
         self.prev_coords = prev_coords
         self.fih = fih
         self.affiliation = affiliation
+        self.senses = senses
 
         self.items = {}
         for item in items:
@@ -194,32 +195,29 @@ def init_game(save_state = 0):
     _NPCBucket.append(kanye)
 
     thread.start_new_thread(command_thread, ())
-    #logger.debug("Starting command thread")
-    logger.write_line("Starting command thread") ###TEST
+    logger.write_line("Starting command thread")
 
     thread.start_new_thread(spawn_npc_thread, (10,))
-    #logger.debug("Starting spawn NPC thread")
-    logger.write_line("Starting spawn NPC thread") ###TEST
+    logger.write_line("Starting spawn NPC thread")
 
     thread.start_new_thread(npc_thread, ())
-    #logger.debug("Starting NPC action thread")
-    logger.write_line("Starting NPC action thread") ###TEST
+    logger.write_line("Starting NPC action thread")
 
 def shutdown_game():
     # Winds the game down and creates a directory with all of the saved state information
     global _StillAlive
-    global _Players
+    global _Characters
+    global _Objects
     global _Rooms
 
-    #logger.debug('Shutting down the game.')
-    logger.write_line('Shutting down the game.') ###TEST
+    logger.write_line('Shutting down the game.')
 
     _StillAlive = False # Causes all of the threads to close
 
-    for player in _Players.values(): # Save all of the player states
-        loader.save_player(player)
-    #logger.debug('Saved player states.')
-    logger.write_line('Saved player states.') ###TEST
+    for player in _Characters.values(): # Save all of the player states
+        if isinstance(player, Player):
+            loader.save_player(player)
+    logger.write_line('Saved player states.')
 
     save_num = 1
     while 1:    # Create a directory to save the game state in
@@ -227,12 +225,16 @@ def shutdown_game():
         if not os.path.exists(directory):
             os.makedirs(directory)
 
+            objects = []
+            for object in _Objects.values():
+                objects.append(object)
+            loader.save_objects(objects, directory) # Save all objects in the game
+
             for coords in _Rooms: # Save the rooms to the save state directory
-                path = directory + '/%d_%d_%d.xml' % coords
+                path = directory + 'rooms/%d_%d_%d.xml' % coords
                 loader.save_room(_Rooms[coords], path)
 
-            #logger.debug("Saved game state to '%s'" % directory)
-            logger.write_line("Saved game state to '%s'"%directory) ###TEST
+            logger.write_line("Saved game state to '%s'" % directory)
             break
         else:
             save_num += 1
@@ -245,7 +247,11 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        player = Player(name, coords, coords, affiliation)
+        senses = {'sight': True,
+                  'sound': True,
+                  'smell': True,
+                  'see_dead_people': False}
+        player = Player(name, coords, coords, affiliation, senses)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game
@@ -253,8 +259,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
 
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
-    #logger.debug("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
-    logger.write_line("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2])) ###TEST
+    logger.write_line("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
 
 def remove_player(name):
     global _Rooms
@@ -322,9 +327,19 @@ def command_thread():
                 for message in messages:
                     _MessageQueue.put(message)
             elif player_name in _BuilderQueues:
-                _BuilderQueues[player_name].put(command)
+                if command_str == 'done_building':
+                    _Characters_In_Builder_Lock.acquire()
+                    _Characters[player_name] = _Characters_In_Builder[player_name]  # Move player from Builder back to _Characters
+                    player = _Characters[player_name]
+                    _Characters_In_Builder_Lock.release()
 
-                logger.write_line("Forwarded command to builder queue (%s, %s)" % (player_name, command))
+                    _MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords)))   # Put room description in the message queue
+
+                    logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d, %d, %d)." % player.coords)
+                else:
+                    _BuilderQueues[player_name].put(command)
+    
+                    logger.write_line("Forwarded command to builder queue (%s, %s)" % (player_name, command))
 
         time.sleep(.05) # Sleep for 50ms
 
