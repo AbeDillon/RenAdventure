@@ -1,8 +1,7 @@
 
 """
 add logging
-    logger.write_line('Initializing game state from save state %d' % save_state) ###TEST
-update comments
+    logger.write_line('Initializing game state from save state %d' % save_state)
 """
 
 import os
@@ -28,13 +27,14 @@ class feedGetter(threading.Thread):
         """
         statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
         self.twitterSave(statuses)
+        logger.write_line('Init thread to get tweets for %s ' % self.user)
 
         return None
 
     # twitter.api returns the data as a class.  twittersave strips out
     # the tweet, converts it to UTF-8 and saves it to a file.
     def twitterSave(self, statuses):
-        fout = open('twitterfeeds\\' + self.user + ".txt", 'w')
+        fout = open('twitterFeeds\\' + self.user + ".txt", 'w')
         for status in statuses:
             text = status.text
             text = text.encode('utf-8')
@@ -43,11 +43,19 @@ class feedGetter(threading.Thread):
             fout.write('\n')
         fout.close()
 
+        logger.write_line("twitterFeeds file saved for %s" % self.user)
+
 
 #===============================================entry==============================================
 
 
-# logger = Q2logging.out_file_instance('logs/TwitterCrawler/TwitterCrawler')
+logger = Q2logging.out_file_instance('logs\TwitterCrawler\TwitterCrawler')
+
+# Creates the directory "TwitterCrawler" if it.'s not already there.
+directories = os.listdir(os.getcwd())
+if "logs\\TwitterCrawler\\TwitterCrawler" not in directories:
+    os.mkdir("logs\\TwitterCrawler\\TwitterCrawler")
+    logger.write_line('Created TwitterCrawler log file')
 
 
 def getNames(path):
@@ -59,6 +67,7 @@ def getNames(path):
         name = filename.split('.')
         name = name[0]
         handles.append(name)
+        logger.write_line('Appended the handle %s to the handles list' % name)
     return handles
 
 
@@ -72,27 +81,33 @@ def main():
     oldNamesQ = Queue.Queue()
 
     # Looks at the two queues, pulls from newNamesQ first if available, and gets the twitter feed for that name.
-    # If there's nothing in the queues it looks in the "twitterfeeds" folder and adds those names to the newNamesQ queue.
+    # If there's nothing in the queues it looks in the "twitterFeeds" folder and adds those names to the newNamesQ queue.
     # Each name gets spun off on it's own thread to get the tweets, new threads are spun off at no less than
     # 45 second intervals.
     startTime = time.time()
     while(1):
         try:
             user = newNamesQ.get_nowait()
+            logger.write_line('Looking for name in newNamesQ')
         except Queue.Empty:
             user = None
+            logger.write_line('No name in newNamesQ')
 
         if user == None:
             try:
                 user = oldNamesQ.get_nowait()
+                logger.write_line('Looking for name in oldNamesQ')
             except Queue.Empty:
                 user = None
+                logger.write_line('No name in oldNamesQ')
 
         if user != None:
             oldNamesQ.put(user)
+            logger.write_line('Appended %s to oldNamesQ' % user)
 
             feedGetterThread = feedGetter(user, api)
             feedGetterThread.start()
+            logger.write_line('Sent name %s to feedGetter' % user)
 
             finishTime = time.time()
             loopTime = finishTime - startTime
@@ -102,12 +117,13 @@ def main():
             startTime = time.time()
 
 
-        # Opens "twitterfeeds" folder, parses names and adds them to the newNamesQ queue.
-        tempList = getNames(os.listdir(os.getcwd() + "\\twitterfeeds"))
+        # Opens "twitterFeeds" folder, parses names and adds them to the newNamesQ queue.
+        tempList = getNames(os.listdir(os.getcwd() + "\\twitterFeeds"))
         for name in tempList:
             if name not in Names:
                 Names.append(name)
                 newNamesQ.put(name)
+                logger.write_line('Appended %s to newNamesQ' % name)
 
 
 if __name__ == "__main__":

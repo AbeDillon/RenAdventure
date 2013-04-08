@@ -214,6 +214,10 @@ def npc_action(npc):
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go')
 
+        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
+            if portal.locked or engine._Rooms.get(portal.coords, None) == None:
+                valid_portals.remove(portal)
+
         if len(valid_portals) > 0:
             portal = random.choice(valid_portals)
             direction = portal.direction
@@ -428,7 +432,12 @@ def open(room, player, object, noun, tags):
 def go(room, player, object, noun, tags):
     alt_text = ''
     messages = []
-    new_room = engine._Rooms.get(object.coords, "Build")
+
+    if object == None:
+        text = "You can't go that way."
+        return [(player.name, text)]
+    else:
+        new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
         room.players.remove(player.name)    # Remove player from the room
@@ -446,18 +455,10 @@ def go(room, player, object, noun, tags):
         engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
         builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
         builder_thread.start()  # Spin off builder thread
-
-        # Just for testing
-#        player.coords = player.prev_coords
-#        room.players.append(player.name)
-#        del engine._Rooms[object.coords]
-#        messages.append((player.name, "You have entered an unbuilt room, kicking you out."))
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
     else: # Room is built, enter it
-        if object == None:
-            text = "You can't go that way."
-        elif object.locked and 'script' not in tags:
+        if object.locked and 'script' not in tags:
             text = "That way is locked."
         else:
             # Move player to the coordinates the portal leads to
