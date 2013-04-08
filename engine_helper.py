@@ -225,6 +225,216 @@ def npc_action(npc):
             command = (npc.name, command_str, ['npc'])
             engine.put_commands([command])
 
+def filter_messages(messages):
+    filtered_messages = []
+
+    for player_name, message in messages:
+        player = engine._Characters[player_name]
+        filtered_messages.append((player_name, sense_filter(player, message)))
+
+    return filtered_messages
+
+def sense_filter(player, message):
+    temp = message.split()
+    resp = ''
+    threshold = 50
+
+    if "<sound>" in message:
+        start = temp.index("<sound>")
+        state_sense = player.sound
+        end = temp.index("</sound>")
+        if state_sense == False: #This one is impaired
+            for i in range(start+1, end-1):
+                test = random.randint(0, 99)
+                if test <= threshold:
+                    temp[i] = '...' #Does all filtering only between sound tags.
+    if "<smell>" in message:
+        start = temp.index("<smell>")
+        state_sense = player.smell
+        end = temp.index("</smell>")
+        if state_sense == False: #This one is impaired
+            for i in range(start+1, end-1):
+                test = random.randint(0, 99)
+                if test <= threshold:
+                    temp[i] = '...' #Filter only between smell tags
+
+    state_sense = player.sight
+    if state_sense == False: #Impaired vision
+        size = len(temp)
+        if temp[0] != "<smell>" and temp[0] != "<sound>" and temp[size-1] != "</smell>" and temp[size-1] != "</sound>": #This message does not start or end with a tag.
+            start = 0
+            if "<smell>" in temp and "<sound>" not in temp:
+                end1 = temp.index("<smell>") #Get the position
+                for i in range(start, end1-1):
+                    test = random.randint(0, 99)
+                    if test <= threshold:
+                        temp[i] = '...' #Do the replacements up until the <smell> tag
+                start = temp.index("</smell>")+1 #Start at one after the </smell> tag
+                end = len(temp)
+                for i in range(start, end-1):
+                    test = random.randint(0, 99)
+                    if test <= threshold:
+                        temp[i] = '...' #Do the replacements following the </smell> tag
+
+            elif "<sound>" in temp and "<smell>" not in temp:
+                end1 = temp.index("<sound>") #Get the position
+                for i in range(start, end1-1):
+                    test = random.randint(0, 99)
+                    if test <= threshold:
+                        temp[i] = '...' #Do the replacements up until the <sound> tag
+                start = temp.index("</sound>")+1 #Start after the </sound> tag
+                end = len(temp)
+                for i in range(start, end-1):
+                    test = random.randint(0, 99)
+                    if test <= threshold:
+                        temp[i] = '...' #Replace following the </sound> tag
+
+            elif "<smell>" in temp and "<sound>" in temp: #This one has both alt-tags, we have to prioritize them.
+                tmp1 = temp.index("<smell>")
+                tmp2 = temp.index("<sound>")
+                if tmp1 < tmp2: #The smell tag comes first.
+                    end1 = temp.index("<smell>") #Get our first endpoint.
+                    for i in range(start, end1-1):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                    start = temp.index("</smell>")+1 #Get our second start point
+                    end = temp.index("<sound>")-1 #Get our second endpoint
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                    start = temp.index("</sound>")+1
+                    end = len(temp)
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+
+                else: #Sound tag comes first
+                    end1 = temp.index("<sound>") #get first endpoint
+                    for i in range(start, end1-1):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                    start = temp.index("</sound>")+1 #Get our second start point
+                    end = temp.index("<smell>")-1 #Get our seond endpoint.
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                    start = temp.index("</smell>")+1
+                    end = len(temp)
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+
+
+            for i in range(0, len(temp)):
+                resp += temp[i]+' ' #string them all together. #resp is now the full, filtered response.
+
+        else: #This message starts or ends with a tag:
+            if temp[0] == '<smell>' or temp[0] == '<sound>': #Starts with a tag
+                if '<smell>' in temp and not '<sound>' in temp: #Starts with the smell tag
+                    start = temp.index('</smell>')+1
+                    end = len(temp)
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+
+                elif '<sound>' in temp and not '<smell>' in temp: #Starts with sound tag
+                    start = temp.index('</sound>')+1
+                    end = len(temp)
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+
+                else: #Both <sound> and <smell> in temp, and one starts it
+                    tmp1 = temp.index('<sound>')
+                    tmp2 = temp.index('<smell>')
+                    if tmp1 < tmp2: #<sound> comes first:
+                        start = temp.index("</sound>")+1
+                        end = temp.index("<smell>")
+                        for i in range(start, end): #Filter out the text between the sound and smell tags
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+                        start = temp.index("</smell>")+1
+                        end = len(temp)
+                        for i in range(start, end): #Filter out text after smell close tag.
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+
+                    else: #temp2 < temp1, <smell> comes first
+                        start = temp.index("</smell>")+1
+                        end = temp.index("<sound>")
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+                        start = temp.index("</sound>")+1
+                        end = len(temp)
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+
+            elif temp[size-1] == '</smell>' or temp[size-1] == '</sound>': #The message ends in either a smell or sound tag
+                if '<smell>' in temp and not '<sound>' in temp: #Ends with smell tag, no sound tag present.
+                    end = temp.index('<smell>')
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                elif '<sound>' in temp and not '<smell>' in temp: #Ends with sounds tag, smell tag present.
+                    end = temp.index("<sound>")
+                    for i in range(start, end):
+                        test = random.randint(0, 99)
+                        if test <= threshold:
+                            temp[i] = '...'
+                elif '<sound>' in temp and '<smell>' in temp: #Ends with one, but we don't know the ordering.
+                    tmp1 = temp.index("<sound>")
+                    tmp2 = temp.index("<smell>")
+                    if tmp1 < tmp2: #Sound comes before smell #Make changes up until <sound> tag
+                        end = temp.index("<sound>")
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+                        start = temp.index("</sound>")+1
+                        end = temp.index("<smell>")
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+                    else: #sound comes after smell
+                        end = temp.index("<smell>")
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+                        start = temp.index("</smell>")+1
+                        end = temp.index("<sound>")
+                        for i in range(start, end):
+                            test = random.randint(0, 99)
+                            if test <= threshold:
+                                temp[i] = '...'
+
+            for i in range(0, len(temp)):
+                resp += temp[i]+' '
+
+
+    resp = resp.replace("<sound>", '')
+    resp = resp.replace("</sound>", '')
+    resp = resp.replace("<smell>", '')
+    resp = resp.replace("</smell>", '')
+
+    return resp
+
 #Flags  'p' = portals
 #       'r' = room items
 #       'i' = player items
@@ -355,7 +565,7 @@ def look(room, player, object, noun, tags):
     else:
         text = object.inspect_desc
 
-    return [(player.name, text)]
+    return filter_messages([player.name, text])
 
 def take(room, player, object, noun, tags):
     alt_text = ''
@@ -379,7 +589,7 @@ def take(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def open(room, player, object, noun, tags):
     alt_text = ''
@@ -427,7 +637,7 @@ def open(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def go(room, player, object, noun, tags):
     alt_text = ''
@@ -483,7 +693,7 @@ def go(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, '%s has entered the room.' % player.name.title()))
 
-    return messages
+    return filter_messages(messages)
 
 def drop(room, player, object, noun, tags):
     alt_text = ''
@@ -507,7 +717,7 @@ def drop(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def unlock(room, player, object, noun, tags):
     alt_text = ''
@@ -547,7 +757,7 @@ def unlock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def lock(room, player, object, noun, tags):
     alt_text = ''
@@ -583,7 +793,7 @@ def lock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def inventory(room, player, object, noun, tags):
     if len(player.items) > 0:
@@ -610,7 +820,7 @@ def say(room, player, object, noun, tags):
             messages.append((alt_player, alt_text))
             #messages.append((alt_player, '_play_ talking')) # Needs a valid sound
 
-    return messages
+    return filter_messages(messages)
 
 def shout(room, player, object, noun, tags):
     text = "You shout %s" % noun
@@ -634,7 +844,7 @@ def shout(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, alt_text))
 
-    return messages
+    return filter_messages(messages)
 
 def damage(room, attacker, object, noun, tags):
     messages = []
@@ -679,7 +889,7 @@ def damage(room, attacker, object, noun, tags):
 
         messages.append((player.name, text))
 
-    return messages
+    return filter_messages(messages)
 
 def bad_command(room, player, object, noun, tags):
     messages = []
@@ -713,7 +923,7 @@ def reveal(room, player, object, noun, tags):
     for player in room.players:
         messages.append((player, text))
 
-    return messages
+    return filter_messages(messages)
 
 def hide(room, player, object, noun, tags):
     # Hides an object
@@ -724,4 +934,4 @@ def hide(room, player, object, noun, tags):
     for player in room.players:
         messages.append((player, text))
 
-    return messages
+    return filter_messages(messages)
