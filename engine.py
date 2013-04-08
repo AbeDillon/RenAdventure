@@ -130,7 +130,7 @@ class NPC:
         self.affiliation = affiliation
         self.tweets = []
 
-        twitter_file = open('twitterfeeds/%s.feed' % self.name, 'a')
+        twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
         twitter_file.close()
 
 logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
@@ -189,7 +189,7 @@ def init_game(save_state = 0):
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-    kanye = NPC('@kanyewest', (0,2,1), affiliation)
+    kanye = NPC('@mr_kanyewest', (0,2,1), affiliation)
     _NPCBucket.append(kanye)
 
     thread.start_new_thread(command_thread, ())
@@ -364,9 +364,10 @@ def spawn_npc_thread(n):
             npc = random.choice(_NPCBucket)
 
             # Get the NPCs tweets
-            twitter_file = open('twitterfeeds/%s.feed' % npc.name)
+            twitter_file = open('twitterfeeds/%s.txt' % npc.name)
             for line in twitter_file.readlines():
                 npc.tweets.append(line.strip())
+            twitter_file.close()
 
             if len(npc.tweets) > 0:
                 _Characters[npc.name] = npc
