@@ -42,6 +42,7 @@ class feedGetter(threading.Thread):
             fout.write(text)
             fout.write('\n')
         fout.close()
+
         logger.write_line("twitterFeeds file saved for %d" % self.user)
 
 
