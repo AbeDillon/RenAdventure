@@ -16,7 +16,6 @@ class BuilderThread(threading.Thread):
         """
         Initialize a Room Builder thread
         """
-        logger = Q2logging.out_file_instance('logs/builder/builder')
         
         threading.Thread.__init__(self)
         self.type = type_of_object # being built
@@ -28,6 +27,9 @@ class BuilderThread(threading.Thread):
         self.prototype = {}
         if self.type == "room":
             self.prototype["name"] = room_coords
+        # I think we should have a build ID instance to follow through logger file.  ?##?
+        logger = Q2logging.out_file_instance('logs/builder/player_name')
+        logger.writeline( 'Builder Initiated ' +time()+ ', Player = '+ self.player_name + ', Build Type = '+ self.type )
         
     def run(self):
         """
@@ -49,21 +51,22 @@ class BuilderThread(threading.Thread):
         text = textwrap.fill('In this module you will be building a "room" or "area" to your liking with some limits of course.  '
                         'We will walk you through the process of building and populating the room with things like Portals, '
                         'Containers, Items, and some other stuff.  So lets get started.', width=100).strip()
-                        
+        logger.write_line(self.player_name+ ' entered build room Function. , ' +time())               
         self.send_message_to_player(text)
-        
+        logger.write_line(self.player_name+ ' sent to addDescription Function. , ' +time())
         self.addDescription()
-        
+        logger.write_line(self.player_name+ ' sent to addPortals Function. , ' +time())
         self.addPortals()
-        
+        logger.write_line(self.player_name+ ' sent to addItems Function. , '+time())
         self.addItems()
-        
+        logger.write_line(self.player_name+ ' skips NPC attritbutes WE NEED BUIDLER/SELECTOR. , '+time())
         #add functionality for placing NPCs
-        
+        logger.write_line(self.player_name+ ' sent to reviewObject function. , '+time())
         self.reviewObject()
-        
+        logger.write_line(self.playername+ ' sent to makeRoom function. , '+time())
         self.makeRoom()
-        
+        logger.write_line(self.playername+ ' exited room builder. , '+time())
+    
     def buildPortal(self, direction=""):
         """
         function to build a portal step by step.  Direction has been predetermined from room builder function.
