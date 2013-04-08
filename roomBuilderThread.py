@@ -378,7 +378,7 @@ class BuilderThread(threading.Thread):
                 temp_prototype = copy.deepcopy(self.prototype)
                 self.prototype = {} # open new dict for the new item
                 self.buildItem()
-                # get name of key (item just built
+                # capture name of key
                 key = self.prototype['name']               
                 # restore original prototype
                 self.prototype = temp_prototype
@@ -429,7 +429,7 @@ class BuilderThread(threading.Thread):
         Function sets Container flag (bool)
         """
         
-        container_text = '\n' + textwrap.fill('Items can be containers that hold other items. Do you want to make it a container?  [y]es or [n]',  width=100).strip()
+        container_text = '\n' + textwrap.fill('Items can be containers that hold other items. Do you want to make it a container?  [y]es or [n]o',  width=100).strip()
                 
         container_state = self.get_valid_response(container_text)
         if container_state == "yes":
@@ -476,25 +476,25 @@ class BuilderThread(threading.Thread):
         
     def addItems(self):
         """
-        Function for adding items to room or container item.
+        Function for adding items to room or a container item.
         """
         items = {}
         
         #  confirm they want to add item(s)
-        prompt = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
-        
+        item_text = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
         valid_responses = (("new", "n"), ("existing", "e"), ("exit", "x"))
         
-        # save the current room prototype because calling the buildItem function will clobber it
-        temp_prototype = copy.deepcopy(self.prototype)
+        ans = self.get_valid_response(item_text, validResponses=valid_responses)
+        
+        #ensure type to Item for proper dynamic printing
         temp_type = copy.copy(self.type)
         self.type = "item"
-        ans = self.get_valid_response(prompt, validResponses=valid_responses)
+        
         while ans != 'exit':
-            # add an item by name
+            # add an existing item by name
             if ans == "existing":
                 # ask them item name
-                check_name = self.checkName() # check name returns Tuple (name, T/F)
+                check_name = self.checkName() # check name returns Tuple (name, bool (T/F))
                 name = check_name[0]
                 flag = check_name[1]
                 if flag == True: #name was accepted
@@ -506,25 +506,29 @@ class BuilderThread(threading.Thread):
                 else:
                     deny = '\n' +textwrap.fill('We cannot find the '+name+', try again.', width=100).strip()
                     self.send_message_to_player(deny)
-                    ans = 'exit'
+                    
             
-            # build your item
-            else:
+            # build an item
+            else:                
+                # save the current prototype because calling the buildItem function will clobber it
+                temp_prototype = copy.deepcopy(self.prototype)
                 # initialize the prototype for the buildItem function
                 self.prototype = {}
                 # build a new item
                 self.buildItem()
-                # get the item's name
+                # capture the item's name
                 name = self.prototype["name"]
                 # add that item to the list of items
                 items[name] = items.get(name, 0) + 1
+                item_text2 = '\n' +textwrap.fill('Your ' + self.type + ' has been added to ' +temp_type+ ' list. Now what do you want to do?', width= 100).strip()
+                self.send_message_to_player(item_text2)
+                # restore original prototype
+                self.prototype = temp_prototype
+                ans = 'exit'                    
             
-            # prompt the user again
-            self.send_message_to_player(text1)
-            ans = self.get_valid_response(text, validResponses=valid_responses)
-        
-        # restore the prototype
-        self.prototype = temp_prototype
+            # prompt the user again            
+            ans = self.get_valid_response(item_text, validResponses=valid_responses)
+       
         self.type = temp_type
         # add the items to the prototype
         self.prototype['items'] = items
@@ -561,7 +565,7 @@ class BuilderThread(threading.Thread):
         
         room = engine.Room(desc, portals, items, players, npcs)
         
-        self.send_message_to_player("Your '+self.type+' has been built.")
+        self.send_message_to_player("Your "+self.type+" has been built.")
     
     def makePortal(self):
         """
