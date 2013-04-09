@@ -135,7 +135,7 @@ class NPC:
         twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
         twitter_file.close()
 
-logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
+logger = Q2logging.out_file_instance('logs/engine/RenEngine')
 
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
@@ -165,21 +165,18 @@ def init_game(save_state = 0):
         directory = 'SaveState%d' % save_state
 
         print 'Initializing game state from save state %d' % save_state
-        #logger.debug('Initializing game state from save state %d' % save_state)
-        logger.write_line('Initializing game state from save state %d' % save_state) ###TEST
+        logger.write_line('Initializing game state from save state %d' % save_state)
     else:
         directory = 'rooms'
 
         print 'Initializing game state from default save state'
-        #logger.debug('Initializing game state from default save state')
-        logger.write_line('Initializing game state from default save state') ###TEST
+        logger.write_line('Initializing game state from default save state')
 
     _Objects_Lock.acquire()
     _Objects = loader.load_objects('objects/objects.xml') # Load the global objects
     _Objects_Lock.release()
 
-    #logger.debug("Loaded global objects")
-    logger.write_line("Loaded global objects") ###TEST
+    logger.write_line("Loaded global objects")
 
     for filename in os.listdir(directory):
         path = directory + '/' + filename
@@ -197,11 +194,11 @@ def init_game(save_state = 0):
     thread.start_new_thread(command_thread, ())
     logger.write_line("Starting command thread")
 
-#    thread.start_new_thread(spawn_npc_thread, (10,))
-#    logger.write_line("Starting spawn NPC thread")
-#
-#    thread.start_new_thread(npc_thread, ())
-#    logger.write_line("Starting NPC action thread")
+    thread.start_new_thread(spawn_npc_thread, (10,))
+    logger.write_line("Starting spawn NPC thread")
+
+    thread.start_new_thread(npc_thread, ())
+    logger.write_line("Starting NPC action thread")
 
 def shutdown_game():
     # Winds the game down and creates a directory with all of the saved state information
@@ -294,12 +291,9 @@ def get_messages():
     while not _MessageQueue.empty():
         message = _MessageQueue.get()
 
-        #final_msg = (message[0], sense_filter(message[1]) #Pass in the message, filter, get it back, make a new tuple. From here on use final_msg instead of message?
         messages.append(message)
-        #messages.append(final_msg)
 
-        logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1])) ###TEST
-        #logger.write_line("Sending message to server: (%s, %s)" % (final_msg[0], final_msg[1])) 
+        logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1]))
 
     return messages
 
@@ -364,8 +358,7 @@ def npc_thread():
         for npc in npcs.values():
             engine_helper.npc_action(npc)
 
-    #logger.debug("Closing npc action thread.")
-    logger.write_line("Closing npc action thread.") ###TEST
+    logger.write_line("Closing npc action thread.")
 
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game
