@@ -430,7 +430,7 @@ def sense_filter(message):
                         temp[i] = '...'
                 finished = True
             
-            count = count+1
+            ###count = count+1 ###DEBUG
             
     for i in range(0, len(temp)):
         resp += temp[i]+' '
