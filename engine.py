@@ -333,6 +333,8 @@ def command_thread():
                     player = _Characters[player_name]
                     _Characters_In_Builder_Lock.release()
 
+                    _Rooms[player.coords].players.append(player.name) # Add the player to the room
+
                     _MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords)))   # Put room description in the message queue
 
                     logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d, %d, %d)." % player.coords)
