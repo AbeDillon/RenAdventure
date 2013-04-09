@@ -3,16 +3,25 @@ __author__ = 'ADillon'
 import sys, socket
 import time
 
-def connect(HOST="54.244.118.196", PORT=8000):
+def connect(HOST="54.244.118.196", PORT=80):
     cSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print "Socket created."
     print "Attempting to connect to (host, port): (" + repr(HOST) + ", " + str(PORT) + ")"
     cSocket.connect((HOST, PORT))
     print "Socket connected."
+    print "Sending message"
+    cSocket.sendall("Hello!")
+    print "receiving message"
+    msg = ""
+    data = cSocket.recv(1024)
+    while data != None:
+        msg += data
+        data = cSocket.recv(1024)
+    print msg
     cSocket.close()
 
 if __name__ == "__main__":
-    HOST = "54.244.118.196"
+    HOST = "awseb-e-g-AWSEBLoa-B6W9I2L4XFDZ-424831863.us-west-2.elb.amazonaws.com"
     PORT = 80
 
     if "-h" in sys.argv:
@@ -31,7 +40,7 @@ if __name__ == "__main__":
             PORT = int(PORT)
         except:
             print "The port must be an integer."
-            PORT = 8000
+            PORT = 80
 
     connect(HOST, PORT)
 
