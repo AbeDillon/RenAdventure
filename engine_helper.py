@@ -238,7 +238,7 @@ def filter_messages(messages):
 
     return filtered_messages
 
-def sense_filter(message):
+def sense_filter(player, message):
     temp = message.split()
     resp = ''
     threshold = 50
@@ -258,7 +258,7 @@ def sense_filter(message):
         while sound_count > 0: #We still have sound tags to look for and remove.
             start = sound_start
             end = sound_end
-            if player.sound == False: #This one is impaired
+            if player.senses['sound'] == False: #This one is impaired
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -277,7 +277,7 @@ def sense_filter(message):
         while smell_count > 0: #We still have smell tags to look for and remove.
             start = smell_start
             end = smell_end
-            if player.smell == False: #This one is impaired
+            if player.senses['smell'] == False: #This one is impaired
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -293,7 +293,7 @@ def sense_filter(message):
                 smell_end = len(temp)
 
 
-    state_sense = player.sight
+    state_sense = player.senses['sight']
     if state_sense == False: #Impaired vision
         sound_count = message.count("<sound>")
         if "<sound>" in temp:
@@ -591,6 +591,8 @@ def take(room, player, object, noun, tags):
         alt_text = "%s has taken the %s." % (player.name, object.name)
         sound = '_play_ sound' # NEEDS A VALID SOUND
 
+    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+
     messages = []
     messages.append((player.name, text))    # Message to send to the player
     messages.append((player.name, sound))
@@ -638,6 +640,8 @@ def open(room, player, object, noun, tags):
 
             if 'script' in tags:
                 text = alt_text = "The %s has opened, but there is nothing inside." % object.name
+
+    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
 
     messages = []
     messages.append((player.name, text))
@@ -719,6 +723,8 @@ def drop(room, player, object, noun, tags):
         alt_text = "%s has dropped a %s." % (player.name, object.name)
         sound = '_play_ drop'
 
+    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+
     messages = []
     messages.append((player.name, text))
     messages.append((player.name, sound)) # Sound to send to the player
@@ -759,6 +765,8 @@ def unlock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to unlock the %s." % object.name
 
+    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+
     messages = []
     messages.append((player.name, text))
     messages.append((player.name, sound))
@@ -795,6 +803,8 @@ def lock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to lock the %s." % object.name
 
+    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+
     messages = []
     messages.append((player.name, text))
     messages.append((player.name, sound))
@@ -819,8 +829,8 @@ def inventory(room, player, object, noun, tags):
     return [(player.name, text)]
 
 def say(room, player, object, noun, tags):
-    text = "You say %s" % noun
-    alt_text = "%s says %s" % (player.name, noun)
+    text = "<sound> You say %s </sound>" % noun
+    alt_text = "<sound> %s says %s </sound>" % (player.name, noun)
 
     messages = []
     messages.append((player.name, text))
@@ -828,13 +838,13 @@ def say(room, player, object, noun, tags):
     for alt_player in room.players:
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
-            #messages.append((alt_player, '_play_ talking')) # Needs a valid sound
+            #messages.append((alt_player, '<dont_filter>_play_ talking</dont_filter>')) # Needs a valid sound
 
     return filter_messages(messages)
 
 def shout(room, player, object, noun, tags):
-    text = "You shout %s" % noun
-    alt_text = "%s shouted %s" % (player.name, noun)
+    text = "<sound> You shout %s </sound>" % noun
+    alt_text = "<sound> %s shouted %s </sound>" % (player.name, noun)
 
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
@@ -870,6 +880,9 @@ def damage(room, attacker, object, noun, tags):
 
         difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
 
+        if not player.senses['sound']: # Player can't hear very well, they take half damage
+            difference = difference/2
+
         if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
             player.fih = 30
         else:
@@ -895,8 +908,9 @@ def damage(room, attacker, object, noun, tags):
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
             text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
-            messages.append((player, '_play_ death'))    # Send the death sound
+            messages.append((player, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
 
+        text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this
         messages.append((player.name, text))
 
     return filter_messages(messages)

@@ -248,7 +248,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
         player = loader.load_player(path)
     else:
         senses = {'sight': True,
-                  'sound': True,
+                  'sound': False,
                   'smell': True,
                   'see_dead_people': False}
         player = Player(name, coords, coords, affiliation, senses)
