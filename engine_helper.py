@@ -4,13 +4,13 @@ import engine, roomBuilderThread
 import thread, threading, random
 import Queue
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
 
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
 
-    verb, nouns = parse_command(command)
+    verb, nouns = parse_command(command, tags)
 
     if verb == 'damage' and 'npc' not in tags: # Only NPCs can use the damage command
         verb = 'bad_command'
@@ -147,8 +147,10 @@ def rem_item(container, item):
     else:
         container.items[item] -= 1
 
-def parse_command(command):
+def parse_command(command, tags):
     # Create translation tables to make the command easier to parse
+    global valid_verbs
+
     translate_one_word = {'i': 'inventory',
                           'l': 'look room',
                           'h': 'help',
@@ -193,7 +195,8 @@ def parse_command(command):
     words = command.split()
 
     verb = words[0]
-    verb = translate_verb.get(verb, 'bad_command')
+    if verb not in valid_verbs or 'script' not in tags:
+        verb = translate_verb.get(verb, 'bad_command')
 
     nouns = words[1:]
     for n, noun in enumerate(nouns):
@@ -456,7 +459,8 @@ _ValidLookUp = {'look': ('pri', {'hidden': True}),
                 'open': ('ir', {'hidden': True}),
                 'unlock': ('pri', {'hidden': True}),
                 'lock': ('pri', {'hidden': True}),
-                'reveal': ('pr', {'hidden': False})}
+                'hide': ('pr', {}),
+                'reveal': ('pr', {})}
 
 def get_valid_objects(player, room, verb):
     global _ValidLookUp
@@ -504,16 +508,16 @@ def get_all_objects(player, verb):
 
     for room in engine._Rooms.values():
         if 'r' in flags:
-            for item in room.items.values():
-                valid_objects.append((room, item))
+            for item in room.items:
+                valid_objects.append((room, engine._Objects[item]))
 
         if 'p' in flags:
-            for portal in room.portals.values():
-                valid_objects.append((room, portal))
+            for portal in room.portals:
+                valid_objects.append((room, engine._Objects[portal]))
 
     if 'i' in flags:
-        for item in player.items.values():
-            valid_objects.append((None, item))
+        for item in player.items:
+            valid_objects.append((None, engine._Objects[item]))
 
     for room, object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -575,7 +579,7 @@ def look(room, player, object, noun, tags):
     else:
         text = object.inspect_desc
 
-    return filter_messages([player.name, text])
+    return filter_messages([(player.name, text)])
 
 def take(room, player, object, noun, tags):
     alt_text = ''
@@ -940,22 +944,38 @@ def script_delay(player, script):
 
 def reveal(room, player, object, noun, tags):
     # Reveals a hidden object
-    object.hidden = False
-    text = "A %s appears in the room." % object.name
-
     messages = []
-    for player in room.players:
-        messages.append((player, text))
+
+    if object != None:
+        object.hidden = False
+        text = "A %s appears in the room." % object.name
+
+        for player in room.players:
+            messages.append((player, text))
 
     return filter_messages(messages)
 
 def hide(room, player, object, noun, tags):
     # Hides an object
-    object.hidden = True
-    text = "The %s disappears from the room." % object.name
-
     messages = []
-    for player in room.players:
-        messages.append((player, text))
+
+    if object != None:
+        object.hidden = True
+        text = "The %s disappears from the room." % object.name
+
+        for player in room.players:
+            messages.append((player, text))
 
     return filter_messages(messages)
+
+def lose_sense(room, player, object, noun, tags):
+    if noun in player.senses:
+        player.senses[noun] = False
+
+    return []
+
+def gain_sense(room, player, object, noun, tags):
+    if noun in player.senses:
+        player.senses[noun] = True
+
+    return []

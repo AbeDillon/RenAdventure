@@ -197,11 +197,11 @@ def init_game(save_state = 0):
     thread.start_new_thread(command_thread, ())
     logger.write_line("Starting command thread")
 
-    thread.start_new_thread(spawn_npc_thread, (10,))
-    logger.write_line("Starting spawn NPC thread")
-
-    thread.start_new_thread(npc_thread, ())
-    logger.write_line("Starting NPC action thread")
+#    thread.start_new_thread(spawn_npc_thread, (10,))
+#    logger.write_line("Starting spawn NPC thread")
+#
+#    thread.start_new_thread(npc_thread, ())
+#    logger.write_line("Starting NPC action thread")
 
 def shutdown_game():
     # Winds the game down and creates a directory with all of the saved state information
@@ -248,7 +248,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
         player = loader.load_player(path)
     else:
         senses = {'sight': True,
-                  'sound': False,
+                  'sound': True,
                   'smell': True,
                   'see_dead_people': False}
         player = Player(name, coords, coords, affiliation, senses)
@@ -273,8 +273,7 @@ def remove_player(name):
     del _Characters[name] # Remove the player from the list of players in the game
     _Characters_Lock.release()
 
-    #logger.debug("Removed player '%s'" % player.name)
-    logger.write_line("Removed player '%s'"%player.name) ###TEST
+    logger.write_line("Removed player '%s'" % player.name)
 
 def put_commands(commands):
     # Takes a list of commands and pushes them to the command queue
@@ -315,6 +314,7 @@ def command_thread():
     while _StillAlive:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
+            print command
             player_name = command[0]
             command_str = command[1]
             tags = command[2]
