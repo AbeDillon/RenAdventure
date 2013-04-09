@@ -357,8 +357,8 @@ def npc_thread():
 
         for npc in npcs.values():
             engine_helper.npc_action(npc)
-
-    logger.write_line("Closing npc action thread.")
+    else:
+        logger.write_line("Closing npc action thread.")
 
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game

@@ -229,10 +229,14 @@ def npc_action(npc):
             engine.put_commands([command])
 
 def filter_messages(messages):
+    print messages
     filtered_messages = []
 
     for player_name, message in messages:
+        engine._Characters_Lock.acquire()
         player = engine._Characters[player_name]
+        engine._Characters_Lock.release()
+
         if isinstance(player, engine.Player):
             filtered_messages.append((player_name, sense_filter(player, message)))
             
@@ -891,6 +895,7 @@ def damage(room, attacker, object, noun, tags):
             player.fih = 30
         else:
             player.fih += difference
+
         if difference > 0:
             text = "Your Faith in Humanity is increased by %d." % difference
         elif difference < 0:
@@ -912,7 +917,7 @@ def damage(room, attacker, object, noun, tags):
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
             text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
-            messages.append((player, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
+            messages.append((player.name, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
 
         text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this
         messages.append((player.name, text))
