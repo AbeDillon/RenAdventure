@@ -2,20 +2,28 @@ __author__ = 'ADillon'
 
 import sys, socket
 
-def serve(HOST="", PORT=8000):
+def serve(HOST="", PORT=1337):
     sSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print "Socket created"
+    #print "Socket created"
     sSocket.bind((HOST, PORT))
-    print "Socket bound to (host, port): (" +repr(HOST) + ", " + str(PORT) + ")"
+    #print "Socket bound to (host, port): (" +repr(HOST) + ", " + str(PORT) + ")"
     sSocket.listen(5)
-    print "Socket listening..."
+    #print "Socket listening..."
     conn, addr = sSocket.accept()
-    print "Connection made to:", addr
+    #print "Connection made to:", addr
+    data = conn.recv(1024)
+    msg = ""
+    while data != None:
+        msg += data
+        data = conn.recv(1024)
+    #print msg
+    #print "Sending response"
+    conn.sendall("WORLD!")
     conn.close()
 
 if __name__ == "__main__":
     HOST = ""
-    PORT = 8000
+    PORT = 1337
 
     if '-h' in sys.argv:
         try:
@@ -33,6 +41,6 @@ if __name__ == "__main__":
             PORT = int(PORT)
         except:
             print "The port must be an integer"
-            PORT = 8000
+            PORT = 1337
 
     serve(HOST, PORT)

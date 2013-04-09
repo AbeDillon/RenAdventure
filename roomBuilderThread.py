@@ -25,8 +25,7 @@ class BuilderThread(threading.Thread):
         self.room_coords = room_coords
         self.player_name = player_name
         self.prototype = {}
-        # I think we should have a build ID instance to follow through logger file.  ?##?
-        #self.logger = Q2logging.out_file_instance('logs/builder/'+player_name)
+        self.logger = Q2logging.out_file_instance('logs/builder/'+player_name)
         if self.type == "room":
             self.prototype["name"] = room_coords
         
@@ -36,7 +35,7 @@ class BuilderThread(threading.Thread):
         """
         
         """
-        #logger.write_line( 'Builder Initiated ' +time()+ ', Player = '+ self.player_name + ', Build Type = '+ self.type )
+        self.logger.write_line( 'Builder Initiated, Type = '+ self.type)
         if self.type == "room":
             self.buildRoom()
         elif self.type == "portal":
@@ -53,59 +52,70 @@ class BuilderThread(threading.Thread):
         text = textwrap.fill('In this module you will be building a "room" or "area" to your liking with some limits of course.  '
                         'We will walk you through the process of building and populating the room with things like Portals, '
                         'Containers, Items, and some other stuff.  So lets get started.', width=100).strip()
-        #self.logger.write_line(self.player_name+ ' entered build room Function. , ' +time())               
+        self.logger.write_line('Entered build room Function.')               
         self.send_message_to_player(text)
-        #self.logger.write_line(self.player_name+ ' sent to addDescription Function. , ' +time())
+        self.logger.write_line('Sent to addDescription Function.')
         self.addDescription()
-        #self.logger.write_line(self.player_name+ ' sent to addPortals Function. , ' +time())
+        self.logger.write_line('Sent to addPortals Function.')
         self.addPortals()
-        #self.logger.write_line(self.player_name+ ' sent to addItems Function. , '+time())
+        self.logger.write_line('Sent to addItems Function.')
         self.addItems()
-        #self.logger.write_line(self.player_name+ ' skips NPC attritbutes WE NEED BUIDLER/SELECTOR. , '+time())
+        self.logger.write_line('skips adding NPC WE NEED BUIDLER/SELECTOR.')
         #add functionality for placing NPCs
-        #self.logger.write_line(self.player_name+ ' sent to reviewObject function. , '+time())
+        self.logger.write_line('Sent to reviewObject function.')
         self.reviewObject()
-        #self.logger.write_line(self.playername+ ' sent to makeRoom function. , '+time())
+        self.logger.write_line('Sent to makeRoom function.')
         self.makeRoom()
-        #self.logger.write_line(self.playername+ ' exited room builder. , '+time())
+        self.logger.write_line('Exited room builder.')
     
-    def buildPortal(self, direction=""):
+    def buildPortal(self):
         """
         function to build a portal step by step.  Direction has been predetermined from room builder function.
         """
+        self.logger.write_line('Arrived buildPortal function')
+        self.logger.write_line('Send to addName')
         
         # Name Portal 
         self.addName()
+        self.logger.write_line('Send to addDescription')
         
         # Description
         self.addDescription()
+        self.logger.write_line('Send to addInspectionDescription')
         
         # Inspection Description
         self.addInspectionDescription()
+        self.logger.write_line('Send to getDirection function')
         
         # Direction
-        if direction == "":
-            direction = self.getDirection()  # need to have variable set to pass into coords if direction = ""
-        else:
-            self.prototype['direction'] = direction
-            self.send_message_to_player(str(self.prototype))
-        # Coords
+        direction = self.getDirection()
+        self.logger.write_line('Send to assignCoords function w/ direction = '+direction)
+        
+        # Coords        
         self.assignCoords(direction)
+        self.logger.write_line('Send to isLocked function.')
         
-        # Locked
+        # Locked        
         self.isLocked()
-                
-        # Key
+        self.logger.write_line('Send to addKey function.')
+            
+        # Key        
         self.addKey()
+        self.logger.write_line('Send to isHidden function.')
         
-        # Hidden
+        # Hidden        
         self.isHidden()
+        self.logger.write_line('Send to buildScripts Function')
         
-        # Scripts
-        self.buildScripts()
+        # Scripts        
+        self.buildScripts()        
+        self.logger.write_line('Send to reviewObject Function')
         
+        #review object
         self.reviewObject()
+        self.logger.write_line('Send to makePortal Function.')
         
+        #make portal
         self.makePortal()
         
     def buildItem(self):
@@ -367,8 +377,19 @@ class BuilderThread(threading.Thread):
         
     def getDirection(self):
         """
+        function to get desired direction
+        returns direction
         """
-        pass
+        self.logger.write_line('arrive getDirection function')
+        dir_text = '\n' + textwrap.fill('To add a portal, specify the direction you want ([n]orth, [s]outh, [e]ast, [w]est, [u]p, [d]own, [i]n, or [o]ut).',  width=100).strip()
+        valid_responses = (("north", "n"), ("south", "s"), ("east", "e"), ("west", "w"), ("in", "i"), ("out", "o"))
+        
+        direction = self.get_valid_response(dir_text, validResponses = valid_responses)
+        
+        self.prototype['direction'] = direction
+        self.logger.write_line('response recieved = '+str(direction) + ' & assigned to protoype')
+        return direction
+
     
     def getValidCoords(self):
         """
@@ -539,46 +560,54 @@ class BuilderThread(threading.Thread):
     def addPortals(self):
         """
         
-        """
-        
+        """        
+        self.logger.write_line('arrive addPortals Function')
         portals = {}
-        
-        #  confirm they want to create portals
-        text = '\n' + textwrap.fill('To add a portal, specify the direction you want ([n]orth, [s]outh, [e]ast, [w]est, [u]p, [d]own, [i]n, or [o]ut). If you are done adding portals e[x]it.',  width=100).strip()
-        valid_responses = (("north", "n"), ("south", "s"), ("east", "e"), ("west", "w"), ("in", "i"), ("out", "o"), ("exit", "x"))
+        #  confirm they want to add portal(s)
+        portal_text = '\n' + textwrap.fill('Portals (doors) can be added to your room. Do you want to add portal?  [y]es or [n]o',  width=100).strip()
+        more_portal = '\n' + textwrap.fill('Do you want to add another Portal?  [y]es or [n]o')
+        ans = self.get_valid_response(portal_text) # default is yes/no
         
         # save the current room prototype because calling the buildPortal function will clobber it
         temp_prototype = copy.deepcopy(self.prototype)
         temp_type = copy.copy(self.type)
-        self.type = "portal"
-        direction = self.get_valid_response(text, validResponses=valid_responses)
-        while direction not in ("exit", "x"):
-            # initialize the prototype for the buildPortal function
-            self.prototype = {}
-            # build a new portal
-            self.buildPortal(direction)
-            # get the portal's name
-            name = self.prototype["name"]
-            # add that portal's direction : name to the dictionary of portals for the room
-            portals[direction] = name
-            self.send_message_to_player(str(portals))
-            # prompt the user again
-            direction = self.get_valid_response(text, validResponses=valid_responses)
+        self.logger.write_line('prototype & type copied as ' +str(temp_type) + ' & ' + str(temp_prototype))
+        
+        while True: 
+            if ans == 'yes':                                                        
+                self.logger.write_line('make portal? input recieved =' +str(ans))                
+                self.type = "portal"
+                self.prototype = {}
+                # build a new portal
+                self.logger.write_line('send to buildPortal function')
+                self.buildPortal()
+                # get the portal's name
+                name = self.prototype['name']
+                #add to dict for room
+                portals[name] = portals.get(name, 0) + 1
+                self.logger.write_line('portals dict for room to now looks like ' + str(portals)+ ' Prompt again....')
+                #prompt for more
+                ans = self.get_valid_response(more_portal)
+            else:
+                self.logger.write_line('make portal?  input recieved = '+str(ans))
+                break
                 
         # restore the prototype to the room prototype
         self.prototype = temp_prototype
         self.type = temp_type
-        # add the portals to the room
+        self.logger.write_line('begin exit from buildPortals Function.  Restored temp prototoype and type')
+        # add the portals to the room prototype
         self.prototype['portals'] = portals
+        self.logger.write_line('portals dict copied to dict prototype[portals]')
         
     def addItems(self):
         """
-        Function for adding items to room or a container item.
+        Function for adding items to a room or a container item.
         """
         items = {}
         
         #  confirm they want to add item(s)
-        item_text = '\n' + textwrap.fill('Add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
+        item_text = '\n' + textwrap.fill('Items can be added to your ' +self.type+ '.  Enter your choice add a [n]ew item, name an [e]xisting item, or e[x]it.',  width=100).strip()
         valid_responses = (("new", "n"), ("existing", "e"), ("exit", "x"))
         
         ans = self.get_valid_response(item_text, validResponses=valid_responses)
@@ -651,6 +680,7 @@ class BuilderThread(threading.Thread):
         """
         parses the current protoype dict and instantiates a room
         """
+        self.logger.write_line('arrive makeRoom function')
         self.send_message_to_player('Your '+self.type+' is being built.')
         
         desc = self.prototype['description']
@@ -658,24 +688,25 @@ class BuilderThread(threading.Thread):
         items = self.prototype['items']
         players = [] # updated only by engine
         npcs = []   # when NPC builder complete we need to have this list populated by builder.
+        self.logger.write_line('dict parsed to variables')
         
         room = engine.Room(desc, portals, items, players, npcs)
-        
+        self.logger.write_line(str(self.type) + ' instantiated @ ' +str(room)+ 'as ' + str(self.prototype))
         self.send_message_to_player("Your "+self.type+" has been built.")
         
         #add room to list of rooms
-        engine._Rooms[self.room_coords()] = room
+        engine._Rooms[self.room_coords] = room
         
         # send messsage to game_cmd_queue signaling done with builder.
-        self.game_cmd_queue.put((self.player_name, 'done_building'))
+        self.game_cmd_queue.put((self.player_name, 'done_building', []))
         
     
     def makePortal(self):
         """
         Parses the current Prototype dict and instantiates a portal
         """
+        self.logger.write_line('arrive makePortal Function')
         self.send_message_to_player('Your '+self.type+' is now being built.')
-        
         name = self.prototype['name']
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
@@ -685,12 +716,21 @@ class BuilderThread(threading.Thread):
         key = self.prototype['key']
         hidden = self.prototype['hidden']
         scripts = self.prototype['scripts']
+        self.logger.write_line('prototype dict parsed')
         
         # Build Portal
         portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
+        self.logger.write_line(str(self.type) + ' instantiated @ ' +str(portal)+ 'with attribs = ' +str(self.prototype)) 
+        
+        #write item to objects list
+        engine._Objects_Lock.acquire()
+        self.logger.write_line('Objects lock acquired')
+        engine._Objects[name] = portal
+        self.logger.write_line('Objects Dict updated')
+        engine._Objects_Lock.release()
+        self.logger.write_line('Objects lock released')        
         
         self.send_message_to_player('Your '+self.type+' has been built.')
-        return portal
     
     def makeItem(self):
         """
@@ -708,12 +748,19 @@ class BuilderThread(threading.Thread):
         locked = self.prototype['locked']
         key = self.prototype['key']
         items = self.prototype['items']
-         
+        
+        self.logger.write_line(str(self.type)+' Sent to instatiante as ' + str(self.prototype)) 
         item = engine.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
+        self.logger.write_line(str(self.type)+ ' instantiated @ ' + str(item))
+        #write item to objects list
+        engine._Objects_Lock.acquire()
+        self.logger.write_line('Objects lock acquired')
+        engine._Objects[name] = item
+        self.logger.write_line('Objects Dict updated')
+        engine._Objects_Lock.release()
+        self.logger.write_line('Objects lock released')
         
         self.send_message_to_player('Your '+self.type+ ' has been built.')
-        
-        return item
                 
     def get_valid_response(self, prompt, validResponses=(("yes", "y"), ("no", "n"))):
         """
