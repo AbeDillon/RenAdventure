@@ -10,14 +10,19 @@ def load_player(path):
     root = xml.getroot()
     
     player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
+    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']))
     player_attributes['fih'] = int(root.attrib['fih'])
     player_attributes['name'] = root.attrib['name']
     player_attributes['items'] = []
     player_attributes['affiliation'] = {}
-    
+    player_attributes['senses'] = {}
+
+    senses = ['sight', 'sound', 'smell', 'see_dead_people']
     for node in root:
         if node.tag == 'item':
             player_attributes['items'].append(node.text)
+        elif node.tag in senses:
+            player_attributes['senses'][node.tag] = bool(int(node.text))
         else:
             player_attributes['affiliation'][node.tag] = int(node.text)
 
@@ -112,7 +117,7 @@ def load_objects(path):
 
 ############# SAVE METHODS ##############
 # Writes object list to a save file
-def save_objects(objects):
+def save_objects(objects, directory):
     child_nodes = []
     for object in objects:
         if isinstance(object, engine.Item):
@@ -122,7 +127,7 @@ def save_objects(objects):
 
     objects_node = xml.XMLNode('objects', children=child_nodes)
 
-    save = open('objects/objects.xml', 'w')
+    save = open(directory + '/objects/objects.xml', 'w')
     save.write(objects_node.flatten_self())
     save.close()
 
@@ -132,6 +137,9 @@ def save_player(player):
     attributes['x'] = str(player.coords[0])
     attributes['y'] = str(player.coords[1])
     attributes['z'] = str(player.coords[2])
+    attributes['prev_x'] = str(player.prev_coords[0])
+    attributes['prev_y'] = str(player.prev_coords[1])
+    attributes['prev_z'] = str(player.prev_coords[2])
     attributes['name'] = player.name
     attributes['fih'] = str(player.fih)
 
@@ -143,6 +151,10 @@ def save_player(player):
     for item in player.items: # Create the item nodes
         item_node = xml.XMLNode('item', value=item)
         child_nodes.append(item_node)
+
+    for sense in player.senses: # Create the sense nodes
+        sense_node = xml.XMLNode(sense, value=str(int(player.senses[sense])))
+        child_nodes.append(sense_node)
 
     player_node = xml.XMLNode('player', attributes, children=child_nodes)
 

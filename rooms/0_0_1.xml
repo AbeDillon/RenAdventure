@@ -2,6 +2,7 @@
 <room desc="An empty jail cell.">
 <portal>door2</portal>
 <portal>door3</portal>
+<portal>large door</portal>
 <item>key</item>
 <item>old toilet</item>
 </room>

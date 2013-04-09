@@ -5,17 +5,14 @@ import thread, threading, Queue
 import time, random
 import RAProtocol
 import engine
-#import logging
 import os
 #import msvcrt
 import string
 import loader
 import ssl
-import Q2logging ###TEST
+import Q2logging
 
-#logging.basicConfig(filename='RenAdventure.log', level=logging.DEBUG, format = '%(asctime)s: <%(name)s> %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p')
-#_Logger = logging.getLogger('Server')
-logger = Q2logging.out_file_instance('logs/server/RenServer') ###TEST
+logger = Q2logging.out_file_instance('logs/server/RenServer')
 
 _Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
@@ -58,8 +55,7 @@ def main():
     engine.init_game()
 
     print "Game State initialized"
-    #_Logger.debug('Game State initialized')
-    logger.write_line('Game State initialized') ###TEST
+    logger.write_line('Game State initialized')
 
     # Spin-off Log-in thread
     global _Threads
@@ -84,28 +80,25 @@ def main():
     login_thread.start()
 
     print "Log-in thread spawned"
-    #_Logger.debug('Log-in thread spawned')
-    logger.write_line('Log-in thread spawned') ###TEST
+    logger.write_line('Log-in thread spawned')
 
     #rlt = ReadLineThread()
     #rlt.start()
 
     #print "Server console input thread spawned"
-    #_Logger.debug("Server console input thread spawned")
+    #logger.write_line('Server console input thread spawned')
 
     sat = ServerActionThread()
     sat.start()
 
     print 'Server action thread spawned'
-    #_Logger.debug('Server action thread spawned')
-    logger.write_line('Server action thread spawned') ###TEST
+    logger.write_line('Server action thread spawned')
 
 
     timeout = PlayerTimeout()
     timeout.start()
     print 'Player timeout thread spawned'
-    #_Logger.debug('Player timeout thread spawned')
-    logger.write_line('Player timeout thread spawned') ###TEST
+    logger.write_line('Player timeout thread spawned')
     
     # Spin-off NPC Spawning thread
 
@@ -113,8 +106,7 @@ def main():
 
     # Start Main Loop
     print "Entering main loop..."
-    #_Logger.debug('Entering main loop...')
-    logger.write_line('Entering main loop...') ###TEST
+    logger.write_line('Entering main loop...')
     #loop_cnt = 0
     while 1:
         command = None
@@ -122,8 +114,7 @@ def main():
             command = _CMD_Queue.get_nowait()
             print "player: " + command[0] + " command: " + command[1]
             line = '<player>: '+command[0]+' <command>: '+command[1]
-            #_Logger.debug('Processing Command from Queue: %s' % line)
-            logger.write_line('Processing Command from Queue: %s' % line) ###TEST
+            logger.write_line('Processing Command from Queue: %s' % line)
         except:
             pass
 
@@ -195,25 +186,21 @@ class Login(threading.Thread):
         # Create a socket to listen for new connections
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
-        #_Logger.debug('Login Socket created')
-        logger.write_line('Login Socket created') ###TEST
+        logger.write_line('Login Socket created')
 
         sock.bind((self.host, self.listen_port))
         print "Login Socket bound"
-        #_Logger.debug('Login Socket bound')
-        logger.write_line('Login Socket bound') ###TEST
+        logger.write_line('Login Socket bound')
 
         # Listen for new connections
         sock.listen(10)
         print "Login socket listening"
-        #_Logger.debug('Login socket listening')
-        logger.write_line('Login socket listening') ###TEST
+        logger.write_line('Login socket listening')
         while 1:
             # wait to accept a connection
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
-            #_Logger.debug('Connected with '+str(addr[0])+':'+str(addr[1]))
-            logger.write_line('Connected with '+str(addr[0])+':'+str(addr[1])) ###TEST
+            logger.write_line('Connected with '+str(addr[0])+':'+str(addr[1]))
             connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) 
             thread.start_new_thread(self.addPlayer, (connstream, addr))
             time.sleep(0.05)
@@ -245,8 +232,7 @@ class Login(threading.Thread):
 
                 if player_pass == pwd: #Login successful
                     print 'User <%s> logged in' % player_name
-                    #_Logger.debug('User <%s> logged in.'%player_name)
-                    logger.write_line('User <%s> logged in.'%player_name) ###TEST
+                    logger.write_line('User <%s> logged in.'%player_name)
                     logged_in = True
                     _Logged_in.append(player_name)
                     player_path = 'players/%s.xml'%player_name
@@ -256,20 +242,17 @@ class Login(threading.Thread):
                     location = person.coords
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
-                    #_Logger.debug('User <%s> failed to authenticate.' % player_name)
-                    logger.write_line('User <%s> failed to authenticate.'%player_name) ###TEST
+                    logger.write_line('User <%s> failed to authenticate.'%player_name)
                     RAProtocol.sendMessage('invalid', conn)
             else: #File does not exist
 
                 if len(a_string) == 2: #We just got name and password, not affiliation
                     RAProtocol.sendMessage('affiliation_get', conn)
                     print 'Getting user affiliation'
-                    #_Logger.debug('Required user affiliation from <%s>'%player_name)
-                    logger.write_line('Required user affiliation from <%s>'%player_name) ###TEST
+                    logger.write_line('Required user affiliation from <%s>'%player_name)
                 elif len(a_string) == 12: #We got the affiliation data this time.
                     print 'Creating user: <%s>'% player_name
-                    #_Logger.debug('Creating user: <%s>' % player_name)
-                    logger.write_line('Creating user: <%s>'%player_name) ###TEST
+                    logger.write_line('Creating user: <%s>'%player_name)
 
                     cur_person = ''
                     for i in range(2, len(a_string)):
@@ -300,7 +283,7 @@ class Login(threading.Thread):
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
-                oqueue.put(engine.get_room_text(player_name, location))
+                oqueue.put(engine.engine_helper.get_room_text(player_name, location))
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
@@ -342,19 +325,16 @@ class Login(threading.Thread):
                 conn.close()
 
                 print player_name + " added to the game."
-                #_Logger.debug('<'+player_name+'>'+" added to the game.")
-                logger.write_line('<'+player_name+'>'+" added to the game.") ###TEST
+                logger.write_line('<'+player_name+'>'+" added to the game.")
 
         elif player_name not in _Banned_names: #Player name is in _Logged_in, and not in _Banned_names
             print 'Error, attempt to log in to an account already signed on'
-            #_Logger.debug('Error, attempting to log in to an account already signed on: <%s>' % player_name)
-            logger.write_line('Error, attempting to log in to an account already signed on: <%s>'%player_name) ###TEST
+            logger.write_line('Error, attempting to log in to an account already signed on: <%s>'%player_name)
             RAProtocol.sendMessage('already_logged_in', conn)
 
         else: #player_name in _Banned_names
             print 'Attempt to log in with a banned name <%s>, account creation rejected' % player_name
-            #_Logger.debug('Attempt to log in with a banned name <%s>, account creation rejected'%player_name)
-            logger.write_line('Attempt to log in with a banned name <%s>, account creation rejected'%player_name) ###TEST
+            logger.write_line('Attempt to log in with a banned name <%s>, account creation rejected'%player_name)
             RAProtocol.sendMessage('banned_name',conn)
             
 class PlayerInput(threading.Thread):
@@ -394,16 +374,14 @@ class PlayerInput(threading.Thread):
                 conn, addr = sock.accept()
                 print 'got input from ' + self.name
                         
-                #_Logger.debug('Got input from: <%s>' % self.name)
-                logger.write_line('Got input from: <%s>' % self.name) ###TEST
+                logger.write_line('Got input from: <%s>' % self.name)
                 
                 connstream = ssl.wrap_socket(conn, certfile='cert.pem', server_side=True)
                 thread.start_new_thread(self.handleInput, (connstream, ))
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
             print 'Input thread for player <%s> ending' % self.name
-            #_Logger.debug('Input thread for player <%s> ending' % self.name)
-            logger.write_line('Input thread for player <%s> ending' % self.name) ###TEST
+            logger.write_line('Input thread for player <%s> ending' % self.name)
             del _InThreads[self.name] #So we delete the tracker for it.
     def handleInput(self, conn):
         """
@@ -426,8 +404,7 @@ class PlayerInput(threading.Thread):
             if message != 'quit':
                 try:
                     _CMD_Queue.put((self.name, message))
-                    #_Logger.debug('Putting in the command queue: <%s>; "%s"' % (self.name, message))
-                    logger.write_line('Putting in the command queue: <%s>; "%s"' % (self.name, message)) ###TEST
+                    logger.write_line('Putting in the command queue: <%s>; "%s"' % (self.name, message))
                 except:
                     pass
 
@@ -437,14 +414,12 @@ class PlayerInput(threading.Thread):
                 _InThreads[self.name] = False
                 _OutThreads[self.name] = False
                 _Logged_in.remove(self.name)
-                #_Logger.debug('Removing <%s> from _Logged_in' % self.name)
-                logger.write_line('Removing <%s> from _Logged_in' % self.name) ###TEST
+                logger.write_line('Removing <%s> from _Logged_in' % self.name)
                 engine.remove_player(self.name) #Remove player existence from gamestate.
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings[self.name] = time.time()
-            #_Logger.debug("Got a ping from <%s>" % self.name)
-            logger.write_line("Got a ping from <%s>"%self.name) ###TEST
+            logger.write_line("Got a ping from <%s>"%self.name)
 
 class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
 
@@ -466,10 +441,11 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
             for player in _User_Pings:
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
                     print 'Player timed out: <%s>' % player
-                    #_Logger.debug('Removing <%s> from game: Timed out' % player)
-                    logger.write_line('Removing <%s> from game: Timed out' % player) ###TEST
-                    if player in engine._Players:
+                    logger.write_line('Removing <%s> from game: Timed out' % player)
+                    engine._Characters_Lock.acquire()
+                    if player in engine._Characters:
                         engine.remove_player(player)
+                    engine._Characters_Lock.release()
                     if player in _Logged_in:
                         _Logged_in.remove(player)
                     to_rem.append(player)
@@ -513,31 +489,37 @@ class PlayerOutput(threading.Thread):
             try:
                 # get message
                 message = self.queue.get()
+                
             except:
                 # this should handle exceptions
                 pass
             if message != "" and message != 'Error, it appears this person has timed out.':
                 print message
-                #_Logger.debug('Sending message to <%s>: "%s"' %(self.name, message))
-                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message)) ###TEST
+                #if "<sight>" in message: #Some identifier that the sense of sight is involved ###DIRECTIVE
+                    #pass
+                    #sense_state = player.sight
+                    #if sense_state == 'impaired':
+                        #Do something to replace part of the sentence with ellipses?
+                    #elif sense_state == 'blind':
+                        #Do something to replace the whole message with ellipses?
+                    
+                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem') ###TEST
+                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem')
                 # connect to player
                 try:
-                    ssl_sock.connect((self.address[0], self.port)) ###TEST
+                    ssl_sock.connect((self.address[0], self.port))
                     # send message
-                    RAProtocol.sendMessage(message, ssl_sock)  ###TEST
+                    RAProtocol.sendMessage(message, ssl_sock)
                     # close connection
-                    ssl_sock.close()  ###TEST
+                    ssl_sock.close()  
                 except:
                     #Could not make connection or send message
-                    #_Logger.debug('Error making connection or sending message to <%s>'%self.name)
-                    logger.write_line('Error making connection or sending message to <%s>'%self.name) ###TEST
+                    logger.write_line('Error making connection or sending message to <%s>'%self.name)
                 time.sleep(0.05)
             elif message == 'Error, it appears this person has timed out.':
                 print message
-                #_Logger.debug('Sending message to <%s>: "%s"'%(self.name,message))
-                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message)) ###TEST
+                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
                 _OutThreads[self.name] = False
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem')
@@ -546,13 +528,11 @@ class PlayerOutput(threading.Thread):
                     RAProtocol.sendMessage(message, ssl_sock)
                     ssl_sock.close()
                 except:
-                    #_Logger.debug('Failed to either connect or send a message to <%s> after timeout.'%self.name)
-                    logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%self.name) ###TEST
+                    logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%self.name)
                 time.sleep(0.05)
         if not _OutThreads[self.name]: #This thread will no longer be running...
             print 'Output thread for player <%s> ending.' % self.name
-            #_Logger.debug('Output thread for player <%s> ending.'%self.name)
-            logger.write_line('Output thread for player <%s> ending.'%self.name) ###TEST
+            logger.write_line('Output thread for player <%s> ending.'%self.name)
             del _OutThreads[self.name] #So we delete the tracker for it.
 
 
