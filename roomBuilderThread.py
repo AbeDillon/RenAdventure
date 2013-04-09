@@ -25,16 +25,18 @@ class BuilderThread(threading.Thread):
         self.room_coords = room_coords
         self.player_name = player_name
         self.prototype = {}
+        # I think we should have a build ID instance to follow through logger file.  ?##?
+        #self.logger = Q2logging.out_file_instance('logs/builder/'+player_name)
         if self.type == "room":
             self.prototype["name"] = room_coords
-        # I think we should have a build ID instance to follow through logger file.  ?##?
-        logger = Q2logging.out_file_instance('logs/builder/player_name')
-        logger.writeline( 'Builder Initiated ' +time()+ ', Player = '+ self.player_name + ', Build Type = '+ self.type )
+        
+        
         
     def run(self):
         """
         
         """
+        #logger.write_line( 'Builder Initiated ' +time()+ ', Player = '+ self.player_name + ', Build Type = '+ self.type )
         if self.type == "room":
             self.buildRoom()
         elif self.type == "portal":
@@ -51,21 +53,21 @@ class BuilderThread(threading.Thread):
         text = textwrap.fill('In this module you will be building a "room" or "area" to your liking with some limits of course.  '
                         'We will walk you through the process of building and populating the room with things like Portals, '
                         'Containers, Items, and some other stuff.  So lets get started.', width=100).strip()
-        logger.write_line(self.player_name+ ' entered build room Function. , ' +time())               
+        #self.logger.write_line(self.player_name+ ' entered build room Function. , ' +time())               
         self.send_message_to_player(text)
-        logger.write_line(self.player_name+ ' sent to addDescription Function. , ' +time())
+        #self.logger.write_line(self.player_name+ ' sent to addDescription Function. , ' +time())
         self.addDescription()
-        logger.write_line(self.player_name+ ' sent to addPortals Function. , ' +time())
+        #self.logger.write_line(self.player_name+ ' sent to addPortals Function. , ' +time())
         self.addPortals()
-        logger.write_line(self.player_name+ ' sent to addItems Function. , '+time())
+        #self.logger.write_line(self.player_name+ ' sent to addItems Function. , '+time())
         self.addItems()
-        logger.write_line(self.player_name+ ' skips NPC attritbutes WE NEED BUIDLER/SELECTOR. , '+time())
+        #self.logger.write_line(self.player_name+ ' skips NPC attritbutes WE NEED BUIDLER/SELECTOR. , '+time())
         #add functionality for placing NPCs
-        logger.write_line(self.player_name+ ' sent to reviewObject function. , '+time())
+        #self.logger.write_line(self.player_name+ ' sent to reviewObject function. , '+time())
         self.reviewObject()
-        logger.write_line(self.playername+ ' sent to makeRoom function. , '+time())
+        #self.logger.write_line(self.playername+ ' sent to makeRoom function. , '+time())
         self.makeRoom()
-        logger.write_line(self.playername+ ' exited room builder. , '+time())
+        #self.logger.write_line(self.playername+ ' exited room builder. , '+time())
     
     def buildPortal(self, direction=""):
         """
@@ -662,7 +664,7 @@ class BuilderThread(threading.Thread):
         self.send_message_to_player("Your "+self.type+" has been built.")
         
         #add room to list of rooms
-        engine._Rooms[self.coords()] = room
+        engine._Rooms[self.room_coords()] = room
         
         # send messsage to game_cmd_queue signaling done with builder.
         self.game_cmd_queue.put((self.player_name, 'done_building'))
