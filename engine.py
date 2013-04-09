@@ -314,7 +314,6 @@ def command_thread():
     while _StillAlive:
         if not _CommandQueue.empty():
             command = _CommandQueue.get()
-            print command
             player_name = command[0]
             command_str = command[1]
             tags = command[2]
