@@ -1,4 +1,1 @@
-<room desc="An old dining hall.">
-<portal>door7</portal>
-<item>kanye west's sunglasses</item>
-</room>
+<room desc="The street along the side of the mental hospital."><portal>room15_n</portal><portal>room15_w</portal><portal>room15_e</portal></room>

@@ -1,7 +1,1 @@
-<?xml version="1.0"?>
-<room desc="An abandoned warehouse building.">
-<portal>door2</portal>
-<portal>door3</portal>
-<portal>large door</portal>
-<item>key</item>
-</room>
+<room desc="The intersection at the center of town."><portal>room1_e</portal><portal>room1_n</portal><portal>room1_w</portal><portal>room1_s</portal></room>

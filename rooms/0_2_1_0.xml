@@ -1,3 +1,1 @@
-<room desc="An empty room.">
-<portal>door6</portal>
-</room>
+<room desc="Road beside Val-mart."><portal>room6_w</portal><portal>room6_n</portal><portal>room6_s</portal></room>
