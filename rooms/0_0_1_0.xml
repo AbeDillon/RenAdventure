@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<room desc="An abandoned warehouse building.">
+<portal>door2</portal>
+<portal>door3</portal>
+<portal>large door</portal>
+<item>key</item>
+</room>
