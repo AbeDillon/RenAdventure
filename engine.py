@@ -244,10 +244,9 @@ def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4,
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        senses = {'sight': True,
-                  'sound': True,
-                  'smell': True,
-                  'see_dead_people': False}
+        senses = {'sight': 0,
+                  'sound': 0,
+                  'smell': 0}
         player = Player(name, coords, coords, affiliation, senses)
 
     _Characters_Lock.acquire()

@@ -264,7 +264,7 @@ def sense_filter(player, message):
         while sound_count > 0: #We still have sound tags to look for and remove.
             start = sound_start
             end = sound_end
-            if player.senses['sound'] == False: #This one is impaired
+            if player.senses['sound'] > 0: #This one is impaired
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -283,7 +283,7 @@ def sense_filter(player, message):
         while smell_count > 0: #We still have smell tags to look for and remove.
             start = smell_start
             end = smell_end
-            if player.senses['smell'] == False: #This one is impaired
+            if player.senses['smell'] > 0: #This one is impaired
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -300,7 +300,7 @@ def sense_filter(player, message):
 
 
     state_sense = player.senses['sight']
-    if state_sense == False: #Impaired vision
+    if state_sense > 0: #Impaired vision
         sound_count = message.count("<sound>")
         if "<sound>" in temp:
             sound_start = temp.index("<sound>")
@@ -974,12 +974,12 @@ def hide(room, player, object, noun, tags):
 
 def lose_sense(room, player, object, noun, tags):
     if noun in player.senses:
-        player.senses[noun] = False
+        player.senses[noun] += 1
 
     return []
 
 def gain_sense(room, player, object, noun, tags):
     if noun in player.senses:
-        player.senses[noun] = True
+        player.senses[noun] -= 1
 
     return []
