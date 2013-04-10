@@ -387,7 +387,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line(str(name)+' accepted written to '+str(self.type)+ ' prototype')
         
         self.send_message_to_player(str(self.prototype))
-        self.logger('exiting addName function')
+        self.logger.write_line('exiting addName function')
 
     def checkName(self):
         """
@@ -403,7 +403,7 @@ class BuilderThread(threading.Thread):
         exist_flag = False
         self.logger.write_line('checking non NPC type')
         engine._Characters_Lock.acquire()
-        self.write_line('characters lock acquired')
+        self.logger.write_line('characters lock acquired')
         if name in engine._Characters:
             exist_flag = True
         engine._Characters_Lock.release()  
@@ -411,7 +411,7 @@ class BuilderThread(threading.Thread):
         
         if exist_flag == False:
             engine._Objects_Lock.acquire()
-            self.write_line('objects lock acquired')
+            self.logger.write_line('objects lock acquired')
             if name in engine._Objects:            
                 exist_flag = True                        
             engine._Objects_Lock.release()
@@ -452,7 +452,7 @@ class BuilderThread(threading.Thread):
         
         self.prototype['inspection_description'] = i_desc
         self.send_message_to_player(str(self.prototype))
-        self.logger.write_line('prototype[inspection_description] = '+str(self.prototype['inpsection_description']+ ' exiting addInspectionDescription'))        
+        self.logger.write_line('prototype[inspection_description] = '+str(self.prototype['inspection_description']+ ' exiting addInspectionDescription'))        
         
     def getDirection(self):
         """
@@ -577,16 +577,16 @@ class BuilderThread(threading.Thread):
                 check_name = self.checkName() # check name returns Tuple (name, T/F)
                 name = check_name[0]
                 flag = check_name[1]
-                self.logger.write_line('Check name parsed = ' +name+ ' ' +flag)
+                self.logger.write_line('Check name parsed = ' +str(name)+ ' ' +str(flag))
                 if flag == True: #name was accepted
                     key = name
                     self.prototype['key'] = key
-                    accept = '\n' + textwrap.fill('The '+name+ ' is now the key to your '+orig_type+'.', width=100).strip()        
+                    accept = '\n' + textwrap.fill('The '+str(name)+ ' is now the key to your '+str(orig_type)+'.', width=100).strip()        
                     self.logger.write_line('name accepted prototype[key] = '+str(self.prototype['key']))
                     self.send_message_to_player(accept)
                     ans = 'keyless' #break loop
                 else:
-                    deny = '\n' +textwrap.fill('We cannot find '+name+'.  You will have to try again.', width=100).strip()
+                    deny = '\n' +textwrap.fill('We cannot find '+str(name)+'.  You will have to try again.', width=100).strip()
                     self.send_message_to_player(deny)
                     self.logger.write_line('name not accepted.')
                     
@@ -631,7 +631,7 @@ class BuilderThread(threading.Thread):
         else:
             self.prototype['portable'] = False
         
-        self.logger.write_line('exiting isPortable with prototype[portable] = '+self.prototype['portable'])    
+        self.logger.write_line('exiting isPortable with prototype[portable] = '+str(self.prototype['portable']))    
         self.send_message_to_player(str(self.prototype))
             
     def isHidden(self):
@@ -639,7 +639,7 @@ class BuilderThread(threading.Thread):
         Function sets hidden state
         """
         self.logger.write_line('entered isHidden function')
-        hidden_text = '\n' + textwrap.fill('This ' +self.type+ ' can be [h]idden or [v]isible.  Which do you prefer?',  width=100).strip()
+        hidden_text = '\n' + textwrap.fill('This ' +str(self.type)+ ' can be [h]idden or [v]isible.  Which do you prefer?',  width=100).strip()
         valid_responses = (('hidden', 'h'), ('visible', 'v'))
         
         hidden_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
@@ -650,7 +650,7 @@ class BuilderThread(threading.Thread):
         else:
             self.prototype['hidden'] = False
         
-        self.logger.write_line('exiting isHidden with prototype[hidden] = '+self.prototype['hidden'])    
+        self.logger.write_line('exiting isHidden with prototype[hidden] = '+str(self.prototype['hidden']))    
         self.send_message_to_player(str(self.prototype))
     
     def isContainer(self):
@@ -661,14 +661,14 @@ class BuilderThread(threading.Thread):
         container_text = '\n' + textwrap.fill('Items can be containers that hold other items. Do you want to make it a container?  [y]es or [n]o',  width=100).strip()
                 
         container_state = self.get_valid_response(container_text)
-        self.logger.write_line('input recieved = '+container_state)
+        self.logger.write_line('input recieved = '+str(container_state))
         
         if container_state == "yes":
             self.prototype['container'] = True
         else:
             self.prototype['container'] = False
             
-        self.logger.write_line('exiting isContainer with prototype[container] = '+self.prototype['container'])
+        self.logger.write_line('exiting isContainer with prototype[container] = '+str(self.prototype['container']))
         self.send_message_to_player(str(self.prototype))
             
     def addPortals(self):
@@ -679,17 +679,18 @@ class BuilderThread(threading.Thread):
         portals = {}
         #  confirm they want to add portal(s)
         portal_text = '\n' + textwrap.fill('Portals (doors) can be added to your room. Do you want to add portal?  [y]es or [n]o',  width=100).strip()
-        more_portal = '\n' + textwrap.fill('Do you want to add another Portal?  [y]es or [n]o')
-               
-        self.logger.write_line('make portal? input recieved =' +str(ans))   
+        more_portal = '\n' + textwrap.fill('Do you want to add another Portal?  [y]es or [n]o')               
+          
         # save the current room prototype because calling the buildPortal function will clobber it
         temp_prototype = copy.deepcopy(self.prototype)
         temp_type = copy.copy(self.type)
         self.logger.write_line('prototype & type copied as ' +str(temp_type) + ' & ' + str(temp_prototype))
+        ans = self.get_valid_response(portal_text) # default is yes/no 
         
         while True: 
             if ans == 'yes':                             
-                ans = self.get_valid_response(portal_text) # default is yes/no 
+                
+                self.logger.write_line('make portal? input recieved =' +str(ans))
                 self.type = "portal"
                 self.prototype = {}
                 # build a new portal
@@ -743,16 +744,16 @@ class BuilderThread(threading.Thread):
                 check_name = self.checkName() # check name returns Tuple (name, bool (T/F))
                 name = check_name[0]
                 flag = check_name[1]
-                self.logger.write_line('input received and parsed name = '+name+' flag = '+flag)
+                self.logger.write_line('input received and parsed name = '+str(name)+' flag = '+str(flag))
                 if flag == True: #name was accepted
                     #append name to item dict
                     items[name] = items.get(name, 0) + 1
-                    accept = '\n' + textwrap.fill('The '+name+ ' has been added to your '+temp_type+'.', width=100).strip()        
+                    accept = '\n' + textwrap.fill('The '+str(name)+ ' has been added to your '+str(temp_type)+'.', width=100).strip()        
                     self.send_message_to_player(accept)
                     self.logger.write_line(name+' existed added to items dict which looks like... '+str(items))
                     ans = 'exit'
                 else:
-                    deny = '\n' +textwrap.fill('We cannot find the '+name+', try again.', width=100).strip()
+                    deny = '\n' +textwrap.fill('We cannot find the '+str(name)+', try again.', width=100).strip()
                     self.send_message_to_player(deny)
                     self.logger.write_line('name not found.')
                     
@@ -767,11 +768,11 @@ class BuilderThread(threading.Thread):
                 self.buildItem()
                 # capture the item's name
                 name = self.prototype["name"]
-                self.logger.write_line('returned to addItems from buildItem, capture name = '+ name)
+                self.logger.write_line('returned to addItems from buildItem, capture name = '+ str(name))
                 # add that item to the list of items
                 items[name] = items.get(name, 0) + 1
                 self.logger.write_line('item added to Items dict which now looks like.... ' + str(items))
-                item_text2 = '\n' +textwrap.fill('Your ' + self.type + ' has been added to ' +temp_type+ ' list. Now what do you want to do?', width= 100).strip()
+                item_text2 = '\n' +textwrap.fill('Your ' + str(self.type) + ' has been added to ' +str(temp_type)+ ' list. Now what do you want to do?', width= 100).strip()
                 self.send_message_to_player(item_text2)
                 # restore original prototype
                 self.prototype = temp_prototype
@@ -784,14 +785,14 @@ class BuilderThread(threading.Thread):
         self.type = temp_type
         # add the items to the prototype
         self.prototype['items'] = items
-        self.logger.write_line('type restored to temp_type ('+temp_type+'), items written to prototype[items] ='+str(self.prototype['items']) )
+        self.logger.write_line('type restored to temp_type ('+str(temp_type)+'), items written to prototype[items] ='+str(self.prototype['items']) )
         
     def reviewObject(self):
         """
         function to display the object created and allow for the player to make edits.
         """
         self.logger.write_line('enter reviewObject function')
-        self.send_message_to_player('Here is a look at the characteristics of your '+self.type+'.')
+        self.send_message_to_player('Here is a look at the characteristics of your '+str(self.type)+'.')
         self.logger.write_line('send to printObject function')
         self.printObject()
         
@@ -816,7 +817,7 @@ class BuilderThread(threading.Thread):
         parses the current protoype dict and instantiates a room
         """
         self.logger.write_line('arrive makeRoom function')
-        self.send_message_to_player('Your '+self.type+' is being built.')
+        self.send_message_to_player('Your '+str(self.type)+' is being built.')
         
         desc = self.prototype['description']
         portals = self.prototype['portals']
@@ -827,7 +828,7 @@ class BuilderThread(threading.Thread):
         
         room = engine.Room(desc, portals, items, players, npcs)
         self.logger.write_line(str(self.type) + ' instantiated @ ' +str(room)+ 'as ' + str(self.prototype))
-        self.send_message_to_player("Your "+self.type+" has been built.")
+        self.send_message_to_player("Your "+str(self.type)+" has been built.")
         
         #add room to list of rooms
         # NEED LOCKS OR QUEUE FOR THIS
@@ -935,7 +936,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('enter get_cmd_from_player function.')
         command = self.cmd_queue.get()
         message = command[1]
-        self.logger.write_line('command recieved = '+command+' message = '+ message+', exiting get_cmd_from_player')
+        self.logger.write_line('command recieved = '+str(command)+' message = '+ str(message)+', exiting get_cmd_from_player')
         return message
 
     def send_message_to_player(self, message):
@@ -948,4 +949,4 @@ class BuilderThread(threading.Thread):
         
         self.msg_queue.put(message_tuple)
         
-        slef.logger.write_line('message sent to player = '+message_tuple+' message printed = '+message)
+        self.logger.write_line('message sent to player = '+str(message_tuple)+' message printed = '+str(message))
