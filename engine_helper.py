@@ -158,7 +158,9 @@ def parse_command(command, tags):
                           'n': 'go north',
                           's': 'go south',
                           'w': 'go west',
-                          'e': 'go east'}
+                          'e': 'go east',
+                          'u': 'go up',
+                          'd': 'go down'}
 
     translate_verb = {'look': 'look',
                       'l': 'look',
