@@ -229,7 +229,6 @@ def npc_action(npc):
             engine.put_commands([command])
 
 def filter_messages(messages):
-    print messages
     filtered_messages = []
 
     for player_name, message in messages:
@@ -857,7 +856,7 @@ def shout(room, player, object, noun, tags):
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
         for j in range(-2,3):
-            bubble_coords.append((player.coords[0]+i, player.coords[1]+j, player.coords[2]))
+            bubble_coords.append((player.coords[0]+i, player.coords[1]+j, player.coords[2], player.coords[3]))
 
     trimmed_bubble = []
     for coords in bubble_coords: # Remove coords from the bubble that don't have room with players in them
@@ -913,10 +912,10 @@ def damage(room, attacker, object, noun, tags):
 
             # Reset player
             player.fih = 30
-            player.coords = (0,0,1)
+            player.coords = (0,0,1,0)
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
-            text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
+            text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
             messages.append((player.name, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
 
         text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this

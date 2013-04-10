@@ -181,14 +181,14 @@ def init_game(save_state = 0):
     for filename in os.listdir(directory):
         path = directory + '/' + filename
         split_name = filename.split('_')
-        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
+        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2]), int(split_name[3].replace('.xml', '')))
 
         _Rooms[coords] = loader.load_room(path)
-        logger.write_line("Loaded room at (%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], path))
+        logger.write_line("Loaded room at (%d,%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], coords[3], path))
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-    kanye = NPC('@mr_kanyewest', (0,2,1), affiliation)
+    kanye = NPC('@mr_kanyewest', (0,2,1,0), affiliation)
     _NPCBucket.append(kanye)
 
     thread.start_new_thread(command_thread, ())
@@ -228,7 +228,7 @@ def shutdown_game():
             loader.save_objects(objects, directory) # Save all objects in the game
 
             for coords in _Rooms: # Save the rooms to the save state directory
-                path = directory + 'rooms/%d_%d_%d.xml' % coords
+                path = directory + 'rooms/%d_%d_%d_%d.xml' % coords
                 loader.save_room(_Rooms[coords], path)
 
             logger.write_line("Saved game state to '%s'" % directory)
@@ -236,7 +236,7 @@ def shutdown_game():
         else:
             save_num += 1
 
-def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
+def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
     global _Rooms
     global _Characters
 
@@ -256,7 +256,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
 
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
-    logger.write_line("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+    logger.write_line("Created player '%s' at (%d,%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2], player.coords[3]))
 
 def remove_player(name):
     global _Rooms
@@ -330,7 +330,7 @@ def command_thread():
 
                     _MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords)))   # Put room description in the message queue
 
-                    logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d, %d, %d)." % player.coords)
+                    logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d,%d,%d,%d)." % player.coords)
                 else:
                     _BuilderQueues[player_name].put(command)
     

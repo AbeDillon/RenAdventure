@@ -265,7 +265,7 @@ class Login(threading.Thread):
                     fin = open(path, 'w')
                     fin.write(player_pass)
                     fin.close()
-                    location = (0,0,1)
+                    location = (0,0,1,0)
                     logged_in = True
                     _Logged_in.append(player_name)
                 

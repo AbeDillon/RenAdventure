@@ -9,8 +9,8 @@ def load_player(path):
     xml = ET.parse(path)
     root = xml.getroot()
     
-    player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
-    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']))
+    player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']), int(root.attrib['a']))
+    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']), int(root.attrib['prev_a']))
     player_attributes['fih'] = int(root.attrib['fih'])
     player_attributes['name'] = root.attrib['name']
     player_attributes['items'] = []
@@ -73,11 +73,11 @@ def load_item(root):
 # Loads a portal from a node
 def load_portal(root):
     portal_attributes = {}
-    portal_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
+    portal_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']), int(root.attrib['a']))
     portal_attributes['scripts'] = {}
 
     for attribute in root.attrib:
-        if attribute not in 'xyz': # Ignore the coordinate attributes
+        if attribute not in 'xyza': # Ignore the coordinate attributes
             value = root.attrib[attribute]
             if value.isdigit():
                 value = bool(int(value))
@@ -137,9 +137,11 @@ def save_player(player):
     attributes['x'] = str(player.coords[0])
     attributes['y'] = str(player.coords[1])
     attributes['z'] = str(player.coords[2])
+    attributes['a'] = str(player.coords[3])
     attributes['prev_x'] = str(player.prev_coords[0])
     attributes['prev_y'] = str(player.prev_coords[1])
     attributes['prev_z'] = str(player.prev_coords[2])
+    attributes['prev_a'] = str(player.prev_coords[3])
     attributes['name'] = player.name
     attributes['fih'] = str(player.fih)
 
@@ -211,6 +213,7 @@ def create_portal_node(portal):
     attributes['x'] = str(portal.coords[0])
     attributes['y'] = str(portal.coords[1])
     attributes['z'] = str(portal.coords[2])
+    attributes['z'] = str(portal.coords[3])
     attributes['direction'] = portal.direction
     attributes['desc'] = portal.desc
     attributes['inspect_desc'] = portal.inspect_desc
