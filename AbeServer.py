@@ -14,9 +14,14 @@ import Q2logging
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
+# _Player_Locations = {} #{playername: location} where location is "Lobby" or the name of a running world instance? ###IP
+# _Player_Loc_Lock = threading.RLock() #Lock for player locations dict. ###IP
+
 _Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
+
+#_Lobby_Queue = Queue.Queue() #Queue of Player chatting/commands for lobby? ###IP
 
 _MSG_Queue = Queue.Queue()
 
@@ -402,6 +407,23 @@ class PlayerInput(threading.Thread):
 
             # add it to the queue
             if message != 'quit':
+                # _Player_Loc_Lock.acquire() ###IP
+                # location = _Player_Locations.get(self.name, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
+                # _Player_Loc_Lock.release() ###IP
+                
+                # if location == 'lobby': #Player is in the lobby ###IP
+                    # try:
+                        # pass #Put player message in the message queue for the lobby
+                    # except:
+                        # pass
+                # elif location == 'world1': #Player is in the game instance known as world1 ###IP
+                    # try:
+                        # _CMD_Queue.put((self.name, message))
+                        # logger.write_line('Putting in the command queue: <%s>; "%s"'%(self.name, message))
+                    # except:
+                        # pass
+                        
+                        
                 try:
                     _CMD_Queue.put((self.name, message))
                     logger.write_line('Putting in the command queue: <%s>; "%s"' % (self.name, message))
@@ -495,13 +517,6 @@ class PlayerOutput(threading.Thread):
                 pass
             if message != "" and message != 'Error, it appears this person has timed out.':
                 print message
-                #if "<sight>" in message: #Some identifier that the sense of sight is involved ###DIRECTIVE
-                    #pass
-                    #sense_state = player.sight
-                    #if sense_state == 'impaired':
-                        #Do something to replace part of the sentence with ellipses?
-                    #elif sense_state == 'blind':
-                        #Do something to replace the whole message with ellipses?
                     
                 logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
