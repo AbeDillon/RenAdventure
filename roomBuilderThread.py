@@ -5,7 +5,8 @@ import time
 import copy
 import engine
 import Q2logging
-
+import twitter
+import os
 
 
 class BuilderThread(threading.Thread):
@@ -153,7 +154,6 @@ class BuilderThread(threading.Thread):
         
         #Container
         self.isContainer()
-        
 
         if self.prototype['container'] == True:
             #locked
@@ -197,8 +197,14 @@ class BuilderThread(threading.Thread):
         
         # Get starting coords
         self.getValidCoords()
+        self.logger.write_line('send to getTwitter function')
         
         #Twitter handle
+        self.getTwitter()
+        self.logger.write_line('send to getAffiliation function')
+        
+        # affiliation
+        self.getAffiliation()
     
     def buildScripts(self):
         """
@@ -454,6 +460,39 @@ class BuilderThread(threading.Thread):
         self.send_message_to_player(str(self.prototype))
         self.logger.write_line('prototype[inspection_description] = '+str(self.prototype['inspection_description']+ ' exiting addInspectionDescription'))        
         
+    def getAffiliation(self):
+        """function to assign affilliatons for NPC.  Possible to use it for players also."""
+        
+        self.logger.write_line('enter getAffiliation function')
+        entry_text = '\n'+textwrap.fill('We need you to place these 5 people in order of how well your %s likes these people.  1 will represent the '
+                                        'person your %s likes the most 5 will be the one they like the least.  each number can only be used one time.'
+                                        'Those people are...'%(self.type, self.type), width=100).strip()
+        
+        affiliation = {}
+        aff_list = ['Obama', 'Kanye', 'O''Rielly', 'Gotfried', 'Burbiglia']
+        num_list = [1,2,3,4,5]
+        
+        self.send_message_to_player(entry_text+'\n')
+        for name in aff_list: #loop just to print 
+            self.send_message_to_player(name)        
+        self.logger.write_line('begin affiliation ranking')
+        for name in aff_list: # loop for input
+            rank_text = '\n'+ textwrap.fill('Please rank %s from 1 to 5,  with 1 being your favorite and 5 your least favorite.'%name, width=100)
+            self.send_message_to_player(rank_text)
+            ans= self.get_cmd_from_player()
+            self.logger.write_line('name = %s, ans = %d') % (name, ans)
+            while ans not in num_list:
+                self.send_message_to_player('Invlaid response.  Each number can only be used once.  Try again\n')                
+                self.send_message_to_player(rank_text)
+                ans= self.get_cmd_from_player()
+                self.logger.write_line('ans = %d, not valid or available prompt again.')%ans
+            affiliation[name] = ans
+            num_list.remove(ans)
+            self.logger.write_line('affiliation written = %s : %s')% (name, str(affiliation[name])
+        
+        self.prototype['affiliation'] = affiliation   
+        self.logger.write_line('getAffiliations complete exiting function with prototype[affiliations] = %s')% str(self.prototype['affiliations'])
+    
     def getDirection(self):
         """
         function to get desired direction
@@ -471,7 +510,57 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('returning '+str(direction)+ ' exiting getDirection function')
         return direction
 
-    
+    def getTwitter(self):
+        """ Function to get a valid Twitter user handle
+        creates file for valid handle that crawler accesses and writes to """ 
+        
+        self.logger.write_line('entered getTwitter function')
+        
+        self.logger.write_line('make list of Twitter Handles we already crawl')
+        path = (os.listdir(os.getcwd() + "\\twitterFeeds"))
+        handles = []
+        
+        for filename in path:
+            name = filename.lower().split('.')
+            name = name[0]
+            handles.append(name)
+            self.logger.write_line('Appended the handle %s to the handles list' % name)
+        self.logger.write_line('END OF HANDLES LIST')
+        
+        handle_text = '\n'+textwrap.fill('Enter a valid twitter handle for this Non Player Character.', width = 100)
+        accept_text = '\n'+textwrap.fill('The Twitter handle ' +str(handle)+ ' has been validated and accepted.')
+        deny_text = '\n'+textwrap.fill('The Twitter handle ' +str(handle)+ ' cannot be validated try again.')
+        
+        # get handle
+        while True:    
+            valid_handle = False
+            self.send_message_to_player(handle_text)
+            handle = self.get_cmd_from_player().lower() #twitter handles are all lower...itized  :-)
+            if handle in handles:
+                #name already being scraped break validation loop
+                break
+            if handle not in handles:
+                #check twitter
+                try:  # twitter api throws error if name does not exist
+                    api = twitter.Api()
+                    api.GetUser(str(handle))
+                    self.logger.write_line(str(handle)+ ' validated as twitter handle')
+                    valid_handle = True               
+                except:
+                    self.logger.write_line(str(handle)+ ' does not validate with twitter')
+                    pass
+                                            
+            if valid_handle == True:
+                # make file in \\twitterfeeds
+                fout = open('twitterFeeds\\' + str(handle) + '.txt', 'a')
+                self.logger.write_line('file created for crawler at twitterFeeds\\'+str(handle)+'.txt')
+                fout.close()
+                break
+
+        self.prototype['twitter'] = str(handle)        
+        self.send_message_to_player(accept_text)
+        self.logger.write_line('exiting getTwitter function, prototype[twitter] = '+self.prototype['twitter'])
+        
     def getValidCoords(self):
         """
         function to get valid Coords
