@@ -504,7 +504,7 @@ class BuilderThread(threading.Thread):
         
         self.logger.write_line('arrive getDirection function')
         dir_text = '\n' + textwrap.fill('Specify the direction the portal leads ([n]orth, [s]outh, [e]ast, [w]est, [u]p, [d]own, [i]n, or [o]ut).',  width=100).strip()
-        valid_responses = (("north", "n"), ("south", "s"), ("east", "e"), ("west", "w"), ("in", "i"), ("out", "o"))
+        valid_responses = (("north", "n"), ("south", "s"), ("east", "e"), ("west", "w"), ('up', 'u'), ('down', 'd'), ("in", "i"), ("out", "o"))
         
         direction = self.get_valid_response(dir_text, validResponses = valid_responses)
         
