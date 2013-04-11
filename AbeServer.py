@@ -14,9 +14,14 @@ import Q2logging
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
+# _Player_Locations = {} #{playername: location} where location is "Lobby" or the name of a running world instance? ###IP
+# _Player_Loc_Lock = threading.RLock() #Lock for player locations dict. ###IP
+
 _Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
+
+#_Lobby_Queue = Queue.Queue() #Queue of Player chatting/commands for lobby? ###IP
 
 _MSG_Queue = Queue.Queue()
 
@@ -402,6 +407,24 @@ class PlayerInput(threading.Thread):
 
             # add it to the queue
             if message != 'quit':
+                # _Player_Loc_Lock.acquire() ###IP
+                # location = _Player_Locations[self.name] #Get whether player is in "Lobby" or a world? ###IP
+                # _Player_Loc_Lock.release() ###IP
+                
+                # if location == 'lobby': #Player is in the lobby ###IP
+                    # try:
+                        # pass
+                        #Put player message in the message queue for the lobby?
+                    # except:
+                        # pass
+                # elif location == 'world1': #Player is in the game instance known as world1 ###IP
+                    # try:
+                        # _CMD_Queue.put((self.name, message))
+                        # logger.write_line('Putting in the command queue: <%s>; "%s"'%(self.name, message))
+                    # except:
+                        # pass
+                        
+                        
                 try:
                     _CMD_Queue.put((self.name, message))
                     logger.write_line('Putting in the command queue: <%s>; "%s"' % (self.name, message))
