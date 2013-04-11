@@ -20,10 +20,14 @@ class feedGetter(threading.Thread):
         """
         Scrapes twitter for (count) number of tweets.  It likely won't return that many.  They are returned as classes.
         """
-        statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
-        self.twitterSave(statuses)
-        logger.write_line('Init thread to get tweets for %s ' % self.user)
-
+        try: # Try added to prevent breakage on twitter handles that dissappear (deleted)
+            statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
+            self.twitterSave(statuses)
+            logger.write_line('Init thread to get tweets for %s ' % self.user)
+        except:
+            logger.write_line('twitter object failed for %s' %self.user)
+            pass
+        
         return None
 
     # twitter.api returns the data as a class.  twittersave strips out
