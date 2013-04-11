@@ -104,13 +104,13 @@ class Player:
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, prev_coords, affiliation, senses, items = {}, fih = 30):
+    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30):
         self.name = name.lower()
         self.coords = coords
         self.prev_coords = prev_coords
         self.fih = fih
         self.affiliation = affiliation
-        self.senses = senses
+        self.sense_effects = sense_effects
 
         self.items = {}
         for item in items:
@@ -258,10 +258,7 @@ def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4,
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        senses = {'sight': 0,
-                  'sound': 0,
-                  'smell': 0}
-        player = Player(name, coords, coords, affiliation, senses)
+        player = Player(name, coords, coords, affiliation)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game

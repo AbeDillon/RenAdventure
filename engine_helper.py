@@ -1,17 +1,10 @@
 __author__ = 'EKing'
 
-import engine, roomBuilderThread
-import thread, threading, random
+import engine, roomBuilderThread # sense_effect_filters
+import threading, random
 import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
-
-_Stack_Probability = {0: 0,
-                      1: 50,
-                      2: 65,
-                      3: 77,
-                      4: 87,
-                      5: 95}
 
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
@@ -237,235 +230,6 @@ def npc_action(npc):
             command = (npc.name, command_str, ['npc'])
             engine.put_commands([command])
 
-def filter_messages(messages):
-    filtered_messages = []
-
-    for player_name, message in messages:
-        engine._Characters_Lock.acquire()
-        player = engine._Characters[player_name]
-        engine._Characters_Lock.release()
-
-        if isinstance(player, engine.Player):
-            filtered_messages.append((player_name, sense_filter(player, message)))
-            
-        else:
-            filtered_messages.append((player_name, message))
-
-    return filtered_messages
-
-def sense_filter(player, message):
-    temp = message.split()
-    resp = ''
-    finished = False
-    
-    sound_count = message.count("<sound>")
-    if "<sound>" in temp:
-        sound_start = temp.index("<sound>") #Initially
-        sound_end = temp.index("</sound>") #initially
-
-    smell_count = message.count("<smell>")
-    if "<smell>" in temp:
-        smell_start = temp.index("<smell>") #Initially
-        smell_end = temp.index("</smell>") #initially
-    
-    if "<sound>" in temp:
-        while sound_count > 0: #We still have sound tags to look for and remove.
-            start = sound_start
-            end = sound_end
-            if player.senses['sound'] > 0: #This one is impaired
-                threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                for i in range(start+1, end-1):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...' #Does all filtering only between sound tags.
-            else: ###This sense is not impaired, do not mess with it.
-                break
-            sound_count = sound_count - 1
-            if sound_count > 0: #More sounds yet
-                sound_start = temp.index("<sound>", sound_start+1)
-                sound_end = temp.index("</sound>", sound_end+1)
-            else: 
-                sound_start = len(temp)
-                sound_end = len(temp)
-
-    if "<smell>" in temp:
-        while smell_count > 0: #We still have smell tags to look for and remove.
-            start = smell_start
-            end = smell_end
-            if player.senses['smell'] > 0: #This one is impaired
-                threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                for i in range(start+1, end-1):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...' #Filter only between smell tags
-            else: ###This sense is not impaired, stop messing with it now.
-                break
-            smell_count = smell_count - 1
-            if smell_count > 0: #More smells yet
-                smell_start = temp.index("<smell>", smell_start+1)
-                smell_end = temp.index("</smell>", smell_end +1)
-            else:
-                smell_start = len(temp)
-                smell_end = len(temp)
-
-
-    state_sense = player.senses['sight']
-    if state_sense > 0: #Impaired vision
-        sound_count = message.count("<sound>")
-        if "<sound>" in temp:
-            sound_start = temp.index("<sound>")
-            sound_end = temp.index("</sound>")
-        else:
-            sound_start = len(temp)
-            sound_end = len(temp)
-            
-        smell_count = message.count("<smell>")
-        if "<smell>" in temp:
-            smell_start = temp.index("<smell>")
-            smell_end = temp.index("</smell>")
-        else:
-            smell_start = len(temp)
-            smell_end = len(temp)
-        
-        ignore_count = message.count("<dont_filter>")
-        if "<dont_filter>" in temp:
-            ignore_start = temp.index("<dont_filter>")
-            ignore_end = temp.index("</dont_filter>")
-        else:
-            ignore_start = len(temp)
-            ignore_end = len(temp)
-
-        start = 0
-        while (sound_count > 0 and smell_count > 0 and ignore_count > 0) or not finished : #While we haven't finished filtering everying yet...
-            if sound_start < smell_start and sound_start < ignore_start: #We are starting by looking for a sound 
-                
-                end = sound_start
-                for i in range(start, end):
-                    threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                    print threshold
-                    test=random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = sound_end+1 #This is the next entry
-                sound_count = sound_count -1
-                if sound_count > 0:
-                    sound_start = temp.index("<sound>", sound_start+1) #Find the next occurrence of sound_start
-                    sound_end = temp.index("</sound>", sound_end+1) #Find the next occurrence of sound_end
-                else:
-                    sound_start = len(temp)
-                    sound_end = len(temp)
-
-            elif smell_start < sound_start and smell_start < ignore_start: #We are starting by looking for a smell
-                end = smell_start
-                for i in range(start, end):
-                    threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = smell_end+1
-                smell_count = smell_count -1
-                if smell_count > 0:
-                    smell_start = temp.index("<smell>", smell_start+1) #Find the next occurrence of smell_start
-                    smell_end = temp.index("</smell>", smell_end+1) #Find the next occurrence of smell_end
-                else:
-                    smell_start = len(temp)
-                    smell_end = len(temp)
-
-            elif ignore_start < sound_start and ignore_start < smell_start: #We are starting by looking for a don't filter tag.
-                end = ignore_start
-                for i in range(start, end):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = ignore_end +1
-                ignore_count = ignore_count -1
-                if ignore_count > 0:
-                    ignore_start = temp.index("<dont_filter>", ignore_start+1) #Look for next occurrence of <dont_filter>
-                    ignore_end = temp.index("</dont_filter>", ignore_end+1) #Find next occurrence of </dont_filter>
-                else:
-                    ignore_start = len(temp)
-                    ignore_end = len(temp)
-
-                    
-            else: #Other cases: All equal, 2/3 equal.
-                if ignore_start == smell_start and ignore_start == sound_start: #Then all are equal ###DEBUG
-                    end = len(temp)
-                    for i in range(start, end):
-                        threshold = _Stack_Probability.get(player.senses['sight'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                        print threshold
-                        test = random.randint(0, 99)
-                        if test <= threshold:
-                            temp[i] = '...' 
-                    finished = True
-                else: #Two of them are equal, one is not
-                    if ignore_start < smell_start and ignore_start < sound_start: #Ignore_start is the only one.
-                        end = ignore_start
-                        for i in range(start, end):
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = ignore_end+1
-                        ignore_count = ignore_count -1
-                        if ignore_count > 0:
-                            ignore_start = temp.index("<dont_filter>", ignore_start+1) #Look for the next occurrence 
-                            ignore_end = temp.index("</dont_filter>", ignore_end+1) 
-                        else:
-                            ignore_start = len(temp)
-                            ignore_end = len(temp)
-                        
-                    elif smell_start < ignore_start and smell_start < sound_start: #smell_start is the only one
-                        end = smell_start
-                        for i in range(start, end):
-                            threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = smell_end+1
-                        smell_count = smell_count -1
-                        if smell_count > 0:
-                            smell_start = temp.index("<smell>", smell_start+1)
-                            smell_end = temp.index("</smell>", smell_end+1)
-                        else:
-                            smell_start = len(temp)
-                            smell_end = len(temp)
-                            
-                    elif sound_start < smell_start and sound_start < ignore_start: #Sound_start is the only one
-                        end = sound_start
-                        for i in range(start, end):
-                            threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = sound_end+1
-                        sound_count = sound_count -1
-                        if sound_count > 0:
-                            sound_start = temp.index("<sound>", sound_start+1)
-                            sound_end = temp.index("</sound>", sound_end+1)
-                        else:
-                            sound_start = len(temp)
-                            sound_end = len(temp)
-                
-            if sound_count == 0 and smell_count == 0 and ignore_count == 0 and not finished:
-                for i in range(start, len(temp)): #Finish off the rest of the words
-                    threshold = _Stack_Probability.get(player.senses['sight'], 99) # Gets the appropriate threshold for the number of stacks on that sense
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                finished = True
-            
-    for i in range(0, len(temp)):
-        resp += temp[i]+' '
-
-    
-    resp = resp.replace("<sound>", '')
-    resp = resp.replace("</sound>", '')
-    resp = resp.replace("<smell>", '')
-    resp = resp.replace("</smell>", '')
-    resp = resp.replace("<dont_filter>", '')
-    resp = resp.replace("</dont_filter>", '')
-
-    return resp.strip()
-
 #Flags  'p' = portals
 #       'r' = room items
 #       'i' = player items
@@ -597,7 +361,7 @@ def look(room, player, object, noun, tags):
     else:
         text = object.inspect_desc
 
-    return filter_messages([(player.name, text)])
+    return [(player.name, text)]
 
 def take(room, player, object, noun, tags):
     alt_text = ''
@@ -623,7 +387,7 @@ def take(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def open(room, player, object, noun, tags):
     alt_text = ''
@@ -673,7 +437,7 @@ def open(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def go(room, player, object, noun, tags):
     alt_text = ''
@@ -729,7 +493,7 @@ def go(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, '%s has entered the room.' % player.name.title()))
 
-    return filter_messages(messages)
+    return messages
 
 def drop(room, player, object, noun, tags):
     alt_text = ''
@@ -755,7 +519,7 @@ def drop(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def unlock(room, player, object, noun, tags):
     alt_text = ''
@@ -797,7 +561,7 @@ def unlock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def lock(room, player, object, noun, tags):
     alt_text = ''
@@ -835,7 +599,7 @@ def lock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def inventory(room, player, object, noun, tags):
     if len(player.items) > 0:
@@ -862,7 +626,7 @@ def say(room, player, object, noun, tags):
             messages.append((alt_player, alt_text))
             #messages.append((alt_player, '<dont_filter>_play_ talking</dont_filter>')) # Needs a valid sound
 
-    return filter_messages(messages)
+    return messages
 
 def shout(room, player, object, noun, tags):
     text = "<sound> You shout %s </sound>" % noun
@@ -886,7 +650,7 @@ def shout(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def damage(room, attacker, object, noun, tags):
     messages = []
@@ -902,8 +666,8 @@ def damage(room, attacker, object, noun, tags):
 
         difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
 
-        if not player.senses['sound']: # Player can't hear very well, they take half damage
-            difference = difference/2
+#        if not player.senses['sound']: # Player can't hear very well, they take half damage
+#            difference = difference/2
 
         if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
             player.fih = 30
@@ -936,7 +700,7 @@ def damage(room, attacker, object, noun, tags):
         text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this
         messages.append((player.name, text))
 
-    return filter_messages(messages)
+    return messages
 
 def bad_command(room, player, object, noun, tags):
     messages = []
@@ -972,7 +736,7 @@ def reveal(room, player, object, noun, tags):
         for player in room.players:
             messages.append((player, text))
 
-    return filter_messages(messages)
+    return messages
 
 def hide(room, player, object, noun, tags):
     # Hides an object
@@ -985,7 +749,7 @@ def hide(room, player, object, noun, tags):
         for player in room.players:
             messages.append((player, text))
 
-    return filter_messages(messages)
+    return messages
 
 def lose_sense(room, player, object, noun, tags):
     if noun in player.senses:

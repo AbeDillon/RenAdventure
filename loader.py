@@ -15,16 +15,16 @@ def load_player(path):
     player_attributes['name'] = root.attrib['name']
     player_attributes['items'] = []
     player_attributes['affiliation'] = {}
-    player_attributes['senses'] = {}
+    player_attributes['sense_effects'] = {}
 
-    senses = ['sight', 'sound', 'smell']
+    affiliation_people = ['Obama', 'Kanye', 'OReilly', 'Gottfried', 'Burbiglia']
     for node in root:
         if node.tag == 'item':
             player_attributes['items'].append(node.text)
-        elif node.tag in senses:
-            player_attributes['senses'][node.tag] = int(node.text)
-        else:
+        elif node.tag in affiliation_people:
             player_attributes['affiliation'][node.tag] = int(node.text)
+        else:
+            player_attributes['sense_effects'][node.tag] = int(node.text)
 
     return engine.Player(**player_attributes)
     
@@ -154,8 +154,8 @@ def save_player(player):
         item_node = xml.XMLNode('item', value=item)
         child_nodes.append(item_node)
 
-    for sense in player.senses: # Create the sense nodes
-        sense_node = xml.XMLNode(sense, value=player.senses[sense])
+    for effect in player.sense_effects: # Create the sense nodes
+        sense_node = xml.XMLNode(effect, value=player.sense_effects[effect])
         child_nodes.append(sense_node)
 
     player_node = xml.XMLNode('player', attributes, children=child_nodes)
