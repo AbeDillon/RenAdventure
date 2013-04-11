@@ -400,6 +400,7 @@ class PlayerInput(threading.Thread):
         global _OutThreads
         global _Logger
         global _User_Pings
+        #global _Lobby_Queue
         # receive message
         message = RAProtocol.receiveMessage(conn)
 
@@ -413,7 +414,7 @@ class PlayerInput(threading.Thread):
                 
                 # if location == 'lobby': #Player is in the lobby ###IP
                     # try:
-                        # pass #Put player message in the message queue for the lobby
+                        # _Lobby_Queue.put((self.name, message))
                     # except:
                         # pass
                 # elif location == 'world1': #Player is in the game instance known as world1 ###IP
