@@ -467,28 +467,31 @@ class BuilderThread(threading.Thread):
         entry_text = '\n'+textwrap.fill('We need you to place these 5 people in order of how well your %s likes these people.  1 will represent the '
                                         'person your %s likes the most 5 will be the one they like the least.  each number can only be used one time.'
                                         'Those people are...'%(self.type, self.type), width=100).strip()
-        
+        #set "table" with lists/dicts to work with
         affiliation = {}
         aff_list = ['Obama', 'Kanye', 'O''Rielly', 'Gotfried', 'Burbiglia']
         num_list = [1,2,3,4,5]
-        
+        #Entry text
         self.send_message_to_player(entry_text+'\n')
         for name in aff_list: #loop just to print 
             self.send_message_to_player(name)        
+        #start ranking
         self.logger.write_line('begin affiliation ranking')
         for name in aff_list: # loop for input
             rank_text = '\n'+ textwrap.fill('Please rank %s from 1 to 5,  with 1 being your favorite and 5 your least favorite.'%name, width=100)
             self.send_message_to_player(rank_text)
             ans= self.get_cmd_from_player()
             self.logger.write_line('name = %s, ans = %d') % (name, ans)
-            while ans not in num_list:
+            while ans not in num_list: #if answer not available
                 self.send_message_to_player('Invlaid response.  Each number can only be used once.  Try again\n')                
+                # message and prompt again
                 self.send_message_to_player(rank_text)
                 ans= self.get_cmd_from_player()
                 self.logger.write_line('ans = %d, not valid or available prompt again.')%ans
+            # answer is available write to dict remove answer so cannot be used again
             affiliation[name] = ans
             num_list.remove(ans)
-            self.logger.write_line('affiliation written = %s : %s')% (name, str(affiliation[name])
+            self.logger.write_line('affiliation written = %s : %s')% (name, str(affiliation[name]))
         
         self.prototype['affiliation'] = affiliation   
         self.logger.write_line('getAffiliations complete exiting function with prototype[affiliations] = %s')% str(self.prototype['affiliations'])
