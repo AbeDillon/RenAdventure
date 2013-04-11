@@ -408,7 +408,7 @@ class PlayerInput(threading.Thread):
             # add it to the queue
             if message != 'quit':
                 # _Player_Loc_Lock.acquire() ###IP
-                # location = _Player_Locations[self.name] #Get whether player is in "Lobby" or a world? ###IP
+                # location = _Player_Locations.get(self.name, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
                 # _Player_Loc_Lock.release() ###IP
                 
                 # if location == 'lobby': #Player is in the lobby ###IP
@@ -517,13 +517,6 @@ class PlayerOutput(threading.Thread):
                 pass
             if message != "" and message != 'Error, it appears this person has timed out.':
                 print message
-                #if "<sight>" in message: #Some identifier that the sense of sight is involved ###DIRECTIVE
-                    #pass
-                    #sense_state = player.sight
-                    #if sense_state == 'impaired':
-                        #Do something to replace part of the sentence with ellipses?
-                    #elif sense_state == 'blind':
-                        #Do something to replace the whole message with ellipses?
                     
                 logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
