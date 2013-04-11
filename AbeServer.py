@@ -413,8 +413,7 @@ class PlayerInput(threading.Thread):
                 
                 # if location == 'lobby': #Player is in the lobby ###IP
                     # try:
-                        # pass
-                        #Put player message in the message queue for the lobby?
+                        # pass #Put player message in the message queue for the lobby
                     # except:
                         # pass
                 # elif location == 'world1': #Player is in the game instance known as world1 ###IP
