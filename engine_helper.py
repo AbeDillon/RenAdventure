@@ -6,6 +6,13 @@ import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
 
+_Stack_Probability = {0: 0,
+                      1: 50,
+                      2: 65,
+                      3: 77,
+                      4: 87,
+                      5: 95}
+
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -249,7 +256,6 @@ def filter_messages(messages):
 def sense_filter(player, message):
     temp = message.split()
     resp = ''
-    threshold = 50
     finished = False
     
     sound_count = message.count("<sound>")
@@ -267,6 +273,7 @@ def sense_filter(player, message):
             start = sound_start
             end = sound_end
             if player.senses['sound'] > 0: #This one is impaired
+                threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -286,6 +293,7 @@ def sense_filter(player, message):
             start = smell_start
             end = smell_end
             if player.senses['smell'] > 0: #This one is impaired
+                threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                 for i in range(start+1, end-1):
                     test = random.randint(0, 99)
                     if test <= threshold:
@@ -326,14 +334,15 @@ def sense_filter(player, message):
         else:
             ignore_start = len(temp)
             ignore_end = len(temp)
-            
-        #count = 0 ###DEBUG 
+
         start = 0
         while (sound_count > 0 and smell_count > 0 and ignore_count > 0) or not finished : #While we haven't finished filtering everying yet...
             if sound_start < smell_start and sound_start < ignore_start: #We are starting by looking for a sound 
                 
                 end = sound_start
                 for i in range(start, end):
+                    threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
+                    print threshold
                     test=random.randint(0, 99)
                     if test <= threshold:
                         temp[i] = '...'
@@ -349,6 +358,7 @@ def sense_filter(player, message):
             elif smell_start < sound_start and smell_start < ignore_start: #We are starting by looking for a smell
                 end = smell_start
                 for i in range(start, end):
+                    threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                     test = random.randint(0, 99)
                     if test <= threshold:
                         temp[i] = '...'
@@ -381,6 +391,8 @@ def sense_filter(player, message):
                 if ignore_start == smell_start and ignore_start == sound_start: #Then all are equal ###DEBUG
                     end = len(temp)
                     for i in range(start, end):
+                        threshold = _Stack_Probability.get(player.senses['sight'], 99) # Gets the appropriate threshold for the number of stacks on that sense
+                        print threshold
                         test = random.randint(0, 99)
                         if test <= threshold:
                             temp[i] = '...' 
@@ -404,6 +416,7 @@ def sense_filter(player, message):
                     elif smell_start < ignore_start and smell_start < sound_start: #smell_start is the only one
                         end = smell_start
                         for i in range(start, end):
+                            threshold = _Stack_Probability.get(player.senses['smell'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                             test = random.randint(0, 99)
                             if test <= threshold:
                                 temp[i] = '...'
@@ -419,6 +432,7 @@ def sense_filter(player, message):
                     elif sound_start < smell_start and sound_start < ignore_start: #Sound_start is the only one
                         end = sound_start
                         for i in range(start, end):
+                            threshold = _Stack_Probability.get(player.senses['sound'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                             test = random.randint(0, 99)
                             if test <= threshold:
                                 temp[i] = '...'
@@ -433,12 +447,11 @@ def sense_filter(player, message):
                 
             if sound_count == 0 and smell_count == 0 and ignore_count == 0 and not finished:
                 for i in range(start, len(temp)): #Finish off the rest of the words
+                    threshold = _Stack_Probability.get(player.senses['sight'], 99) # Gets the appropriate threshold for the number of stacks on that sense
                     test = random.randint(0, 99)
                     if test <= threshold:
                         temp[i] = '...'
                 finished = True
-            
-            ###count = count+1 ###DEBUG
             
     for i in range(0, len(temp)):
         resp += temp[i]+' '
