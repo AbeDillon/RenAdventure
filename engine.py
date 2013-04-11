@@ -131,6 +131,8 @@ class NPC:
         self.coords = coords
         self.affiliation = affiliation
         self.tweets = []
+        self.lifespan = 20 # Number of cycles the NPC lasts before they are recycled
+        self.cycles = 0 # Number of cycles the NPC has been alive for
 
         twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
         twitter_file.close()
@@ -154,7 +156,11 @@ _Characters_In_Builder_Lock = threading.RLock()
 _Objects = {} # All Objects currently in the game
 _Objects_Lock = threading.RLock()
 
-_NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
+_NPC_Bucket = {} # List of NPCs
+_NPC_Bucket_Lock = threading.RLock()
+
+_New_NPC_Queue = Queue.Queue()  # Queue of newly created NPCs to be added to the game
+_Old_NPC_Queue = Queue.Queue()  # Queue of NPCs to be added to the game
 
 def init_game(save_state = 0):
     # Initializes the map and starts the command thread
@@ -189,7 +195,15 @@ def init_game(save_state = 0):
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
     kanye = NPC('@mr_kanyewest', (0,2,1,0), affiliation)
-    _NPCBucket.append(kanye)
+
+    _NPC_Bucket_Lock.acquire()
+    _NPC_Bucket['@mr_kanyewest'] = kanye
+
+    npcs = _NPC_Bucket.values()
+    random.shuffle(npcs)
+    for npc in npcs: # Put all NPCs on the queue in random order
+        _Old_NPC_Queue.put(npc)
+    _NPC_Bucket_Lock.release()
 
     thread.start_new_thread(command_thread, ())
     logger.write_line("Starting command thread")
@@ -343,15 +357,23 @@ def npc_thread():
     # Runs the commands for all NPC's in the game
     global _StillAlive
     global _Characters
+    global _Rooms
 
     if _StillAlive:
         threading.Timer(5.0, npc_thread).start()
 
         npcs = {}
         _Characters_Lock.acquire()
-        for character in _Characters:
+        for character in _Characters.keys():
             if isinstance(_Characters[character], NPC):
-                npcs[character] = _Characters[character]
+                if _Characters[character].lifespan > _Characters[character].cycles:
+                    _Characters[character].cycles += 1 # Increment the NPCs cycles
+                    npcs[character] = _Characters[character]
+                else:   # NPC is out of cycles
+                    _Old_NPC_Queue.put(_Characters[character])
+                    _Rooms[_Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
+                    _Characters[character].cycles = 0 # Reset cycles to 0
+                    del _Characters[character] # Remove NPC from the list of active characters
         _Characters_Lock.release()
 
         for npc in npcs.values():
@@ -373,20 +395,40 @@ def spawn_npc_thread(n):
                 npcs[character] = _Characters[character]
 
         if ((len(_Rooms) / n) + 1) > len(npcs):
-            npc = random.choice(_NPCBucket)
+            # Select an NPC to add to the game
+            rejected_npc = None # The first rejected npc
+            while 1:
+                if not _New_NPC_Queue.empty():
+                    npc = _New_NPC_Queue.get()
+                    if npc is not rejected_npc:
+                        tweet_file = open('twitterfeeds/%s.txt' % npc.name)
+                        for line in tweet_file.readlines():
+                            npc.tweets.append(line.strip())
 
-            # Get the NPCs tweets
-            twitter_file = open('twitterfeeds/%s.txt' % npc.name)
-            for line in twitter_file.readlines():
-                npc.tweets.append(line.strip())
-            twitter_file.close()
+                        if len(npc.tweets) > 0:
+                            break
+                        else:
+                            if rejected_npc == None:
+                                rejected_npc = npc
+                            _New_NPC_Queue.put(npc)
+                elif not _Old_NPC_Queue.empty():
+                    npc = _Old_NPC_Queue.get()
+                    tweet_file = open('twitterfeeds/%s.txt' % npc.name)
+                    for line in tweet_file.readlines():
+                        npc.tweets.append(line.strip())
 
-            if len(npc.tweets) > 0:
+                    if len(npc.tweets) > 0:
+                        break
+                    else:
+                        _Old_NPC_Queue.put(npc)
+                else:
+                    npc = None
+                    break
+
+            if npc != None:
                 _Characters[npc.name] = npc
                 _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
-
                 logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
-
 
         elif ((len(_Rooms) / n) + 1) < len(npcs):
             name = random.choice(npcs.keys())
