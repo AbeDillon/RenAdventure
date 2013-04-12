@@ -258,8 +258,7 @@ def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4,
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        sense_effects = {'blind': 1}
-        player = Player(name, coords, coords, affiliation, sense_effects)
+        player = Player(name, coords, coords, affiliation)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game
@@ -358,7 +357,7 @@ def npc_thread():
     global _Rooms
 
     if _StillAlive:
-        threading.Timer(2.0, npc_thread).start()
+        threading.Timer(5.0, npc_thread).start()
 
         npcs = {}
         _Characters_Lock.acquire()
