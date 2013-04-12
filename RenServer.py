@@ -1,4 +1,4 @@
-__author__ = 'ADillon'
+__author__ = 'ADillon, MNutter'
 
 import socket, sys
 import thread, threading, Queue
