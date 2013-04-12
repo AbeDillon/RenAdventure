@@ -354,6 +354,7 @@ class BuilderThread(threading.Thread):
         # write none types for names when adding items and keys by name.
         
         if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
+            
             self.logger.write_line('name input = '+str(name)+ ', validating as non NPC type')
             
             while True:
@@ -385,10 +386,39 @@ class BuilderThread(threading.Thread):
                 self.send_message_to_player(text)
                 name = self.get_cmd_from_player() 
                 
-        if self.type == 'npc':
-            pass
-            #  finish when we determine more about building npcs
-        
+        if self.type == 'npc':  # requires different validation and appending to dict than items
+            
+            self.logger.write_line('name input = %s validating as NPC type' % str(name))
+            
+            while True:
+                exist_flag = False            
+                engine._Characters_Lock.acquire()
+                self.logger.write_line('characters list lock acquired')
+                if name in engine._Characters:
+                    exist_flag = True
+                    engine._Characters_Lock.release()
+                    self.send_message_to_player(deny)
+                    self.logger.write_line('%s in characters list, name denied , characters lock released' % (str(name)))
+                else:
+                    engine._Characters_Lock.release()
+                    self.logger.write_line('name not in characters list, Characters lock released')
+                
+                if exist_flag == False:
+                    engine._NPC_Bucket_Lock.acquire()
+                    self.logger.write_line('NPC Bucket Lock acquired')
+                    if name not in engine._NPC_Bucket:
+                        engine._NPC_Bucket[name] = None
+                        engine._NPC_Bucket_Lock.release()
+                        self.logger.write_line('%s name not found in NPC bucket.  Written as Nonetype placeholder, bucket lock released' % str(name))
+                        break
+                    else:
+                        engine._NPC_Bucket_Lock.release()
+                        self.send_message_to_player(deny)
+                        self.logger.write_line('%s in NPC Bucket denied NPC Bucket Lock released.' % str(name))
+                #reprompt player
+                self.send_message_to_player(text)
+                name = self.get_cmd_from_player()
+                
         self.prototype['name'] = name
         self.logger.write_line(str(name)+' accepted written to '+str(self.type)+ ' prototype')
         
@@ -931,13 +961,38 @@ class BuilderThread(threading.Thread):
         self.game_cmd_queue.put((self.player_name, 'done_building', []))
         self.logger.write_line('command sent to game queue to exit builder, exit makeRoom')
     
+    def makeNPC(self):
+        """ parses current prototype and instantiates a NPC """
+        
+        self.logger.write_line('entered makeNPC function')
+        self.send_message_to_player('Your %s is now being built' % self.type)
+        
+        # Parse Prototype for readability
+        name = self.prototype['name']
+        coords = self.prototype['coords']
+        affilitation = self.prototype['affiliation']
+        
+        # build NPC object
+        npc = engine.NPC(name, coords, affilitation)
+        self.logger.write_line('%s object instantiated with attributes %s' %(self.type, str((name, coords, affiliation))))
+        
+        # update placeholder in NPC Bucket
+        engine._NPC_Bucket_Lock.acquire()
+        self.logger.write_line('NPC Bucket Lock acquired')
+        engine._NPC_Bucket[name] = npc
+        engine._NPC_Bucket_Lock.release()
+        self.logger.write_line('NPC Object placeholder updated, NPC bucket lock released')
+        
+        self.send_message_to_player('The NPC %s has been built and added to the character bucket.' % str(name))
+        self.logger.write_line('NPC built successfully exiting makeNPC function')
+        
     def makePortal(self):
         """
         Parses the current Prototype dict and instantiates a portal
         """
         
         self.logger.write_line('arrive makePortal Function')
-        self.send_message_to_player('Your '+self.type+' is now being built.')
+        self.send_message_to_player('Your %s is now being built.' % self.type)
         name = self.prototype['name']
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
@@ -951,17 +1006,16 @@ class BuilderThread(threading.Thread):
         
         # Build Portal
         portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
-        self.logger.write_line(str(self.type) + ' instantiated @ ' +str(portal)+ 'with attribs = ' +str(self.prototype)) 
+        self.logger.write_line('%s instantiated @ %s with attributes = %s' % (self.type, str(portal), str(self.prototype))) 
         
-        #write item to objects list
+        #update placeholder objects list
         engine._Objects_Lock.acquire()
         self.logger.write_line('Objects lock acquired')
-        engine._Objects[name] = portal
-        self.logger.write_line('Objects Dict updated')
+        engine._Objects[name] = portal        
         engine._Objects_Lock.release()
-        self.logger.write_line('Objects lock released')        
+        self.logger.write_line('Objects Dict updated, Objects Lock released')
         
-        self.send_message_to_player('Your '+self.type+' has been built.')
+        self.send_message_to_player('Your %s has been built.' % self.type)
         self.logger.write_line('portal built successfully exiting makePortal function')
     
     def makeItem(self):
