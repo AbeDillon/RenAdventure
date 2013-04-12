@@ -4,6 +4,7 @@ import random
 
 _Sense_Effect_Map = {'blind': 'sight',
                      'hallucinating': 'sight',
+                     'leet': 'sight',
                      'deaf': 'sound'}
 
 _Stack_Probability = {1: .50,
@@ -36,6 +37,7 @@ def filter_messages(messages):
                     tag_index = message.find('<')
                     if tag_index == -1: # Did not find another tag
                         filtered_message += message
+                        message = ''
                     else:
                         tag_string = message[:tag_index] # Get the segment that is before the next tag
                         message.replace(tag_string, '')
@@ -75,3 +77,66 @@ def blind(message, stacks):
 
 def deaf(message, stacks):
     return blind(message, stacks)
+
+def hallucinating(message, stacks):
+    # Replaces a percentage of words in the message with hallucinations
+    hallucinations = ['rainbow', 'chuckling clown', 'serpent', 'crying baby', 'flaming eagle', 'George W Bush eating a kitten']
+
+    words = message.split()
+    num_replace = int(len(words) * _Stack_Probability[stacks])  # Number of words to replace
+
+    for i in range(num_replace):
+        while 1:
+            rand_index = random.randint(0, len(words)-1)
+            if words[rand_index] not in hallucinations:
+                words[rand_index] = random.choice(hallucinations)
+                break
+
+    return ' '.join(words)
+
+def leet(message, stacks):
+    # Replaces a percentage of words in the message with leet speak
+    leet_translation = {'a': '4',
+                        'b': ']3',
+                        'c': '{',
+                        'd': '|)',
+                        'e': '3',
+                        'f': 'ph',
+                        'g': '6',
+                        'h': ')-(',
+                        'i': '1',
+                        'j': '_|',
+                        'k': '|<',
+                        'l': '1',
+                        'm': '|\/|',
+                        'n': '|\|',
+                        'o': '0',
+                        'p': '|>',
+                        'q': '(,)',
+                        'r': '|2',
+                        's': '5',
+                        't': '7',
+                        'u': '(_)',
+                        'v': '\/',
+                        'w': '\/\/',
+                        'x': '}{',
+                        'y': "'/",
+                        'z': '2'}
+
+    message = message.lower()
+    words = message.split()
+    num_replace = int(len(words) * _Stack_Probability[stacks])  # Number of words to replace
+
+    for i in range(num_replace):
+        while 1:
+            rand_index = random.randint(0, len(words)-1)
+            if words[rand_index][0] not in leet_translation.values():    # Check if the randomly chosen word is already translated
+                translated_word = ''
+
+                for char in words[rand_index]:
+                    translated_word += leet_translation.get(char, char) # Tries to get a translated character, if it doesn't exist uses the original character
+
+                words[rand_index] = translated_word
+                break
+
+    return ' '.join(words)

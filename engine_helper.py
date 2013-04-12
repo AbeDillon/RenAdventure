@@ -4,7 +4,7 @@ import engine, roomBuilderThread, sense_effect_filters
 import thread, threading, random
 import Queue
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
@@ -69,6 +69,9 @@ def scrub(scripts):
 def get_room_text(player_name, coords):
     room = engine._Rooms[coords]
     text = '<sight>' + room.desc
+
+    for item in room.items:
+        print item, engine._Objects[item].hidden
 
     # Add items to the text
     visible_items = get_visible(room.items)
@@ -620,7 +623,7 @@ def inventory(room, player, object, noun, tags):
     else:
         text = "Your inventory is empty."
 
-    text = '<sight>' + text + '</sight>'
+    #text = '<sight>' + text + '</sight>'
 
     return [(player.name, text)]
 
@@ -703,7 +706,7 @@ def damage(room, attacker, object, noun, tags):
             player.fih = 30
             player.coords = (0,0,1,0)
             room.players.remove(player.name) # Remove player from room
-            engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
+            engine._Rooms[(0,0,1,0)].players.append(player.name) # Add player to new room
             text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
             messages.append((player.name, '_play_ death'))    # Send the death sound
 
@@ -760,14 +763,19 @@ def hide(room, player, object, noun, tags):
 
     return messages
 
-def lose_sense(room, player, object, noun, tags):
-    if noun in player.senses:
-        player.senses[noun] += 1
+def add_status_effect(room, player, object, noun, tags):
+    if noun in player.sense_effects:
+        player.sense_effects[noun] += 1
+    else:
+        player.sense_effects[noun] = 1
 
     return []
 
-def gain_sense(room, player, object, noun, tags):
-    if noun in player.senses:
-        player.senses[noun] -= 1
+def lose_status_effect(room, player, object, noun, tags):
+    if noun in player.sense_effects:
+        player.sense_effects[noun] -= 1
+
+    if player.sense_effects[noun] <= 0:
+        del player.sense_effects[noun]
 
     return []

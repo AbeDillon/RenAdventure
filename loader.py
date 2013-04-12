@@ -58,7 +58,7 @@ def load_item(root):
     for attribute in root.attrib:
         value = root.attrib[attribute]
         if value.isdigit():
-            value = bool(value)
+            value = bool(int(value))
 
         item_attributes[attribute] = value
     
