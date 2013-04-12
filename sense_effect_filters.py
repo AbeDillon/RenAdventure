@@ -1,16 +1,16 @@
 import engine
 import re
+import random
 
 _Sense_Effect_Map = {'blind': 'sight',
                      'hallucinating': 'sight',
                      'deaf': 'sound'}
 
-_Stack_Probability = {0: 0,
-                      1: 50,
-                      2: 65,
-                      3: 77,
-                      4: 87,
-                      5: 95}
+_Stack_Probability = {1: .50,
+                      2: .65,
+                      3: .77,
+                      4: .87,
+                      5: .95}
 
 def filter_messages(messages):
     # Runs all of the messages through the appropriate filters
@@ -48,7 +48,7 @@ def filter_messages(messages):
 def filter_message_segment(player, message, tag):
     # Runs the segment through the appropriate filters
     tag = tag.replace('<', '')
-    tag = tag.replace('/>', '')
+    tag = tag.replace('>', '')
 
     for effect in player.sense_effects:
         sense = _Sense_Effect_Map.get(effect, None) # Get the affected sense
@@ -60,5 +60,18 @@ def filter_message_segment(player, message, tag):
     return message
 
 def blind(message, stacks):
-    # Replaces a percentage of words in the message that are between <sight> tags with ellipses
-    return message
+    # Replaces a percentage of words in the message with ellipses
+    words = message.split()
+    num_replace = int(len(words) * _Stack_Probability[stacks])  # Number of words to replace
+
+    for i in range(num_replace):
+        while 1:
+            rand_index = random.randint(0, len(words)-1)
+            if words[rand_index] != '...':
+                words[rand_index] = '...'
+                break
+
+    return ' '.join(words)
+
+def deaf(message, stacks):
+    return blind(message, stacks)

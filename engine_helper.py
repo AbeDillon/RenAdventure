@@ -6,13 +6,6 @@ import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
 
-_Stack_Probability = {0: 0,
-                      1: 50,
-                      2: 65,
-                      3: 77,
-                      4: 87,
-                      5: 95}
-
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -494,7 +487,6 @@ def go(room, player, object, noun, tags):
             text = get_room_text(player.name, player.coords)
             alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
 
-        text = '<sight>' + text + '</sight>'
         alt_text = '<sight>' + alt_text + '</sight>'
 
         messages.append((player.name, text))
