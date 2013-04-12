@@ -258,7 +258,8 @@ def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4,
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        player = Player(name, coords, coords, affiliation)
+        sense_effects = {'blind': 1}
+        player = Player(name, coords, coords, affiliation, sense_effects)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game

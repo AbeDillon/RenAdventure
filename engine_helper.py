@@ -1,10 +1,17 @@
 __author__ = 'EKing'
 
-import engine, roomBuilderThread # sense_effect_filters
-import threading, random
+import engine, roomBuilderThread, sense_effect_filters
+import thread, threading, random
 import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'lose_sense', 'gain_sense']
+
+_Stack_Probability = {0: 0,
+                      1: 50,
+                      2: 65,
+                      3: 77,
+                      4: 87,
+                      5: 95}
 
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
@@ -51,7 +58,7 @@ def do_command(player_name, command, tags):
         script = verb + "(room, player, object, noun_string, tags)"
         messages = eval(script)
 
-    return messages
+    return sense_effect_filters.filter_messages(messages)
 
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
@@ -68,7 +75,7 @@ def scrub(scripts):
 
 def get_room_text(player_name, coords):
     room = engine._Rooms[coords]
-    text = room.desc
+    text = '<sight>' + room.desc
 
     # Add items to the text
     visible_items = get_visible(room.items)
@@ -110,7 +117,7 @@ def get_room_text(player_name, coords):
         else:
             text += " %s," % name.title()
 
-    return text
+    return text + '</sight>'
 
 def get_visible(object_names):
     visible_objects = []
@@ -377,7 +384,8 @@ def take(room, player, object, noun, tags):
         alt_text = "%s has taken the %s." % (player.name, object.name)
         sound = '_play_ sound' # NEEDS A VALID SOUND
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))    # Message to send to the player
@@ -427,7 +435,8 @@ def open(room, player, object, noun, tags):
             if 'script' in tags:
                 text = alt_text = "The %s has opened, but there is nothing inside." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -484,6 +493,9 @@ def go(room, player, object, noun, tags):
             text = get_room_text(player.name, player.coords)
             alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
 
+        text = '<sight>' + text + '</sight>'
+        alt_text = '<sight>' + alt_text + '</sight>'
+
         messages.append((player.name, text))
 
         for alt_player in room.players: # Give players in room that was left a message
@@ -509,7 +521,8 @@ def drop(room, player, object, noun, tags):
         alt_text = "%s has dropped a %s." % (player.name, object.name)
         sound = '_play_ drop'
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -551,7 +564,8 @@ def unlock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to unlock the %s." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -589,7 +603,8 @@ def lock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to lock the %s." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -611,6 +626,8 @@ def inventory(room, player, object, noun, tags):
                 text += " x%d" % player.items[item]
     else:
         text = "Your inventory is empty."
+
+    text = '<sight>' + text + '</sight>'
 
     return [(player.name, text)]
 
@@ -695,9 +712,8 @@ def damage(room, attacker, object, noun, tags):
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
             text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
-            messages.append((player.name, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
+            messages.append((player.name, '_play_ death'))    # Send the death sound
 
-        text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this
         messages.append((player.name, text))
 
     return messages
@@ -731,7 +747,7 @@ def reveal(room, player, object, noun, tags):
 
     if object != None:
         object.hidden = False
-        text = "A %s appears in the room." % object.name
+        text = "<sight>A %s appears in the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
@@ -744,7 +760,7 @@ def hide(room, player, object, noun, tags):
 
     if object != None:
         object.hidden = True
-        text = "The %s disappears from the room." % object.name
+        text = "<sight>The %s disappears from the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
