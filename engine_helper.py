@@ -226,12 +226,13 @@ def npc_action(npc):
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go')
 
+        portals = []
         for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
-            if portal.locked or engine._Rooms.get(portal.coords, None) == None:
-                valid_portals.remove(portal)
+            if not portal.locked and engine._Rooms.get(portal.coords, None) != None:
+                portals.append(portal)
 
-        if len(valid_portals) > 0:
-            portal = random.choice(valid_portals)
+        if len(portals) > 0:
+            portal = random.choice(portals)
             direction = portal.direction
             command_str = 'go %s' % direction
             command = (npc.name, command_str, ['npc'])

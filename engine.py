@@ -194,7 +194,7 @@ def init_game(save_state = 0):
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-    kanye = NPC('@mr_kanyewest', (0,2,1,0), affiliation)
+    kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
 
     _NPC_Bucket_Lock.acquire()
     _NPC_Bucket['@mr_kanyewest'] = kanye
@@ -358,7 +358,7 @@ def npc_thread():
     global _Rooms
 
     if _StillAlive:
-        threading.Timer(5.0, npc_thread).start()
+        threading.Timer(2.0, npc_thread).start()
 
         npcs = {}
         _Characters_Lock.acquire()
