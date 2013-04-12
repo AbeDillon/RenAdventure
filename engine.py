@@ -401,6 +401,7 @@ def spawn_npc_thread(n):
                         tweet_file = open('twitterfeeds/%s.txt' % npc.name)
                         for line in tweet_file.readlines():
                             npc.tweets.append(line.strip())
+                        tweet_file.close()
 
                         if len(npc.tweets) > 0:
                             break
