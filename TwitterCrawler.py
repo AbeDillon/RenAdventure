@@ -41,10 +41,12 @@ class feedGetter(threading.Thread):
         logger.write_line("twitterFeeds file saved for %s" % self.user)
 
 
-#===============================================entry==============================================
+#==================================================================================================
 
+# !!! denotes that this function will be moved to fileCrawler.
 
 logger = Q2logging.out_file_instance('logs\TwitterCrawler\TwitterCrawler')
+
 
 # Creates the directory "TwitterCrawler" if it.'s not already there.
 directories = os.listdir(os.getcwd())
@@ -67,8 +69,10 @@ def getNames(path):
 
 
 def main():
+
     api = twitter.Api()
 
+    # !!!
     Names = []
 
     newNamesQ = Queue.Queue()
@@ -79,8 +83,11 @@ def main():
     # If there's nothing in the queues it looks in the "twitterFeeds" folder and adds those names to the newNamesQ queue.
     # Each name gets spun off on it's own thread to get the tweets, new threads are spun off at no less than
     # 45 second intervals.
+
     startTime = time.time()
+
     while(1):
+
         try:
             user = newNamesQ.get_nowait()
             logger.write_line('Looking for name in newNamesQ')
@@ -112,8 +119,10 @@ def main():
             startTime = time.time()
 
 
+        # !!!
         # Opens "twitterFeeds" folder, parses names and adds them to the newNamesQ queue.
         tempList = getNames(os.listdir(os.getcwd() + "\\twitterFeeds"))
+
         for name in tempList:
             if name not in Names:
                 Names.append(name)
