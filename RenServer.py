@@ -241,8 +241,11 @@ class Login(threading.Thread):
                     logged_in = True
                     _Logged_in.append(player_name)
                     player_path = 'players/%s.xml'%player_name
-                    
-                    person = loader.load_player(player_path)
+                    try:
+                        person = loader.load_player(player_path)
+                    except:
+                        logger.write_line("Error loading player file %s, file does not exist" % player_path)
+                        print "Error loading player file %s, file does not exist" % player_path
                     player_affil = person.affiliation #Load in the players affiliation
                     location = person.coords
                 else:
