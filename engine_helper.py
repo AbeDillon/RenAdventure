@@ -1,16 +1,16 @@
 __author__ = 'EKing'
 
-import engine, roomBuilderThread
+import engine, roomBuilderThread, sense_effect_filters
 import thread, threading, random
 import Queue
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'reveal']
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
 def do_command(player_name, command, tags):
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
 
-    verb, nouns = parse_command(command)
+    verb, nouns = parse_command(command, tags)
 
     if verb == 'damage' and 'npc' not in tags: # Only NPCs can use the damage command
         verb = 'bad_command'
@@ -51,7 +51,7 @@ def do_command(player_name, command, tags):
         script = verb + "(room, player, object, noun_string, tags)"
         messages = eval(script)
 
-    return messages
+    return sense_effect_filters.filter_messages(messages)
 
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
@@ -68,7 +68,10 @@ def scrub(scripts):
 
 def get_room_text(player_name, coords):
     room = engine._Rooms[coords]
-    text = room.desc
+    text = '<sight>' + room.desc
+
+    for item in room.items:
+        print item, engine._Objects[item].hidden
 
     # Add items to the text
     visible_items = get_visible(room.items)
@@ -110,7 +113,7 @@ def get_room_text(player_name, coords):
         else:
             text += " %s," % name.title()
 
-    return text
+    return text + '</sight>'
 
 def get_visible(object_names):
     visible_objects = []
@@ -147,8 +150,10 @@ def rem_item(container, item):
     else:
         container.items[item] -= 1
 
-def parse_command(command):
+def parse_command(command, tags):
     # Create translation tables to make the command easier to parse
+    global valid_verbs
+
     translate_one_word = {'i': 'inventory',
                           'l': 'look room',
                           'h': 'help',
@@ -156,7 +161,9 @@ def parse_command(command):
                           'n': 'go north',
                           's': 'go south',
                           'w': 'go west',
-                          'e': 'go east'}
+                          'e': 'go east',
+                          'u': 'go up',
+                          'd': 'go down'}
 
     translate_verb = {'look': 'look',
                       'l': 'look',
@@ -193,7 +200,8 @@ def parse_command(command):
     words = command.split()
 
     verb = words[0]
-    verb = translate_verb.get(verb, 'bad_command')
+    if verb not in valid_verbs or 'script' not in tags:
+        verb = translate_verb.get(verb, 'bad_command')
 
     nouns = words[1:]
     for n, noun in enumerate(nouns):
@@ -214,236 +222,17 @@ def npc_action(npc):
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go')
 
+        portals = []
         for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
-            if portal.locked or engine._Rooms.get(portal.coords, None) == None:
-                valid_portals.remove(portal)
+            if not portal.locked and engine._Rooms.get(portal.coords, None) != None:
+                portals.append(portal)
 
-        if len(valid_portals) > 0:
-            portal = random.choice(valid_portals)
+        if len(portals) > 0:
+            portal = random.choice(portals)
             direction = portal.direction
             command_str = 'go %s' % direction
             command = (npc.name, command_str, ['npc'])
             engine.put_commands([command])
-
-def filter_messages(messages):
-    filtered_messages = []
-
-    for player_name, message in messages:
-        player = engine._Characters[player_name]
-        if isinstance(player, engine.Player):
-            filtered_messages.append((player_name, sense_filter(player, message)))
-            
-        else:
-            filtered_messages.append((player_name, message))
-
-    return filtered_messages
-
-def sense_filter(player, message):
-    temp = message.split()
-    resp = ''
-    threshold = 50
-    finished = False
-    
-    sound_count = message.count("<sound>")
-    if "<sound>" in temp:
-        sound_start = temp.index("<sound>") #Initially
-        sound_end = temp.index("</sound>") #initially
-
-    smell_count = message.count("<smell>")
-    if "<smell>" in temp:
-        smell_start = temp.index("<smell>") #Initially
-        smell_end = temp.index("</smell>") #initially
-    
-    if "<sound>" in temp:
-        while sound_count > 0: #We still have sound tags to look for and remove.
-            start = sound_start
-            end = sound_end
-            if player.senses['sound'] == False: #This one is impaired
-                for i in range(start+1, end-1):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...' #Does all filtering only between sound tags.
-            else: ###This sense is not impaired, do not mess with it.
-                break
-            sound_count = sound_count - 1
-            if sound_count > 0: #More sounds yet
-                sound_start = temp.index("<sound>", sound_start+1)
-                sound_end = temp.index("</sound>", sound_end+1)
-            else: 
-                sound_start = len(temp)
-                sound_end = len(temp)
-
-    if "<smell>" in temp:
-        while smell_count > 0: #We still have smell tags to look for and remove.
-            start = smell_start
-            end = smell_end
-            if player.senses['smell'] == False: #This one is impaired
-                for i in range(start+1, end-1):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...' #Filter only between smell tags
-            else: ###This sense is not impaired, stop messing with it now.
-                break
-            smell_count = smell_count - 1
-            if smell_count > 0: #More smells yet
-                smell_start = temp.index("<smell>", smell_start+1)
-                smell_end = temp.index("</smell>", smell_end +1)
-            else:
-                smell_start = len(temp)
-                smell_end = len(temp)
-
-
-    state_sense = player.senses['sight']
-    if state_sense == False: #Impaired vision
-        sound_count = message.count("<sound>")
-        if "<sound>" in temp:
-            sound_start = temp.index("<sound>")
-            sound_end = temp.index("</sound>")
-        else:
-            sound_start = len(temp)
-            sound_end = len(temp)
-            
-        smell_count = message.count("<smell>")
-        if "<smell>" in temp:
-            smell_start = temp.index("<smell>")
-            smell_end = temp.index("</smell>")
-        else:
-            smell_start = len(temp)
-            smell_end = len(temp)
-        
-        ignore_count = message.count("<dont_filter>")
-        if "<dont_filter>" in temp:
-            ignore_start = temp.index("<dont_filter>")
-            ignore_end = temp.index("</dont_filter>")
-        else:
-            ignore_start = len(temp)
-            ignore_end = len(temp)
-            
-        #count = 0 ###DEBUG 
-        start = 0
-        while (sound_count > 0 and smell_count > 0 and ignore_count > 0) or not finished : #While we haven't finished filtering everying yet...
-            if sound_start < smell_start and sound_start < ignore_start: #We are starting by looking for a sound 
-                
-                end = sound_start
-                for i in range(start, end):
-                    test=random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = sound_end+1 #This is the next entry
-                sound_count = sound_count -1
-                if sound_count > 0:
-                    sound_start = temp.index("<sound>", sound_start+1) #Find the next occurrence of sound_start
-                    sound_end = temp.index("</sound>", sound_end+1) #Find the next occurrence of sound_end
-                else:
-                    sound_start = len(temp)
-                    sound_end = len(temp)
-
-            elif smell_start < sound_start and smell_start < ignore_start: #We are starting by looking for a smell
-                end = smell_start
-                for i in range(start, end):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = smell_end+1
-                smell_count = smell_count -1
-                if smell_count > 0:
-                    smell_start = temp.index("<smell>", smell_start+1) #Find the next occurrence of smell_start
-                    smell_end = temp.index("</smell>", smell_end+1) #Find the next occurrence of smell_end
-                else:
-                    smell_start = len(temp)
-                    smell_end = len(temp)
-
-            elif ignore_start < sound_start and ignore_start < smell_start: #We are starting by looking for a don't filter tag.
-                end = ignore_start
-                for i in range(start, end):
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                start = ignore_end +1
-                ignore_count = ignore_count -1
-                if ignore_count > 0:
-                    ignore_start = temp.index("<dont_filter>", ignore_start+1) #Look for next occurrence of <dont_filter>
-                    ignore_end = temp.index("</dont_filter>", ignore_end+1) #Find next occurrence of </dont_filter>
-                else:
-                    ignore_start = len(temp)
-                    ignore_end = len(temp)
-
-                    
-            else: #Other cases: All equal, 2/3 equal.
-                if ignore_start == smell_start and ignore_start == sound_start: #Then all are equal ###DEBUG
-                    end = len(temp)
-                    for i in range(start, end):
-                        test = random.randint(0, 99)
-                        if test <= threshold:
-                            temp[i] = '...' 
-                    finished = True
-                else: #Two of them are equal, one is not
-                    if ignore_start < smell_start and ignore_start < sound_start: #Ignore_start is the only one.
-                        end = ignore_start
-                        for i in range(start, end):
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = ignore_end+1
-                        ignore_count = ignore_count -1
-                        if ignore_count > 0:
-                            ignore_start = temp.index("<dont_filter>", ignore_start+1) #Look for the next occurrence 
-                            ignore_end = temp.index("</dont_filter>", ignore_end+1) 
-                        else:
-                            ignore_start = len(temp)
-                            ignore_end = len(temp)
-                        
-                    elif smell_start < ignore_start and smell_start < sound_start: #smell_start is the only one
-                        end = smell_start
-                        for i in range(start, end):
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = smell_end+1
-                        smell_count = smell_count -1
-                        if smell_count > 0:
-                            smell_start = temp.index("<smell>", smell_start+1)
-                            smell_end = temp.index("</smell>", smell_end+1)
-                        else:
-                            smell_start = len(temp)
-                            smell_end = len(temp)
-                            
-                    elif sound_start < smell_start and sound_start < ignore_start: #Sound_start is the only one
-                        end = sound_start
-                        for i in range(start, end):
-                            test = random.randint(0, 99)
-                            if test <= threshold:
-                                temp[i] = '...'
-                        start = sound_end+1
-                        sound_count = sound_count -1
-                        if sound_count > 0:
-                            sound_start = temp.index("<sound>", sound_start+1)
-                            sound_end = temp.index("</sound>", sound_end+1)
-                        else:
-                            sound_start = len(temp)
-                            sound_end = len(temp)
-                
-            if sound_count == 0 and smell_count == 0 and ignore_count == 0 and not finished:
-                for i in range(start, len(temp)): #Finish off the rest of the words
-                    test = random.randint(0, 99)
-                    if test <= threshold:
-                        temp[i] = '...'
-                finished = True
-            
-            ###count = count+1 ###DEBUG
-            
-    for i in range(0, len(temp)):
-        resp += temp[i]+' '
-
-    
-    resp = resp.replace("<sound>", '')
-    resp = resp.replace("</sound>", '')
-    resp = resp.replace("<smell>", '')
-    resp = resp.replace("</smell>", '')
-    resp = resp.replace("<dont_filter>", '')
-    resp = resp.replace("</dont_filter>", '')
-
-    return resp.strip()
 
 #Flags  'p' = portals
 #       'r' = room items
@@ -456,7 +245,8 @@ _ValidLookUp = {'look': ('pri', {'hidden': True}),
                 'open': ('ir', {'hidden': True}),
                 'unlock': ('pri', {'hidden': True}),
                 'lock': ('pri', {'hidden': True}),
-                'reveal': ('pr', {'hidden': False})}
+                'hide': ('pr', {}),
+                'reveal': ('pr', {})}
 
 def get_valid_objects(player, room, verb):
     global _ValidLookUp
@@ -504,16 +294,16 @@ def get_all_objects(player, verb):
 
     for room in engine._Rooms.values():
         if 'r' in flags:
-            for item in room.items.values():
-                valid_objects.append((room, item))
+            for item in room.items:
+                valid_objects.append((room, engine._Objects[item]))
 
         if 'p' in flags:
-            for portal in room.portals.values():
-                valid_objects.append((room, portal))
+            for portal in room.portals:
+                valid_objects.append((room, engine._Objects[portal]))
 
     if 'i' in flags:
-        for item in player.items.values():
-            valid_objects.append((None, item))
+        for item in player.items:
+            valid_objects.append((None, engine._Objects[item]))
 
     for room, object in valid_objects:
         for attribute, value in enumerate(cull):
@@ -575,7 +365,7 @@ def look(room, player, object, noun, tags):
     else:
         text = object.inspect_desc
 
-    return filter_messages([player.name, text])
+    return [(player.name, text)]
 
 def take(room, player, object, noun, tags):
     alt_text = ''
@@ -591,7 +381,8 @@ def take(room, player, object, noun, tags):
         alt_text = "%s has taken the %s." % (player.name, object.name)
         sound = '_play_ sound' # NEEDS A VALID SOUND
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))    # Message to send to the player
@@ -601,7 +392,7 @@ def take(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def open(room, player, object, noun, tags):
     alt_text = ''
@@ -641,7 +432,8 @@ def open(room, player, object, noun, tags):
             if 'script' in tags:
                 text = alt_text = "The %s has opened, but there is nothing inside." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -651,7 +443,7 @@ def open(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def go(room, player, object, noun, tags):
     alt_text = ''
@@ -698,6 +490,8 @@ def go(room, player, object, noun, tags):
             text = get_room_text(player.name, player.coords)
             alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
 
+        alt_text = '<sight>' + alt_text + '</sight>'
+
         messages.append((player.name, text))
 
         for alt_player in room.players: # Give players in room that was left a message
@@ -707,7 +501,7 @@ def go(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, '%s has entered the room.' % player.name.title()))
 
-    return filter_messages(messages)
+    return messages
 
 def drop(room, player, object, noun, tags):
     alt_text = ''
@@ -723,7 +517,8 @@ def drop(room, player, object, noun, tags):
         alt_text = "%s has dropped a %s." % (player.name, object.name)
         sound = '_play_ drop'
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -733,7 +528,7 @@ def drop(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def unlock(room, player, object, noun, tags):
     alt_text = ''
@@ -765,7 +560,8 @@ def unlock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to unlock the %s." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -775,7 +571,7 @@ def unlock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def lock(room, player, object, noun, tags):
     alt_text = ''
@@ -803,7 +599,8 @@ def lock(room, player, object, noun, tags):
         else:
             text = "You don't have the key to lock the %s." % object.name
 
-    sound = '<dont_filter> ' + sound + ' </dont_filter>' # We don't want to filter this
+    text = '<sight>' + text + '</sight>'
+    alt_text = '<sight>' + alt_text + '</sight>'
 
     messages = []
     messages.append((player.name, text))
@@ -813,7 +610,7 @@ def lock(room, player, object, noun, tags):
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def inventory(room, player, object, noun, tags):
     if len(player.items) > 0:
@@ -825,6 +622,8 @@ def inventory(room, player, object, noun, tags):
                 text += " x%d" % player.items[item]
     else:
         text = "Your inventory is empty."
+
+    #text = '<sight>' + text + '</sight>'
 
     return [(player.name, text)]
 
@@ -840,7 +639,7 @@ def say(room, player, object, noun, tags):
             messages.append((alt_player, alt_text))
             #messages.append((alt_player, '<dont_filter>_play_ talking</dont_filter>')) # Needs a valid sound
 
-    return filter_messages(messages)
+    return messages
 
 def shout(room, player, object, noun, tags):
     text = "<sound> You shout %s </sound>" % noun
@@ -849,7 +648,7 @@ def shout(room, player, object, noun, tags):
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
         for j in range(-2,3):
-            bubble_coords.append((player.coords[0]+i, player.coords[1]+j, player.coords[2]))
+            bubble_coords.append((player.coords[0]+i, player.coords[1]+j, player.coords[2], player.coords[3]))
 
     trimmed_bubble = []
     for coords in bubble_coords: # Remove coords from the bubble that don't have room with players in them
@@ -864,7 +663,7 @@ def shout(room, player, object, noun, tags):
             if alt_player != player.name:
                 messages.append((alt_player, alt_text))
 
-    return filter_messages(messages)
+    return messages
 
 def damage(room, attacker, object, noun, tags):
     messages = []
@@ -880,13 +679,14 @@ def damage(room, attacker, object, noun, tags):
 
         difference += 6 # Shift the difference over to put the mid point at 0 (this will need to be changed if the number of people changes)
 
-        if not player.senses['sound']: # Player can't hear very well, they take half damage
-            difference = difference/2
+#        if not player.senses['sound']: # Player can't hear very well, they take half damage
+#            difference = difference/2
 
         if (player.fih + difference) > 30: # Player cannot exceed 30 'Faith in Humanity' points
             player.fih = 30
         else:
             player.fih += difference
+
         if difference > 0:
             text = "Your Faith in Humanity is increased by %d." % difference
         elif difference < 0:
@@ -904,16 +704,15 @@ def damage(room, attacker, object, noun, tags):
 
             # Reset player
             player.fih = 30
-            player.coords = (0,0,1)
+            player.coords = (0,0,1,0)
             room.players.remove(player.name) # Remove player from room
-            engine._Rooms[(0,0,1)].players.append(player.name) # Add player to new room
-            text += "\n%s" % get_room_text(player.name, (0,0,1))    # Send the room description
-            messages.append((player, '<dont_filter>_play_ death</dont_filter>'))    # Send the death sound
+            engine._Rooms[(0,0,1,0)].players.append(player.name) # Add player to new room
+            text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
+            messages.append((player.name, '_play_ death'))    # Send the death sound
 
-        text = '<dont_filter> ' + text + ' </dont_filter>' # We don't want to filter this
         messages.append((player.name, text))
 
-    return filter_messages(messages)
+    return messages
 
 def bad_command(room, player, object, noun, tags):
     messages = []
@@ -940,22 +739,43 @@ def script_delay(player, script):
 
 def reveal(room, player, object, noun, tags):
     # Reveals a hidden object
-    object.hidden = False
-    text = "A %s appears in the room." % object.name
-
     messages = []
-    for player in room.players:
-        messages.append((player, text))
 
-    return filter_messages(messages)
+    if object != None:
+        object.hidden = False
+        text = "<sight>A %s appears in the room.</sight>" % object.name
+
+        for player in room.players:
+            messages.append((player, text))
+
+    return messages
 
 def hide(room, player, object, noun, tags):
     # Hides an object
-    object.hidden = True
-    text = "The %s disappears from the room." % object.name
-
     messages = []
-    for player in room.players:
-        messages.append((player, text))
 
-    return filter_messages(messages)
+    if object != None:
+        object.hidden = True
+        text = "<sight>The %s disappears from the room.</sight>" % object.name
+
+        for player in room.players:
+            messages.append((player, text))
+
+    return messages
+
+def add_status_effect(room, player, object, noun, tags):
+    if noun in player.sense_effects:
+        player.sense_effects[noun] += 1
+    else:
+        player.sense_effects[noun] = 1
+
+    return []
+
+def lose_status_effect(room, player, object, noun, tags):
+    if noun in player.sense_effects:
+        player.sense_effects[noun] -= 1
+
+    if player.sense_effects[noun] <= 0:
+        del player.sense_effects[noun]
+
+    return []

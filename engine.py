@@ -104,13 +104,13 @@ class Player:
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, prev_coords, affiliation, senses, items = {}, fih = 30):
+    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30):
         self.name = name.lower()
         self.coords = coords
         self.prev_coords = prev_coords
         self.fih = fih
         self.affiliation = affiliation
-        self.senses = senses
+        self.sense_effects = sense_effects
 
         self.items = {}
         for item in items:
@@ -131,11 +131,13 @@ class NPC:
         self.coords = coords
         self.affiliation = affiliation
         self.tweets = []
+        self.lifespan = 20 # Number of cycles the NPC lasts before they are recycled
+        self.cycles = 0 # Number of cycles the NPC has been alive for
 
         twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
         twitter_file.close()
 
-logger = Q2logging.out_file_instance('logs/engine/RenEngine') ###TEST
+logger = Q2logging.out_file_instance('logs/engine/RenEngine')
 
 _StillAlive = True
 _CommandQueue = Queue.Queue() # Commands that are waiting to be run
@@ -154,7 +156,11 @@ _Characters_In_Builder_Lock = threading.RLock()
 _Objects = {} # All Objects currently in the game
 _Objects_Lock = threading.RLock()
 
-_NPCBucket = [] # List of NPCs to pull from when spawning a new NPC
+_NPC_Bucket = {} # List of NPCs
+_NPC_Bucket_Lock = threading.RLock()
+
+_New_NPC_Queue = Queue.Queue()  # Queue of newly created NPCs to be added to the game
+_Old_NPC_Queue = Queue.Queue()  # Queue of NPCs to be added to the game
 
 def init_game(save_state = 0):
     # Initializes the map and starts the command thread
@@ -165,34 +171,39 @@ def init_game(save_state = 0):
         directory = 'SaveState%d' % save_state
 
         print 'Initializing game state from save state %d' % save_state
-        #logger.debug('Initializing game state from save state %d' % save_state)
-        logger.write_line('Initializing game state from save state %d' % save_state) ###TEST
+        logger.write_line('Initializing game state from save state %d' % save_state)
     else:
         directory = 'rooms'
 
         print 'Initializing game state from default save state'
-        #logger.debug('Initializing game state from default save state')
-        logger.write_line('Initializing game state from default save state') ###TEST
+        logger.write_line('Initializing game state from default save state')
 
     _Objects_Lock.acquire()
     _Objects = loader.load_objects('objects/objects.xml') # Load the global objects
     _Objects_Lock.release()
 
-    #logger.debug("Loaded global objects")
-    logger.write_line("Loaded global objects") ###TEST
+    logger.write_line("Loaded global objects")
 
     for filename in os.listdir(directory):
         path = directory + '/' + filename
         split_name = filename.split('_')
-        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2].replace('.xml', '')))
+        coords = (int(split_name[0]), int(split_name[1]), int(split_name[2]), int(split_name[3].replace('.xml', '')))
 
         _Rooms[coords] = loader.load_room(path)
-        logger.write_line("Loaded room at (%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], path))
+        logger.write_line("Loaded room at (%d,%d,%d,%d) from '%s'"%(coords[0], coords[1], coords[2], coords[3], path))
 
     # Add some NPCs to the bucket
     affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-    kanye = NPC('@mr_kanyewest', (0,2,1), affiliation)
-    _NPCBucket.append(kanye)
+    kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
+
+    _NPC_Bucket_Lock.acquire()
+    _NPC_Bucket['@mr_kanyewest'] = kanye
+
+    npcs = _NPC_Bucket.values()
+    random.shuffle(npcs)
+    for npc in npcs: # Put all NPCs on the queue in random order
+        _Old_NPC_Queue.put(npc)
+    _NPC_Bucket_Lock.release()
 
     thread.start_new_thread(command_thread, ())
     logger.write_line("Starting command thread")
@@ -231,7 +242,7 @@ def shutdown_game():
             loader.save_objects(objects, directory) # Save all objects in the game
 
             for coords in _Rooms: # Save the rooms to the save state directory
-                path = directory + 'rooms/%d_%d_%d.xml' % coords
+                path = directory + 'rooms/%d_%d_%d_%d.xml' % coords
                 loader.save_room(_Rooms[coords], path)
 
             logger.write_line("Saved game state to '%s'" % directory)
@@ -239,7 +250,7 @@ def shutdown_game():
         else:
             save_num += 1
 
-def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
+def make_player(name, coords = (0,0,1,0), affiliation = {'Obama': 5, 'Kanye': 4, 'OReilly': 3, 'Gottfried': 2, 'Burbiglia': 1}):
     global _Rooms
     global _Characters
 
@@ -247,11 +258,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
     if os.path.exists(path):    # Load the player if a save file exists for them, otherwise create a new player
         player = loader.load_player(path)
     else:
-        senses = {'sight': True,
-                  'sound': False,
-                  'smell': True,
-                  'see_dead_people': False}
-        player = Player(name, coords, coords, affiliation, senses)
+        player = Player(name, coords, coords, affiliation)
 
     _Characters_Lock.acquire()
     _Characters[player.name] = player # Add to list of players in the game
@@ -259,7 +266,7 @@ def make_player(name, coords = (0,0,1), affiliation = {'Obama': 5, 'Kanye': 4, '
 
     _Rooms[player.coords].players.append(player.name) # Add player to list of players in the room they are in
 
-    logger.write_line("Created player '%s' at (%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2]))
+    logger.write_line("Created player '%s' at (%d,%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2], player.coords[3]))
 
 def remove_player(name):
     global _Rooms
@@ -273,8 +280,7 @@ def remove_player(name):
     del _Characters[name] # Remove the player from the list of players in the game
     _Characters_Lock.release()
 
-    #logger.debug("Removed player '%s'" % player.name)
-    logger.write_line("Removed player '%s'"%player.name) ###TEST
+    logger.write_line("Removed player '%s'" % player.name)
 
 def put_commands(commands):
     # Takes a list of commands and pushes them to the command queue
@@ -295,12 +301,9 @@ def get_messages():
     while not _MessageQueue.empty():
         message = _MessageQueue.get()
 
-        #final_msg = (message[0], sense_filter(message[1]) #Pass in the message, filter, get it back, make a new tuple. From here on use final_msg instead of message?
         messages.append(message)
-        #messages.append(final_msg)
 
-        logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1])) ###TEST
-        #logger.write_line("Sending message to server: (%s, %s)" % (final_msg[0], final_msg[1])) 
+        logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1]))
 
     return messages
 
@@ -333,9 +336,11 @@ def command_thread():
                     player = _Characters[player_name]
                     _Characters_In_Builder_Lock.release()
 
+                    _Rooms[player.coords].players.append(player.name) # Add the player to the room
+
                     _MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords)))   # Put room description in the message queue
 
-                    logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d, %d, %d)." % player.coords)
+                    logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d,%d,%d,%d)." % player.coords)
                 else:
                     _BuilderQueues[player_name].put(command)
     
@@ -349,22 +354,29 @@ def npc_thread():
     # Runs the commands for all NPC's in the game
     global _StillAlive
     global _Characters
+    global _Rooms
 
     if _StillAlive:
         threading.Timer(5.0, npc_thread).start()
 
         npcs = {}
         _Characters_Lock.acquire()
-        for character in _Characters:
+        for character in _Characters.keys():
             if isinstance(_Characters[character], NPC):
-                npcs[character] = _Characters[character]
+                if _Characters[character].lifespan > _Characters[character].cycles:
+                    _Characters[character].cycles += 1 # Increment the NPCs cycles
+                    npcs[character] = _Characters[character]
+                else:   # NPC is out of cycles
+                    _Old_NPC_Queue.put(_Characters[character])
+                    _Rooms[_Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
+                    _Characters[character].cycles = 0 # Reset cycles to 0
+                    del _Characters[character] # Remove NPC from the list of active characters
         _Characters_Lock.release()
 
         for npc in npcs.values():
             engine_helper.npc_action(npc)
-
-    #logger.debug("Closing npc action thread.")
-    logger.write_line("Closing npc action thread.") ###TEST
+    else:
+        logger.write_line("Closing npc action thread.")
 
 def spawn_npc_thread(n):
     # Spawns a new NPC for every 'n' rooms in the game
@@ -380,20 +392,41 @@ def spawn_npc_thread(n):
                 npcs[character] = _Characters[character]
 
         if ((len(_Rooms) / n) + 1) > len(npcs):
-            npc = random.choice(_NPCBucket)
+            # Select an NPC to add to the game
+            rejected_npc = None # The first rejected npc
+            while 1:
+                if not _New_NPC_Queue.empty():
+                    npc = _New_NPC_Queue.get()
+                    if npc is not rejected_npc:
+                        tweet_file = open('twitterfeeds/%s.txt' % npc.name)
+                        for line in tweet_file.readlines():
+                            npc.tweets.append(line.strip())
+                        tweet_file.close()
 
-            # Get the NPCs tweets
-            twitter_file = open('twitterfeeds/%s.txt' % npc.name)
-            for line in twitter_file.readlines():
-                npc.tweets.append(line.strip())
-            twitter_file.close()
+                        if len(npc.tweets) > 0:
+                            break
+                        else:
+                            if rejected_npc == None:
+                                rejected_npc = npc
+                            _New_NPC_Queue.put(npc)
+                elif not _Old_NPC_Queue.empty():
+                    npc = _Old_NPC_Queue.get()
+                    tweet_file = open('twitterfeeds/%s.txt' % npc.name)
+                    for line in tweet_file.readlines():
+                        npc.tweets.append(line.strip())
 
-            if len(npc.tweets) > 0:
+                    if len(npc.tweets) > 0:
+                        break
+                    else:
+                        _Old_NPC_Queue.put(npc)
+                else:
+                    npc = None
+                    break
+
+            if npc != None:
                 _Characters[npc.name] = npc
                 _Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
-
                 logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
-
 
         elif ((len(_Rooms) / n) + 1) < len(npcs):
             name = random.choice(npcs.keys())

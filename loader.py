@@ -9,22 +9,22 @@ def load_player(path):
     xml = ET.parse(path)
     root = xml.getroot()
     
-    player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
-    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']))
+    player_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']), int(root.attrib['a']))
+    player_attributes['prev_coords'] = (int(root.attrib['prev_x']), int(root.attrib['prev_y']), int(root.attrib['prev_z']), int(root.attrib['prev_a']))
     player_attributes['fih'] = int(root.attrib['fih'])
     player_attributes['name'] = root.attrib['name']
     player_attributes['items'] = []
     player_attributes['affiliation'] = {}
-    player_attributes['senses'] = {}
+    player_attributes['sense_effects'] = {}
 
-    senses = ['sight', 'sound', 'smell', 'see_dead_people']
+    affiliation_people = ['Obama', 'Kanye', 'OReilly', 'Gottfried', 'Burbiglia']
     for node in root:
         if node.tag == 'item':
             player_attributes['items'].append(node.text)
-        elif node.tag in senses:
-            player_attributes['senses'][node.tag] = bool(int(node.text))
-        else:
+        elif node.tag in affiliation_people:
             player_attributes['affiliation'][node.tag] = int(node.text)
+        else:
+            player_attributes['sense_effects'][node.tag] = int(node.text)
 
     return engine.Player(**player_attributes)
     
@@ -58,7 +58,7 @@ def load_item(root):
     for attribute in root.attrib:
         value = root.attrib[attribute]
         if value.isdigit():
-            value = bool(value)
+            value = bool(int(value))
 
         item_attributes[attribute] = value
     
@@ -73,11 +73,11 @@ def load_item(root):
 # Loads a portal from a node
 def load_portal(root):
     portal_attributes = {}
-    portal_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']))
+    portal_attributes['coords'] = (int(root.attrib['x']), int(root.attrib['y']), int(root.attrib['z']), int(root.attrib['a']))
     portal_attributes['scripts'] = {}
 
     for attribute in root.attrib:
-        if attribute not in 'xyz': # Ignore the coordinate attributes
+        if attribute not in 'xyza': # Ignore the coordinate attributes
             value = root.attrib[attribute]
             if value.isdigit():
                 value = bool(int(value))
@@ -137,9 +137,11 @@ def save_player(player):
     attributes['x'] = str(player.coords[0])
     attributes['y'] = str(player.coords[1])
     attributes['z'] = str(player.coords[2])
+    attributes['a'] = str(player.coords[3])
     attributes['prev_x'] = str(player.prev_coords[0])
     attributes['prev_y'] = str(player.prev_coords[1])
     attributes['prev_z'] = str(player.prev_coords[2])
+    attributes['prev_a'] = str(player.prev_coords[3])
     attributes['name'] = player.name
     attributes['fih'] = str(player.fih)
 
@@ -152,8 +154,8 @@ def save_player(player):
         item_node = xml.XMLNode('item', value=item)
         child_nodes.append(item_node)
 
-    for sense in player.senses: # Create the sense nodes
-        sense_node = xml.XMLNode(sense, value=str(int(player.senses[sense])))
+    for effect in player.sense_effects: # Create the sense nodes
+        sense_node = xml.XMLNode(effect, value=player.sense_effects[effect])
         child_nodes.append(sense_node)
 
     player_node = xml.XMLNode('player', attributes, children=child_nodes)
@@ -211,6 +213,7 @@ def create_portal_node(portal):
     attributes['x'] = str(portal.coords[0])
     attributes['y'] = str(portal.coords[1])
     attributes['z'] = str(portal.coords[2])
+    attributes['z'] = str(portal.coords[3])
     attributes['direction'] = portal.direction
     attributes['desc'] = portal.desc
     attributes['inspect_desc'] = portal.inspect_desc

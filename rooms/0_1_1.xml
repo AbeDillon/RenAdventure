@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<room desc="An abandoned guard room.">
-<portal>door4</portal>
-<portal>heavy door</portal>
-<portal>door5</portal>
-<item>chest</item>
-</room>
