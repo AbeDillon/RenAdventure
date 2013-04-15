@@ -640,8 +640,8 @@ def say(room, player, object, noun, tags, engine):
     return messages
 
 def shout(room, player, object, noun, tags, engine):
-    text = "<sound> You shout %s </sound>" % noun
-    alt_text = "<sound> %s shouted %s </sound>" % (player.name, noun)
+    text = "<sound>You shout %s</sound>" % noun
+    alt_text = "<sound>%s shouted %s</sound>" % (player.name, noun)
 
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
@@ -657,7 +657,7 @@ def shout(room, player, object, noun, tags, engine):
     messages.append((player.name, text))
 
     for coords in trimmed_bubble:
-        for alt_player in engine._Rooms[coords].players.values():
+        for alt_player in engine._Rooms[coords].players:
             if alt_player != player.name:
                 messages.append((alt_player, alt_text))
 

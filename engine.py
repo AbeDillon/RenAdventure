@@ -241,7 +241,7 @@ class Engine:
 
                 for coords in self._Rooms: # Save the rooms to the save state directory
                     path = directory + 'rooms/%d_%d_%d_%d.xml' % coords
-                    loader.save_room(_Rooms[coords], path)
+                    loader.save_room(self._Rooms[coords], path)
 
                 self.logger.write_line("Saved game state to '%s'" % directory)
                 break
@@ -349,7 +349,7 @@ class Engine:
                         npcs[character] = self._Characters[character]
                     else:   # NPC is out of cycles
                         self._Old_NPC_Queue.put(self._Characters[character])
-                        self._Rooms[_Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
+                        self._Rooms[self._Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
                         self._Characters[character].cycles = 0 # Reset cycles to 0
                         del self._Characters[character] # Remove NPC from the list of active characters
             self._Characters_Lock.release()
@@ -405,7 +405,7 @@ class Engine:
                     self._Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
                     self.logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
 
-            elif ((len(_Rooms) / n) + 1) < len(npcs):
+            elif ((len(self._Rooms) / n) + 1) < len(npcs):
                 name = random.choice(npcs.keys())
                 npc = npcs[name]
                 del self._Characters[name] # Remove from the NPC list
