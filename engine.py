@@ -197,9 +197,24 @@ class Engine:
         # Add some NPCs to the bucket
         affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
         kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
+        
+        # affiliation = {'Obama': 1, 'Gottfried': 1, 'OReilly': 1, 'Kanye': 1, 'Burbiglia': 1}
+        # ermah = NPC('ermahgerd', (0,0,1,0), affiliation)
+        # pr = NPC('philosoraptor', (0,0,1,0), affiliation)
+        # lolcat = NPC('lolcat', (0,0,1,0), affiliation)
+        # hb = NPC('honeybadger', (0,0,1,0), affiliation)
+        # oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
+        # ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
 
         self._NPC_Bucket_Lock.acquire()
         self._NPC_Bucket['@mr_kanyewest'] = kanye
+        # self._NPC_Bucket['ermahgerd'] = ermah 
+        # self._NPC_Bucket['philosoraptor'] = pr
+        # self._NPC_Bucket['lolcat'] = lolcat
+        # self._NPC_Bucket['honeybadger'] = hb
+        # self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
+        # self._NPC_Bucket['conspiracykeanu'] = ck
+        
 
         npcs = self._NPC_Bucket.values()
         random.shuffle(npcs)
@@ -298,7 +313,7 @@ class Engine:
         messages = []
         while not self._MessageQueue.empty():
             message = self._MessageQueue.get()
-
+            
             messages.append(message)
 
             self.logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1]))

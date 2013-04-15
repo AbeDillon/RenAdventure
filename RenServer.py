@@ -825,6 +825,9 @@ class LobbyThread(threading.Thread):
                     _Player_OQueues_Lock.release()
                     
                 time.sleep(0.05)
+                
+            else:
+                time.sleep(0.05)
             
 
 if __name__ == "__main__":
