@@ -265,14 +265,23 @@ class Engine:
         self.logger.write_line("Created player '%s' at (%d,%d,%d,%d)" % (player.name, player.coords[0], player.coords[1], player.coords[2], player.coords[3]))
 
     def remove_player(self, name):
-        self._Characters_Lock.acquire()
-        player = self._Characters[name]
-        loader.save_player(player)  # Save the player
+        if name in self._Characters:
+            self._Characters_Lock.acquire()
+            player = self._Characters[name]
+            del self._Characters[name] # Remove the player from the list of players in the game
+            self._Characters_Lock.release()
 
-        self._Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
-        del self._Characters[name] # Remove the player from the list of players in the game
-        self._Characters_Lock.release()
+            self._Rooms[player.coords].players.remove(player.name) # Remove the player from the room they are in
+        elif name in self._Characters_In_Builder:
+            self._Characters_In_Builder_Lock.acquire()
+            player = self._Characters_In_Builder[name]
+            del self._Rooms[player.coords] # Remove the room that was being built since it wasn't finished
 
+            player.coords = player.prev_coords # Save the player in the previous room
+            del self._Characters_In_Builder[name] # Remove the player from the list of players
+            self._Characters_In_Builder_Lock.release()
+
+        loader.save_player(player) # Save the player
         self.logger.write_line("Removed player '%s'" % player.name)
 
     def put_commands(self, commands):
