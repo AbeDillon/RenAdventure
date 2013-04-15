@@ -4,7 +4,7 @@ import socket, sys
 import thread, threading, Queue
 import time, random
 import RAProtocol
-import engine
+import engine as engine_classes
 import os
 #import msvcrt
 import string
@@ -14,14 +14,14 @@ import Q2logging
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
-# _Player_Locations = {} #{playername: location} where location is "Lobby" or the name of a running world instance? ###IP
-# _Player_Loc_Lock = threading.RLock() #Lock for player locations dict. ###IP
+_Player_Locations = {} #{playername: location} where location is "Lobby" or the name of a running world instance? ###IP
+_Player_Loc_Lock = threading.RLock() #Lock for player locations dict. ###IP
 
 _Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
 
-#_Lobby_Queue = Queue.Queue() #Queue of Player chatting/commands for lobby? ###IP
+_Lobby_Queue = Queue.Queue() #Queue of Player chatting/commands for lobby? ###IP
 
 _MSG_Queue = Queue.Queue()
 
@@ -51,12 +51,17 @@ _User_Pings = {}
 
 _Server_Queue = Queue.Queue()
 
+engine = engine_classes.Engine('sandbox')
+
 def main():
     """
 
     """
     global _Logger
+    global engine
     # Initialize _Game_State
+
+    
     engine.init_game()
 
     print "Game State initialized"
@@ -218,6 +223,7 @@ class Login(threading.Thread):
         global _Banned_names
         global _Logger
         global _User_Pings
+        global engine
         # receive message
         logged_in = False
         input_data = RAProtocol.receiveMessage(conn)
@@ -291,7 +297,7 @@ class Login(threading.Thread):
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
-                oqueue.put(engine.engine_helper.get_room_text(player_name, location))  #####NEED FILTER
+                oqueue.put(engine_classes.engine_helper.get_room_text(player_name, location, engine))  #####NEED FILTER
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
@@ -403,6 +409,7 @@ class PlayerInput(threading.Thread):
         global _OutThreads
         global _Logger
         global _User_Pings
+        global engine
         #global _Lobby_Queue
         # receive message
         message = RAProtocol.receiveMessage(conn)
@@ -457,6 +464,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _User_Pings
         global _Player_OQueues_Lock
         global _Player_OQueues
+        global engine
 
         timeout = 15
         to_rem = []
@@ -602,6 +610,7 @@ class ServerActionThread(threading.Thread):
         """
         global _Server_Queue
         global _CMD_Queue
+        global engine
         done = False
         while not done:
             command = ''

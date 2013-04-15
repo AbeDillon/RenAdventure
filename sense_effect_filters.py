@@ -1,4 +1,4 @@
-import engine
+import engine as engine_classes
 import re
 import random
 
@@ -13,7 +13,7 @@ _Stack_Probability = {1: .50,
                       4: .87,
                       5: .95}
 
-def filter_messages(messages):
+def filter_messages(messages, engine):
     # Runs all of the messages through the appropriate filters
     filtered_messages = []
 
@@ -22,7 +22,7 @@ def filter_messages(messages):
         player = engine._Characters[player_name]
         engine._Characters_Lock.release()
 
-        if isinstance(player, engine.Player):   # Make sure that we are not looking at an NPC
+        if isinstance(player, engine_classes.Player):   # Make sure that we are not looking at an NPC
             filtered_message = ''
 
             while len(message) > 0:
