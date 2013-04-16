@@ -25,11 +25,6 @@ pass the extension to getFullinfo
 
 """
 
-# # Creates the directory "twitterCrawler" if it.'s not already there.
-# directories = os.listdir(os.getcwd())
-# if "logs\\fileCrawler\\fileCrawler" not in directories:
-#     os.mkdir((os.getcwd() + "\\logs\\fileCrawler\\fileCrawler"))
-
 logger = Q2logging.out_file_instance("logs\\fileCrawler\\fileCrawler")
 
 
