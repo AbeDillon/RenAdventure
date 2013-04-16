@@ -4,7 +4,7 @@ import socket, sys
 import thread, threading, Queue
 import time, random
 import RAProtocol
-import engine as engine_classes
+import engine_classes
 import os
 #import msvcrt
 import string
@@ -12,6 +12,7 @@ import loader
 import ssl
 import Q2logging
 import sense_effect_filters
+import engine
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
@@ -34,6 +35,9 @@ _Player_OQueues = {} # (mutex controlled)
 # key = (string)Player_Name : val = (Queue)Output_Queue
 _Player_OQueues_Lock = threading.RLock()
 
+_Player_Data = {} #Hold information until we actually add the player to the game.
+_Player_Data_Lock = threading.RLock()
+
 # We may want to keep track of threads
 _Threads = [] # mutex controlled
 _Threads_Lock = threading.RLock()
@@ -55,7 +59,7 @@ _Server_Queue = Queue.Queue()
 
 _World_list = {}
 
-engine = engine_classes.Engine('sandbox')
+game_engine = engine_classes.Engine('sandbox')
 
 _World_list['sandbox'] = engine #This world instance.
 
@@ -64,11 +68,11 @@ def main():
 
     """
     global _Logger
-    global engine
+    global game_engine
     # Initialize _Game_State
 
     
-    engine.init_game()
+    game_engine.init_game()
 
     print "Game State initialized"
     logger.write_line('Game State initialized')
@@ -140,9 +144,9 @@ def main():
             pass
 
         if command != None:
-            engine.put_commands([command])
+            game_engine.put_commands([command])
 
-        messages = engine.get_messages()
+        messages = game_engine.get_messages()
 
         if messages != []:
             distribute(messages)
@@ -239,10 +243,11 @@ class Login(threading.Thread):
         global _Banned_names
         global _Logger
         global _User_Pings
-        global engine
         global _Player_Loc_Lock
         global _Player_Locations
         global _World_list
+        global _Player_Data
+        global _Player_Data_Lock
         
         # receive message
         logged_in = False
@@ -269,6 +274,9 @@ class Login(threading.Thread):
                     _Player_Loc_Lock.acquire()
                     _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
                     _Player_Loc_Lock.release()
+                    _Player_Data_Lock.acquire()
+                    _Player_Data[player_name] = [] #[0]: location tuple, [1]: affiliation dict
+                    _Player_Data_Lock.release()
                     player_path = 'players/%s.xml'%player_name
                     try:
                         person = loader.load_player(player_path)
@@ -277,6 +285,9 @@ class Login(threading.Thread):
                         print "Error loading player file %s, file does not exist" % player_path
                     player_affil = person.affiliation #Load in the players affiliation
                     location = person.coords
+                    _Player_Data_Lock.acquire()
+                    _Player_Data[player_name].append(location) #Add the location tuple to the list.
+                    _Player_Data_Lock.release()
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
                     logger.write_line('User <%s> failed to authenticate.'%player_name)
@@ -308,17 +319,16 @@ class Login(threading.Thread):
                     _Player_Loc_Lock.acquire()
                     _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
                     _Player_Loc_Lock.release()
+                    _Player_Data_Lock.acquire()
+                    _Player_Data[player_name].append(location) #Add the location tuple to the list.
                 
             if logged_in:
                 _User_Pings_Lock.acquire()
                 _User_Pings[player_name] = time.time()
                 _User_Pings_Lock.release()
-                if player_affil != {}: #Blank dict:
-                # *load player object (to be added, create default player for now)
-                    engine.make_player(player_name, location, player_affil)
-
-                else: #Player did not provide an affiliation?
-                    engine.make_player(player_name, location) #Blank affiliation, use default?
+                _Player_Data_Lock.acquire()
+                _Player_Data.append(player_affil) #This may be {}, but we check for that later.
+                _Player_Data_Lock.release()
 
 
                 # *create player state and add to _Player_States (to be added)
@@ -442,7 +452,7 @@ class PlayerInput(threading.Thread):
         global _OutThreads
         global _Logger
         global _User_Pings
-        global engine
+        global game_engine
         global _Player_Loc_Lock
         global _Player_Locations
         global _Lobby_Queue
@@ -478,7 +488,7 @@ class PlayerInput(threading.Thread):
                 _OutThreads[self.name] = False
                 _Logged_in.remove(self.name)
                 logger.write_line('Removing <%s> from _Logged_in' % self.name)
-                engine.remove_player(self.name) #Remove player existence from gamestate.
+                game_engine.remove_player(self.name) #Remove player existence from gamestate.
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
@@ -497,7 +507,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _User_Pings_Lock
         global _Player_OQueues_Lock
         global _Player_OQueues
-        global engine
+        global game_engine
 
         timeout = 15
         to_rem = []
@@ -510,10 +520,10 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
                     print 'Player timed out: <%s>' % player
                     logger.write_line('Removing <%s> from game: Timed out' % player)
-                    engine._Characters_Lock.acquire()
-                    if player in engine._Characters or player in engine._Characters_In_Builder:
-                        engine.remove_player(player)
-                    engine._Characters_Lock.release()
+                    game_engine._Characters_Lock.acquire()
+                    if player in game_engine._Characters or player in game_engine._Characters_In_Builder:
+                        game_engine.remove_player(player)
+                    game_engine._Characters_Lock.release()
                     if player in _Logged_in:
                         _Logged_in.remove(player)
                     to_rem.append(player)
@@ -644,7 +654,7 @@ class ServerActionThread(threading.Thread):
         """
         global _Server_Queue
         global _CMD_Queue
-        global engine
+        global game_engine
         done = False
         while not done:
             command = ''
@@ -657,7 +667,7 @@ class ServerActionThread(threading.Thread):
                 if command.lower() == 'quit':
                     print 'Got quit, shutting down server.'
                     done = True
-                    engine.shutdown_game()
+                    game_engine.shutdown_game()
                     break
                 else: #No other commands presently.
                     print 'Got command: %s' % command
@@ -759,27 +769,22 @@ class LobbyThread(threading.Thread):
         global _Player_Loc_Lock
         global _Player_OQueues_Lock
         global _Player_OQueues
-        global engine
+        global game_engine
         global _Players
         global _Players_Lock
+        global _Player_Data
+        global _Player_Data_Lock
         
         while 1:
             if not _Lobby_Queue.empty():
                 msg = _Lobby_Queue.get()
                 if "join" in msg[1]: #Syntax format: <player>: join (worldname)
-                    player = msg[0]
+                    player = msg[0] #Player name
+                    _Player_Data_Lock.acquire()
+                    location = _Player_Data[player][0] #Location
+                    affil = _Player_Data[player][1] #Affiliation
+                    _Player_Data_Lock.release()
                     message = msg[1]
-                    this_person = 'None'
-                    engine._Characters_Lock.acquire()
-                    this_person = engine._Characters.get(player, None) #Get this person's player object and find the coordinates.
-                    engine._Characters_Lock.release()
-                            
-                    if this_person != 'None': #We found them, yay.
-
-                        location = this_person.coords  #Get the player's coordinates
-                        
-                    else:
-                        location = (0, 0, 1, 0)
                     
                     cmd, world = msg[1].split()
                     if world in _World_list: #This is a world we know about, let's "move" the player here.
@@ -787,12 +792,22 @@ class LobbyThread(threading.Thread):
                         _Player_Locations[player] = world #Route this players messages to that world
                         _Player_Loc_Lock.release()
                         _Player_OQueues_Lock.acquire()
-                        temp = [(player,engine_classes.engine_helper.get_room_text(player, location, engine))]
+                        if affil != {}:
+                            game_engine.make_player(player, location, affil) #Make with given affiliation
+                        else:
+                            game_engine.make_player(player, location) #Make with default
+                            
+                        _Player_Data_Lock.acquire()
+                        _Player_Data[player] = [] #Reset the list for this person
+                        _Player_Data_Lock.release()
+                            
+                        temp = [(player,engine_classes.engine_helper.get_room_text(player, location, game_engine))]
                         
-                        response = sense_effect_filters.filter_messages(temp, engine)
+                        response = sense_effect_filters.filter_messages(temp, game_engine)
                         output = response[0][1]
                         _Player_OQueues[player].put(output)  #Give them the text to the room.
                         _Player_OQueues_Lock.release()
+                      
                 
                 elif msg[1] == "_ping_": #This is just a ping.
                     _User_Pings_Lock.acquire()
