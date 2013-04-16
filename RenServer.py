@@ -59,9 +59,9 @@ _Server_Queue = Queue.Queue()
 
 _World_list = {}
 
-game_engine = engine_classes.Engine('sandbox')
+game_engine = engine.Engine('sandbox')
 
-_World_list['sandbox'] = engine #This world instance.
+_World_list['sandbox'] = game_engine #This world instance.
 
 def main():
     """
@@ -163,6 +163,7 @@ def distribute(messages):
     for message in messages:
         player = message[0]
         text = message[1]
+        
         if player in _Player_OQueues:
             _Player_Loc_Lock.acquire()
             if _Player_Locations[player] != 'lobby':
@@ -170,6 +171,8 @@ def distribute(messages):
             else:
                 pass
             _Player_Loc_Lock.release()
+        else:
+            pass
 
     _Player_OQueues_Lock.release()
 
@@ -320,14 +323,16 @@ class Login(threading.Thread):
                     _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
                     _Player_Loc_Lock.release()
                     _Player_Data_Lock.acquire()
+                    _Player_Data[player_name] = []
                     _Player_Data[player_name].append(location) #Add the location tuple to the list.
+                    _Player_Data_Lock.release()
                 
             if logged_in:
                 _User_Pings_Lock.acquire()
                 _User_Pings[player_name] = time.time()
                 _User_Pings_Lock.release()
                 _Player_Data_Lock.acquire()
-                _Player_Data.append(player_affil) #This may be {}, but we check for that later.
+                _Player_Data[player_name].append(player_affil) #This may be {}, but we check for that later.
                 _Player_Data_Lock.release()
 
 
@@ -488,7 +493,10 @@ class PlayerInput(threading.Thread):
                 _OutThreads[self.name] = False
                 _Logged_in.remove(self.name)
                 logger.write_line('Removing <%s> from _Logged_in' % self.name)
-                game_engine.remove_player(self.name) #Remove player existence from gamestate.
+                game_engine._Characters_Lock.acquire()
+                if self.name in game_engine._Characters: #This player has been added to the game
+                    game_engine.remove_player(self.name) #Remove player existence from gamestate.
+                game_engine._Characters_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
@@ -774,6 +782,7 @@ class LobbyThread(threading.Thread):
         global _Players_Lock
         global _Player_Data
         global _Player_Data_Lock
+        global _CMD_Queue
         
         while 1:
             if not _Lobby_Queue.empty():
@@ -791,7 +800,7 @@ class LobbyThread(threading.Thread):
                         _Player_Loc_Lock.acquire()
                         _Player_Locations[player] = world #Route this players messages to that world
                         _Player_Loc_Lock.release()
-                        _Player_OQueues_Lock.acquire()
+
                         if affil != {}:
                             game_engine.make_player(player, location, affil) #Make with given affiliation
                         else:
@@ -801,12 +810,7 @@ class LobbyThread(threading.Thread):
                         _Player_Data[player] = [] #Reset the list for this person
                         _Player_Data_Lock.release()
                             
-                        temp = [(player,engine_classes.engine_helper.get_room_text(player, location, game_engine))]
-                        
-                        response = sense_effect_filters.filter_messages(temp, game_engine)
-                        output = response[0][1]
-                        _Player_OQueues[player].put(output)  #Give them the text to the room.
-                        _Player_OQueues_Lock.release()
+                        _CMD_Queue.put((player, 'look'))
                       
                 
                 elif msg[1] == "_ping_": #This is just a ping.
