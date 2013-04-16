@@ -15,7 +15,7 @@ def do_command(player_name, command, tags, engine):
                   'drop': drop,
                   'unlock': unlock,
                   'lock': lock,
-                  'inventory:': inventory,
+                  'inventory': inventory,
                   'say': say,
                   'shout': shout,
                   'damage': damage,
@@ -255,7 +255,7 @@ def npc_action(npc, engine):
 #       'i' = player items
 
 _ValidLookUp = {'look': ('pri', {'hidden': True}),
-                'take': ('r', {'hidden': True, 'portable': False}),
+                'take': ('r', {'hidden': True}),
                 'drop': ('i', {'hidden': True}),
                 'go': ('p', {'hidden': True}),
                 'open': ('ir', {'hidden': True}),
@@ -290,10 +290,10 @@ def get_valid_objects(player, room, verb, engine):
 
     for object in valid_objects:
         for attribute, value in enumerate(cull):
-            if isinstance(object, engine_classes.Item):    # Items are the only object that have all attributes
-                if attribute == 'portable' and object.portable == value:
-                    valid_objects.remove(object)
-                    break
+#            if isinstance(object, engine_classes.Item):    # Items are the only object that have all attributes
+#                if attribute == 'portable' and object.portable == value:
+#                    valid_objects.remove(object)
+#                    break
 
             if attribute == 'hidden' and object.hidden == value:
                 valid_objects.remove(object)
@@ -389,6 +389,8 @@ def take(room, player, object, noun, tags, engine):
 
     if object == None:
         text = "There is no %s to take." % noun
+    elif not object.portable:
+        text = "You can't take the %s." % noun
     else:
         # Move object from room to player
         add_item(player, object.name)
@@ -629,6 +631,7 @@ def lock(room, player, object, noun, tags, engine):
     return messages
 
 def inventory(room, player, object, noun, tags, engine):
+    print 'test'
     if len(player.items) > 0:
         text = "Inventory:"
         for item in player.items:
@@ -638,8 +641,6 @@ def inventory(room, player, object, noun, tags, engine):
                 text += " x%d" % player.items[item]
     else:
         text = "Your inventory is empty."
-
-    #text = '<sight>' + text + '</sight>'
 
     return [(player.name, text)]
 
