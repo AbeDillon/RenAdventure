@@ -723,7 +723,7 @@ def damage(room, attacker, object, noun, tags, engine):
             player.coords = (0,0,1,0)
             room.players.remove(player.name) # Remove player from room
             engine._Rooms[(0,0,1,0)].players.append(player.name) # Add player to new room
-            text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
+            text += "\n%s" % get_room_text(player.name, (0,0,1,0), engine)    # Send the room description
             messages.append((player.name, '_play_ death'))    # Send the death sound
 
         messages.append((player.name, text))

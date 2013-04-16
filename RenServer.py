@@ -11,6 +11,7 @@ import string
 import loader
 import ssl
 import Q2logging
+import sense_effect_filters
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
@@ -48,10 +49,15 @@ _Logged_in = [] #List with player names
 _Banned_names = []
 
 _User_Pings = {}
+_User_Pings_Lock = threading.RLock()
 
 _Server_Queue = Queue.Queue()
 
+_World_list = {}
+
 engine = engine_classes.Engine('sandbox')
+
+_World_list['sandbox'] = engine #This world instance.
 
 def main():
     """
@@ -110,6 +116,11 @@ def main():
     print 'Player timeout thread spawned'
     logger.write_line('Player timeout thread spawned')
     
+    lobby = LobbyThread()
+    lobby.start()
+    print "Lobby message thread spawned"
+    logger.write_line("Lobby message thread spawned")
+    
     # Spin-off NPC Spawning thread
 
     # Spin-off Item Spawning thread
@@ -149,7 +160,12 @@ def distribute(messages):
         player = message[0]
         text = message[1]
         if player in _Player_OQueues:
-            _Player_OQueues[player].put(text)
+            _Player_Loc_Lock.acquire()
+            if _Player_Locations[player] != 'lobby':
+                _Player_OQueues[player].put(text)
+            else:
+                pass
+            _Player_Loc_Lock.release()
 
     _Player_OQueues_Lock.release()
 
@@ -224,6 +240,10 @@ class Login(threading.Thread):
         global _Logger
         global _User_Pings
         global engine
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _World_list
+        
         # receive message
         logged_in = False
         input_data = RAProtocol.receiveMessage(conn)
@@ -246,6 +266,9 @@ class Login(threading.Thread):
                     logger.write_line('User <%s> logged in.'%player_name)
                     logged_in = True
                     _Logged_in.append(player_name)
+                    _Player_Loc_Lock.acquire()
+                    _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
+                    _Player_Loc_Lock.release()
                     player_path = 'players/%s.xml'%player_name
                     try:
                         person = loader.load_player(player_path)
@@ -282,10 +305,14 @@ class Login(threading.Thread):
                     location = (0,0,1,0)
                     logged_in = True
                     _Logged_in.append(player_name)
+                    _Player_Loc_Lock.acquire()
+                    _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
+                    _Player_Loc_Lock.release()
                 
             if logged_in:
-
+                _User_Pings_Lock.acquire()
                 _User_Pings[player_name] = time.time()
+                _User_Pings_Lock.release()
                 if player_affil != {}: #Blank dict:
                 # *load player object (to be added, create default player for now)
                     engine.make_player(player_name, location, player_affil)
@@ -297,7 +324,13 @@ class Login(threading.Thread):
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
-                oqueue.put(engine_classes.engine_helper.get_room_text(player_name, location, engine))  #####NEED FILTER
+                line = "\r\n"
+                for world in _World_list:
+                    line += "\t"+world+"\r\n"
+                
+                oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
+                    
+                #oqueue.put(engine_classes.engine_helper.get_room_text(player_name, location, engine))  #####NEED FILTER
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
@@ -410,36 +443,33 @@ class PlayerInput(threading.Thread):
         global _Logger
         global _User_Pings
         global engine
-        #global _Lobby_Queue
-        # receive message
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _Lobby_Queue
+        
         message = RAProtocol.receiveMessage(conn)
 
         if message != '_ping_':
 
             # add it to the queue
             if message != 'quit':
-                # _Player_Loc_Lock.acquire() ###IP
-                # location = _Player_Locations.get(self.name, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
-                # _Player_Loc_Lock.release() ###IP
+                _Player_Loc_Lock.acquire() ###IP
+                location = _Player_Locations.get(self.name, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
+                _Player_Loc_Lock.release() ###IP
                 
-                # if location == 'lobby': #Player is in the lobby ###IP
-                    # try:
-                        # _Lobby_Queue.put((self.name, message))
-                    # except:
-                        # pass
-                # elif location == 'world1': #Player is in the game instance known as world1 ###IP
-                    # try:
-                        # _CMD_Queue.put((self.name, message))
-                        # logger.write_line('Putting in the command queue: <%s>; "%s"'%(self.name, message))
-                    # except:
-                        # pass
+                if location == 'lobby': #Player is in the lobby ###IP
+                    try:
+                        _Lobby_Queue.put((self.name, message))
+                        logger.write_line("Putting in the lobby message queue: <%s>; '%s'" % (self.name, message))
+                    except:
+                        pass
+                elif location == 'sandbox': #Player is in the game instance known as sandbox ###IP
+                    try:
+                        _CMD_Queue.put((self.name, message))
+                        logger.write_line('Putting in the command queue: <%s>; "%s"'%(self.name, message))
+                    except:
+                        pass
                         
-                        
-                try:
-                    _CMD_Queue.put((self.name, message))
-                    logger.write_line('Putting in the command queue: <%s>; "%s"' % (self.name, message))
-                except:
-                    pass
 
                 conn.close()
 
@@ -451,7 +481,9 @@ class PlayerInput(threading.Thread):
                 engine.remove_player(self.name) #Remove player existence from gamestate.
 
         elif message == '_ping_': #Keepalive ping
+            _User_Pings_Lock.acquire()
             _User_Pings[self.name] = time.time()
+            _User_Pings_Lock.release()
             logger.write_line("Got a ping from <%s>"%self.name)
 
 class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
@@ -462,6 +494,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _OutThreads
         global _Logger
         global _User_Pings
+        global _User_Pings_Lock
         global _Player_OQueues_Lock
         global _Player_OQueues
         global engine
@@ -469,6 +502,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         timeout = 15
         to_rem = []
         while 1:
+            _User_Pings_Lock.acquire()
             for person in to_rem:
                 del _User_Pings[person]
             to_rem = []
@@ -477,7 +511,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     print 'Player timed out: <%s>' % player
                     logger.write_line('Removing <%s> from game: Timed out' % player)
                     engine._Characters_Lock.acquire()
-                    if player in engine._Characters:
+                    if player in engine._Characters or player in engine._Characters_In_Builder:
                         engine.remove_player(player)
                     engine._Characters_Lock.release()
                     if player in _Logged_in:
@@ -486,7 +520,7 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     _Player_OQueues_Lock.acquire()
                     _Player_OQueues[player].put('Error, it appears this person has timed out.')
                     _Player_OQueues_Lock.release()
-
+            _User_Pings_Lock.release()
             time.sleep(0.05)
 
 class PlayerOutput(threading.Thread):
@@ -714,6 +748,87 @@ class TimedScriptThread(threading.Thread):
         """
         # Wait until time.time() >= time
         # run script
+        
+        
+class LobbyThread(threading.Thread):
+
+    def run(self):
+        global _Lobby_Queue
+        global _World_list
+        global _Player_Locations
+        global _Player_Loc_Lock
+        global _Player_OQueues_Lock
+        global _Player_OQueues
+        global engine
+        global _Players
+        global _Players_Lock
+        
+        while 1:
+            if not _Lobby_Queue.empty():
+                msg = _Lobby_Queue.get()
+                if "join" in msg[1]: #Syntax format: <player>: join (worldname)
+                    player = msg[0]
+                    message = msg[1]
+                    this_person = 'None'
+                    engine._Characters_Lock.acquire()
+                    this_person = engine._Characters.get(player, None) #Get this person's player object and find the coordinates.
+                    engine._Characters_Lock.release()
+                            
+                    if this_person != 'None': #We found them, yay.
+
+                        location = this_person.coords  #Get the player's coordinates
+                        
+                    else:
+                        location = (0, 0, 1, 0)
+                    
+                    cmd, world = msg[1].split()
+                    if world in _World_list: #This is a world we know about, let's "move" the player here.
+                        _Player_Loc_Lock.acquire()
+                        _Player_Locations[player] = world #Route this players messages to that world
+                        _Player_Loc_Lock.release()
+                        _Player_OQueues_Lock.acquire()
+                        temp = [(player,engine_classes.engine_helper.get_room_text(player, location, engine))]
+                        
+                        response = sense_effect_filters.filter_messages(temp, engine)
+                        output = response[0][1]
+                        _Player_OQueues[player].put(output)  #Give them the text to the room.
+                        _Player_OQueues_Lock.release()
+                
+                elif msg[1] == "_ping_": #This is just a ping.
+                    _User_Pings_Lock.acquire()
+                    _User_Pings[self.name] = time.time()
+                    _User_Pings_Lock.release()
+                    logger.write_line("Got a ping from <%s>"% msg[0])
+                    
+                else: #This is a regular message for now.
+                    player = msg[0]
+                    message = msg[1]
+
+                    _Player_OQueues_Lock.acquire()
+                    for person in _Player_OQueues:
+                        if person != player: #We want them to get the message, they weren't the ones who said it.
+                            output = "<"+player+">: "+message
+                            _Player_Loc_Lock.acquire()
+                            if _Player_Locations[person] == 'lobby': #They are in the lobby and so should get this message
+                                _Player_OQueues[person].put(output)
+                            else: #They are not in the lobby
+                                pass
+                            _Player_Loc_Lock.release()
+                        else: #They are the person who said the message, send them nothing?
+                            pass
+                            # _Player_Loc_Lock.acquire()
+                            # if _Player_Locations[person] == 'lobby': #Person who said it, still in lobby
+                                # output = "> "
+                                # _Player_OQueues[person].put(output)
+                            # _Player_Loc_Lock.release()
+                            
+                    _Player_OQueues_Lock.release()
+                    
+                time.sleep(0.05)
+                
+            else:
+                time.sleep(0.05)
+            
 
 if __name__ == "__main__":
     main()
