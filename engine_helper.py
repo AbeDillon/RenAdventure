@@ -1,8 +1,8 @@
 __author__ = 'EKing'
 
-import engine as engine_classes
+import engine_classes
 import roomBuilderThread, sense_effect_filters
-import thread, threading, random
+import threading, random
 import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
@@ -485,7 +485,7 @@ def go(room, player, object, noun, tags, engine):
         engine._Characters_Lock.release()
 
         engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
-        builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+        builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
         builder_thread.start()  # Spin off builder thread
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
