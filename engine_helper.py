@@ -8,6 +8,22 @@ import Queue
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
 def do_command(player_name, command, tags, engine):
+    action_map = {'look': look,
+                  'take': take,
+                  'open': open,
+                  'go': go,
+                  'drop': drop,
+                  'unlock': unlock,
+                  'lock': lock,
+                  'inventory:': inventory,
+                  'say': say,
+                  'shout': shout,
+                  'damage': damage,
+                  'bad_command': bad_command,
+                  'reveal': reveal,
+                  'hide': hide,
+                  'add_status_effect': add_status_effect,
+                  'lose_status_effect': lose_status_effect}
 
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -49,8 +65,10 @@ def do_command(player_name, command, tags, engine):
                 engine.put_commands([command]) # Push the command to the command queue
     else:
         noun_string = ' '.join(nouns)
-        script = verb + "(room, player, object, noun_string, tags, engine)"
-        messages = eval(script)
+        action = action_map.get(verb, None)
+
+        if action != None:
+            messages = action(room, player, object, noun_string, tags, engine)
 
     return sense_effect_filters.filter_messages(messages, engine)
 
@@ -357,7 +375,7 @@ def get_object(nouns, valid_objects):
 def look(room, player, object, noun, tags, engine):
     if object == None:
         if 'room' in noun or noun == '':
-            text = get_room_text(player.name, player.coords)
+            text = get_room_text(player.name, player.coords, engine)
         else:
             text = "There is no %s here." % noun
     else:

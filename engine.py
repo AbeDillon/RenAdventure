@@ -137,7 +137,6 @@ class NPC:
         twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
         twitter_file.close()
 
-        
 class Engine:
 
     def __init__(self, name):

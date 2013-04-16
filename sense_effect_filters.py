@@ -49,6 +49,11 @@ def filter_messages(messages, engine):
 
 def filter_message_segment(player, message, tag):
     # Runs the segment through the appropriate filters
+    filter_map = {'blind': blind,
+                  'deaf': deaf,
+                  'hallucinating': hallucinating,
+                  'leet': leet}
+
     tag = tag.replace('<', '')
     tag = tag.replace('>', '')
 
@@ -56,8 +61,10 @@ def filter_message_segment(player, message, tag):
         sense = _Sense_Effect_Map.get(effect, None) # Get the affected sense
         if sense == tag:
             stacks = player.sense_effects[effect]
-            script = effect + '(message, stacks)'
-            message = eval(script) # Apply the filter to the message
+            filter_method = filter_map.get(effect, None)
+
+            if filter_method != None:
+                message = filter_method(message, stacks)
 
     return message
 
