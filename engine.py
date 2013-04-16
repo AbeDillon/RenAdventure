@@ -214,7 +214,7 @@ class Engine:
 
                         self._Rooms[player.coords].players.append(player.name) # Add the player to the room
 
-                        self._MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords)))   # Put room description in the message queue
+                        self._MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords, self)))   # Put room description in the message queue
 
                         self.logger.write_line("Player (" + player.name + ") is done building, moved back to game at coordinates (%d,%d,%d,%d)." % player.coords)
                     else:
