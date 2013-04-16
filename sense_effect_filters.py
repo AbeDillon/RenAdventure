@@ -40,7 +40,7 @@ def filter_messages(messages, engine):
                         message = ''
                     else:
                         tag_string = message[:tag_index] # Get the segment that is before the next tag
-                        message.replace(tag_string, '')
+                        message = message.replace(tag_string, '')
                         filtered_message += tag_string
 
             filtered_messages.append((player.name, filtered_message))
