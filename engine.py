@@ -73,6 +73,8 @@ class Engine:
 #        hb = NPC('honeybadger', (0,0,1,0), affiliation)
 #        oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
 #        ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
+#        ayb = NPC("allyourbase", (0,0,1,0), affiliation)
+#        xyz = NPC("inyourbase", (0,0,1,0), affiliation)
 
         self._NPC_Bucket_Lock.acquire()
         self._NPC_Bucket['@mr_kanyewest'] = kanye
@@ -82,6 +84,8 @@ class Engine:
 #        self._NPC_Bucket['honeybadger'] = hb
 #        self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
 #        self._NPC_Bucket['conspiracykeanu'] = ck
+#        self._NPC_Bucket['allyourbase] = ayb
+#        self._NPC_Bucket['inyourbase'] = xyz
         
 
         npcs = self._NPC_Bucket.values()
