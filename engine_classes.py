@@ -44,7 +44,7 @@ class Portal:
     - Hidden (bool)
     - Editors
     '''
-    def __init__(self, name, direction = None, desc = "", inspect_desc = "", coords = (0,0,0,0), scripts = {}, locked = False, hidden = False, key = '' editors=[]):
+    def __init__(self, name, direction = None, desc = "", inspect_desc = "", coords = (0,0,0,0), scripts = {}, locked = False, hidden = False, key = '', editors=[]):
         self.name = name.lower()
         self.direction = direction
         self.desc = desc
