@@ -8,11 +8,13 @@ class Room:
     - Items
     - Players
     - NPCs
+    - Editors = []
     '''
-    def __init__(self, desc, portals, items, players, npcs):
+    def __init__(self, desc, portals, items, players, npcs, editors = []):
         self.desc = desc
         self.players = players
         self.npcs = npcs
+        self.editors = editors
 
         self.portals = {}
         for portal in portals:
@@ -35,13 +37,14 @@ class Portal:
     - Direction (north, south, east, west, up and down)
     - Description
     - Inspect Description
-    - Coordinates (coordinates that the portal lead to (x,y,z))
+    - Coordinates (coordinates that the portal lead to (x,y,z,a))
     - Action Scripts (ex. {'take': [['move', 'boulder'], ['move', 'monster']})
     - Locked (bool)
     - Key
     - Hidden (bool)
+    - Editors
     '''
-    def __init__(self, name, direction, desc, inspect_desc, coords, scripts = {}, locked = False, hidden = False, key = ''):
+    def __init__(self, name, direction = None, desc = "", inspect_desc = "", coords = (0,0,0,0), scripts = {}, locked = False, hidden = False, key = '' editors=[]):
         self.name = name.lower()
         self.direction = direction
         self.desc = desc
@@ -51,6 +54,7 @@ class Portal:
         self.locked = locked
         self.hidden = hidden
         self.key = key
+        self.editors = editors
 
 class Item:
     '''
@@ -61,13 +65,14 @@ class Item:
     - Action Scripts (ex. {'take': [['move', 'boulder'], ['move', 'monster']})
     - Portable (bool)
     - Hidden (bool)
+    - Editors = []
 
     - Container (bool)
     - Locked (bool)
     - Key
     - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = {}):
+    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = {}, editors = []):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
@@ -77,7 +82,8 @@ class Item:
         self.locked = locked
         self.key = key
         self.scripts = scripts
-
+        self.editors = editors
+        
         self.items = {}
         for item in items:
             if item in self.items:
@@ -97,14 +103,14 @@ class Player:
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30):
+    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30, editors=[]):
         self.name = name.lower()
         self.coords = coords
         self.prev_coords = prev_coords
         self.fih = fih
         self.affiliation = affiliation
         self.sense_effects = sense_effects
-
+        self.editors = editors
         self.items = {}
         for item in items:
             if item in self.items:
@@ -116,11 +122,13 @@ class NPC:
     '''
     Attributes:
     - Name
+    - Editors
     - Coordinates
     - Affiliation (dictionary of opinion of each person)
     '''
-    def __init__(self, name, coords, affiliation, tweets = None):
+    def __init__(self, name, coords, affiliation, tweets = None, editors = []):
         self.name = name.lower()
+        self.editors = editors
         self.coords = coords
         self.affiliation = affiliation
         self.tweets = []
