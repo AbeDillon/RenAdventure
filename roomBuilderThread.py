@@ -63,6 +63,8 @@ class BuilderThread(threading.Thread):
         self.addItems()
         self.logger.write_line('skips adding NPC WE NEED BUIDLER/SELECTOR.')
         #add functionality for placing NPCs
+        self.logger.write_line('sent to getEditors function')
+        self.getEditors()
         self.logger.write_line('Sent to reviewObject function.')
         self.reviewObject()
         self.logger.write_line('Sent to makeRoom function.')
@@ -413,46 +415,60 @@ class BuilderThread(threading.Thread):
         function to take name and check if it exists or not returns tuple (name, T/F flag)       
         """
         
-        self.logger.write_line('enter checkName function')
+        self.logger.write_line('enter checkName function with type = %s' % self.type)
         
         # Get desired name
         text = '\n' +textwrap.fill ('Enter a name for the %s' % self.type , width=100).strip()
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
+        name = str(name)
         
         exist_flag = False
-
-        self.engine._Characters_Lock.acquire()
-        self.logger.write_line('characters lock acquired')
-        if name in self.engine._Characters:
-            exist_flag = True
-            self.logger.write_line('name in characters')
-        self.engine._Characters_Lock.release()  
-        self.logger.write_line('name checked characters lock released')          
         
-        if exist_flag == False:
-            self.engine._Objects_Lock.acquire()
-            self.logger.write_line('objects lock acquired')
-            if name in self.engine._Objects:            
-                # check it is proper object type
-                if self.type in ['item', 'key']:
-                    if isinstance(self.engine._Objects[name], Item) == True:
-                        exist_flag = True                    
-                if self.type == 'portal':
-                    if isinstance(self.engine._Objects[name], Portal) == True:
-                        exist_flag = True
-                self.logger.write_line('name in objects')                       
-            self.engine._Objects_Lock.release()
-            self.logger.write_line('name checked objects lock released')
+        if self.type == 'player':
+            self.engine._Characters_Lock.acquire()
+            try:
+                if isinstance(self.engine._Characters[name], Player) == True:
+                    exist_flag = True
+                    self.logger.write_line('is instance Player passed')
+            except:
+                self.logger.write_line('is instance Player failed')
+                pass
+            self.engine._Characters_Lock.release()
             
-        if exist_flag == False:
+        if self.type in ['item', 'key']:
+            self.engine._Objects_Lock.acquire()
+            try:
+                if isinstance(self.engine._Objects[name], Item) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Objects_Lock.release()
+            
+        if self.type == 'portal':
+            self.engine._Objects_Lock.acquire()
+            try:
+                if isinstance(self.engine._Objects[name], Portal) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Objects_Lock.release()
+                
+        if self.type == 'npc':
+            self.engine._Characters_Lock.acquire()
             self.engine._NPC_Bucket_Lock.acquire()
-            self.logger.write_line('NPC Bucket Lock acquired')
-            if name in self.engine.NPC_bucket:
-                exist_flag = True
-                self.logger.write_line('name in NPC Bucket')
+            try:
+                if isinstance(self.engine._Characters[name], NPC) == True:
+                    exist_flag = True
+            except:
+                pass
+            try:
+                if isinstance(self.engine._NPC_Bucket[name], NPC) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Characters_Lock.release()
             self.engine._NPC_Bucket_Lock.release()
-            self.logger.write_line('name checked NPC Bucket lock released.')
             
         if exist_flag == True:
             self.logger.write_line('exiting checkName returned ( %s, True )' % str(name))
@@ -540,6 +556,81 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('prototype[direction] written, return %s, exiting getDirection function' % direction)
         return direction
 
+    def getEditors(self):
+        """Function to assign editor permisions"""
+        self.logger.write_line('entered getEditors function')
+        
+        # Create new list of editors with creating player added by default
+        if 'editors' not in self.prototype:
+            self.prototype['editors'] = [self.player_name]
+            self.logger.write_line('established editors list with %s as initial entry.'% str(self.player_name))
+        
+        editors = self.prototype['editors']
+        text = ""
+        if len(editors) >= 1:            
+            for n , editor in enumerate(editors):
+                if len(editors) == 1:
+                    text = '%s has editor privileges for this %s.' % (editor, self.type)
+                elif len(editors) == 2:
+                    if n == 0:
+                        text += '%s ' % editor
+                    if n == 1:
+                        text += 'and %s have editor permisions for this %s' % (editor, self.type)
+                elif len(editors) > 2:
+                    if n == (len(editors) - 1):
+                        text += ' and %s have editor privileges for this %s' % (editor, self.type)
+                    else:
+                        text += '%s, ' % editor
+        text += '  Do you want to make any changes ?  y or n '
+        text = '\n' + textwrap.fill(text, width= 100)
+        ans = self.get_valid_response(text)
+        if ans == 'yes':
+            # send to change list function
+            editors = self.changeList(editors)
+        
+        # write to prototype
+        self.prototype['editors'] = editors
+            
+    def changeList(self, list):
+        my_list = list
+        while 1:        
+            
+            list_en = enumerate(list, start = 1)            
+            # Print current list with number.
+            if len(list) == 0:
+                self.send_message_to_player('The List is Empty.')
+            for item in enumerate(list, start = 1):
+                i_num = item[0]
+                value = item[1]
+                self.send_message_to_player('%d.  %s' % (i_num, str(value)))
+            # prompt user
+            prompt = '\n' + textwrap.fill('You can [a]dd or [r]emove items from the list.  You can also be [d]one.  Enter your action letter followed '
+                                    'by a space and the number of the item you wish to perform the action on.  For example to remove item 1 you would '
+                                    'type "r 1".', width= 100)
+            self.send_message_to_player(prompt)            
+            
+            ans = self.get_cmd_from_player().split(' ')
+            action = ans[0]
+            try:
+                num = int(ans[1])
+            except:
+                print '2nd part must be integer in list'
+            
+            if action == 'd': # done
+                break
+            if action == 'r': # remove
+                list.remove(list[num-1])
+            if action == 'a': # add
+                temp_type = self.type
+                self.type = 'player'
+                tple = self.checkName()
+                self.type = temp_type
+                if tple[1] == True:
+                    list.append(tple[0])
+                 
+            
+        return list
+    
     def getTwitter(self):
         """ Function to get a valid Twitter user handle
         creates file for valid handle that crawler accesses and writes to """ 
@@ -905,11 +996,11 @@ class BuilderThread(threading.Thread):
         
         # using key list gives me control over the order in which things display.  lending uniformity to game experience        
         key_list = ['name', 'description', 'inspection_description', 'direction', 'coordinates', 'portable', 'hidden', 'container',
-                    'locked', 'key', 'items', 'scripts', 'npc', 'twitter', 'affiliation' ]
+                    'locked', 'key', 'items', 'scripts', 'npc', 'twitter', 'affiliation', 'editors' ]
         #  keyword : function to run
         dispatcher = {'name': self.addName, 'description': self.addDescription, 'inspection description': self.addInspectionDescription, 'direction': [self.getDirection, self.assignCoords],
                        'coordinates': None, 'portable':self.isPortable, 'hidden':self.isHidden, 'container':self.isContainer,'locked':self.isLocked, 'key':self.addKey, 
-                       'items':None, 'scripts':None, 'npc':None, 'twitter': self.getTwitter, 'affiliation':self.getAffiliation}
+                       'items':None, 'scripts':None, 'npc':None, 'twitter': self.getTwitter, 'affiliation':self.getAffiliation, 'editors':self.getEditors}
         
         while True:
             # display prototype
@@ -925,10 +1016,10 @@ class BuilderThread(threading.Thread):
             
             if ans != 'submit':
                 if ans in self.prototype:
-                    if isinstance(dispatcher[ans], list):
+                    if isinstance(dispatcher[ans], list): # is list of functions to run
                         for i in dispatcher[ans]:
                             if i == self.assignCoords:
-                                i(self.prototype['direction'])
+                                i(self.prototype['direction'])# the assignCoords function requires a parameter to be passed.  This is my workaround for that
                             else:
                                 i()
                     else:
@@ -953,9 +1044,10 @@ class BuilderThread(threading.Thread):
         items = self.prototype['items']
         players = [] # updated only by engine
         npcs = []   # when NPC builder complete we need to have this list populated by builder.
+        editors = self.prototype['editors']
         self.logger.write_line('prototype dict parsed to variables')
         
-        room = engine_classes.Room(desc, portals, items, players, npcs)
+        room = engine_classes.Room(desc, portals, items, players, npcs, editors)
         self.logger.write_line(str(self.type) + ' instantiated @ ' +str(room)+ 'as ' + str(self.prototype))
         self.send_message_to_player("Your "+str(self.type)+" has been built.")
         
