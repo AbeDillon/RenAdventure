@@ -344,11 +344,27 @@ class Login(threading.Thread):
                     line += "\t"+world+"\r\n"
                 
                 oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
+                line = "The following people are in the lobby: \r\n"
+                _Player_Loc_Lock.acquire()
+                for person in _Player_Locations:
+                    if _Player_Locations[person] == 'lobby' and person != player_name: #This person is in the lobby, and isn't the person we're listing people to.
+                        line+= "\t"+person+'\r\n'
+                        
+                _Player_Loc_Lock.release()
+                if line != "The following people are in the lobby: \r\n": #We added players to this line
+                    oqueue.put(line)
+                else: #There are no people in the lobby but you
+                    oqueue.put("There is no one else in the lobby at present.")
                     
                 #oqueue.put(engine_classes.engine_helper.get_room_text(player_name, location, engine))  #####NEED FILTER
 
                 _Player_OQueues_Lock.acquire()
                 _Player_OQueues[player_name] = oqueue
+                _Player_Loc_Lock.acquire()
+                for person in _Player_Locations:
+                    if _Player_Locations[person] == 'lobby' and person != player_name: #This person is in the lobby and is not who just joined. Tell everyone else.
+                        _Player_OQueues[person].put("%s has joined the lobby" % player_name)
+                _Player_Loc_Lock.release()
                 _Player_OQueues_Lock.release()
 
                 # Get I/O port
@@ -497,6 +513,14 @@ class PlayerInput(threading.Thread):
                 if self.name in game_engine._Characters: #This player has been added to the game
                     game_engine.remove_player(self.name) #Remove player existence from gamestate.
                 game_engine._Characters_Lock.release()
+                _Player_Loc_Lock.acquire()
+                if _Player_Locations[self.name] == 'lobby': #This person is in the lobby, tell everyone they quit.
+                    _Player_OQueues_Lock.acquire()
+                    for person in _Player_OQueues:
+                        if person != self.name: #This is not the person quitting, tell them who quit.
+                            _Player_OQueues[person].put("%s quit."%self.name)
+                    _Player_OQueues_Lock.release()
+                _Player_Loc_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
@@ -833,8 +857,9 @@ class LobbyThread(threading.Thread):
                             else: #They are not in the lobby
                                 pass
                             _Player_Loc_Lock.release()
-                        else: #They are the person who said the message, send them nothing?
-                            pass
+                        else: #They are the person who said the message, send them a copy?
+                            output = '\r\n'
+                            _Player_OQueues[person].put(output)
                             # _Player_Loc_Lock.acquire()
                             # if _Player_Locations[person] == 'lobby': #Person who said it, still in lobby
                                 # output = "> "

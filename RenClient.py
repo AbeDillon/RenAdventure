@@ -285,7 +285,7 @@ class InThread(threading.Thread):
             logger.write_line('Output: Playing sound file called %s' % sound_name) 
             
         elif not '_play_' in message: #This isn't a playsound message, we can print it.
-            print >>sys.stdout, "\n" + message
+            print >>sys.stdout, "\n" + message.strip()
             logger.write_line('Output: %s' % message)
 
         return True
