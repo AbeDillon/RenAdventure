@@ -412,7 +412,9 @@ class BuilderThread(threading.Thread):
         """
         function to take name and check if it exists or not returns tuple (name, T/F flag)       
         """
+        
         self.logger.write_line('enter checkName function')
+        
         # Get desired name
         text = '\n' +textwrap.fill ('Enter a name for the %s' % self.type , width=100).strip()
         self.send_message_to_player(text)
@@ -432,7 +434,13 @@ class BuilderThread(threading.Thread):
             self.engine._Objects_Lock.acquire()
             self.logger.write_line('objects lock acquired')
             if name in self.engine._Objects:            
-                exist_flag = True
+                # check it is proper object type
+                if self.type in ['item', 'key']:
+                    if isinstance(self.engine._Objects[name], Item) == True:
+                        exist_flag = True                    
+                if self.type == 'portal':
+                    if isinstance(self.engine._Objects[name], Portal) == True:
+                        exist_flag = True
                 self.logger.write_line('name in objects')                       
             self.engine._Objects_Lock.release()
             self.logger.write_line('name checked objects lock released')
@@ -576,7 +584,7 @@ class BuilderThread(threading.Thread):
             if valid_handle == True:  #only here if twitter handle not already being "crawled" and handle found on twitter
                 # make file in \\twitterfeeds
                 fout = open('twitterFeeds\\' + str(handle) + '.txt', 'a')
-                self.logger.write_line('file created for crawler at twitterFeeds\\'+str(handle)+'.txt')
+                self.logger.write_line('file created for crawler at twitterFeeds\\'+str(handle)+'.twitter')
                 fout.close()
                 break
 
