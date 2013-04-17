@@ -20,15 +20,14 @@ translation = {"&#x27;": "'",
                "&#x22;": "\"",
                "[<i>": "[",
                "</i>]": "]",
-               "&amp;": "&"}
+               "&amp;": "&",
+               "  ": ""}
 
 #================================================xxxxxxxxxxxxxxxxxxxx===============================================
 
 """
-Need to:
+to to:
 
-    add logging
-    add extension dictionary to getFullinfo()
 
 """
 
@@ -56,7 +55,7 @@ class quoteThread(threading.Thread):
 
             try:
                 quoteInfo = self.newNamesQ.get_nowait()
-                logger.write_line('Received quoteInfo from the newNames queue to process.')
+                logger.write_line("Received quoteInfo from the newNames queue to process.")
                 # log stuff
             except Queue.Empty:
                 quoteInfo = None
@@ -65,7 +64,7 @@ class quoteThread(threading.Thread):
             if quoteInfo == None:
                 try:
                     quoteInfo = self.oldNamesQ.get_nowait()
-                    logger.write_line('Received quoteInfo from the oldNames queue to process.')
+                    logger.write_line("Received quoteInfo from the oldNames queue to process.")
                     # log stuff
                 except Queue.Empty:
                     quoteInfo = None
@@ -73,7 +72,7 @@ class quoteThread(threading.Thread):
             if quoteInfo != None:
 
                 uniqueID, characterName = quoteInfo
-                logger.write_line('Processing quoteInfo .')
+                logger.write_line("Processing quoteInfo .")
 
                 self.oldNamesQ.put(quoteInfo)
 
@@ -88,9 +87,9 @@ class quoteThread(threading.Thread):
 
                 # opens the site and breaks out quotes by prefix
                 site = urllib2.urlopen(url)
-                logger.write_line('Opened %s' % url)
+                logger.write_line("Opened %s" % url)
                 siteHtml = site.read()
-                logger.write_line('Read %s' % url)
+                logger.write_line("Read %s" % url)
                 chunks = siteHtml.split(prefix)
                 chunks = chunks[1:]
 
@@ -101,21 +100,21 @@ class quoteThread(threading.Thread):
                     quotes.append(line)
 
                 # cleans up quotes and writes them to a .imdb file
-                qout = open('twitterFeeds\\' + uniqueID + ".imdb", "w")
-                logger.write_line('Opened the IMDB file to write quotes')
+                qout = open("twitterFeeds\\" + uniqueID + ".imdb", "w")
+                logger.write_line("Opened the IMDB file to write quotes")
 
                 for quote in quotes:
 
-                    quote = quote.encode('utf-8')
+                    quote = quote.encode("utf-8")
 
                     for word in translation.keys():
                         quote = quote.replace(word, translation[word])
 
                     qout.write(quote)
                     qout.write('\n')
-                    logger.write_line('Quotes have been processed.')
+                    logger.write_line("Quotes have been processed.")
                 qout.close()
-                logger.write_line('Closed the IMDB file. Moving to the next file in the queue.')
+                logger.write_line("Closed the IMDB file. Moving to the next file in the queue.")
 
 if __name__ == "__main__":
     main()

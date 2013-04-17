@@ -12,10 +12,22 @@ This supports IMDB only at this time.  More to come...
 
 """
 
+"""
+to to:
+
+add extension dictionary
+
+"""
+
+
+#==============================================================================================
+
 logger = Q2logging.out_file_instance("logs\\siteConverter\\siteConverter")
 
 
-siteRef = {}
+# siteRef = {imdbUrl: "http://www.imdb.com/character/%s/quotes",
+#            imdbPrefix: "<title>",
+#            imdbSuffix: " (Character)  - Quotes</title>"}
 
 # get the unique ID from the (extension) quote site
 def getFullinfo(uniqueID, ext):
@@ -29,10 +41,9 @@ def getFullinfo(uniqueID, ext):
 
     # opens the site and breaks out the character name by prefix
     site = urllib2.urlopen(url)
-    print url
-    logger.write_line('Opened %s' % url)
+    logger.write_line("Opened %s" % url)
     siteHtml = site.read()
-    logger.write_line('Read %s' % url)
+    logger.write_line("Read %s" % url)
     chunks = siteHtml.split(prefix)
     chunks = chunks[1:]
 
@@ -41,5 +52,5 @@ def getFullinfo(uniqueID, ext):
         characterName = line[0]
 
     # returns the unique ID and the character name
-    logger.write_line('Returning %s' % uniqueID)
+    logger.write_line("Returning %s" % uniqueID)
     return uniqueID, characterName

@@ -10,8 +10,8 @@ import Queue
 
 """
 
-this code looks at the media folder, finds new files and figures out what type of files they are,
-and sends them to either TwitterCrawler or to the siteConverter/quoteCrawler
+This code looks at the media folder, finds new files and figures out what type of files they are,
+and sends them to either twitterCrawler or to siteConverter/quoteCrawler
 
 """
 
@@ -19,9 +19,6 @@ and sends them to either TwitterCrawler or to the siteConverter/quoteCrawler
 
 """
 to do:
-
-logging
-pass the extension to getFullinfo
 
 """
 
@@ -46,7 +43,7 @@ qThread.start()
 
 while 1:
 
-    filelist = os.listdir(os.getcwd() + "\\twitterfeeds")
+    filelist = os.listdir(os.getcwd() + "\\twitterFeeds")
     fileset = set(filelist)
 
     newNames = fileset - oldNames
@@ -61,12 +58,12 @@ while 1:
             uniqueID = '.'.join(uniqueID)
             ext = item[-1]
 
-            if ext == "twitter":
-
-                twitQueue.put(uniqueID)
-                logger.write_line('Sent %s to twitQueue' % uniqueID)
+            # if ext == "twitter":
+            #
+            #     twitQueue.put(uniqueID)
+            #     logger.write_line("Sent %s to twitQueue" % uniqueID)
 
             if ext == "imdb":
 
                 quoteQueue.put(siteConverter.getFullinfo(uniqueID, ext))
-                logger.write_line('Sent %s to quoteQueue' % uniqueID)
+                logger.write_line("Sent %s to quoteQueue" % uniqueID)
