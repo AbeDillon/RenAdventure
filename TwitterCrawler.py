@@ -6,6 +6,13 @@ import Q2logging
 import threading
 import os
 
+"""
+to do:
+
+If TRY in run(self) returns false, delete the file from the media folder.
+
+"""
+
 class feedGetter(threading.Thread):
 
     def __init__(self, user, api):
@@ -23,34 +30,29 @@ class feedGetter(threading.Thread):
         try:  # TRY added to prevent breakage on twitter handles that have disappeared or have been deleted
             statuses = self.api.GetUserTimeline(self.user, count=100, exclude_replies=True)
             self.twitterSave(statuses)
-            logger.write_line('Init thread to get tweets for %s ' % self.user)
+            logger.write_line("Init thread to get tweets for %s " % self.user)
         except:
-            logger.write_line('twitter object failed for %s' % self.user)
+            logger.write_line("Twitter object failed for %s" % self.user)
             pass
         
         return None
 
-    # twitter.api returns the data as a class.  twittersave strips out
+    # twitter.api returns the data as a class.  twitterSave strips out
     # the tweet, converts it to UTF-8 and saves it to a file.
     def twitterSave(self, statuses):
         fout = open("twitterFeeds\\" + self.user + ".twitter", 'w')
         for status in statuses:
             text = status.text
-            text = text.encode('utf-8')
-            text = text.replace('\n', '')
+            text = text.encode("utf-8")
+            text = text.replace("\n", "")
             fout.write(text)
-            fout.write('\n')
+            fout.write("\n")
         fout.close()
 
         logger.write_line("twitterFeeds file saved for %s" % self.user)
 
 
 #==================================================================================================
-
-# # Creates the directory "twitterCrawler" if it.'s not already there.
-# directories = os.listdir(os.getcwd())
-# if "logs\\twitterCrawler\\twitterCrawler" not in directories:
-#     os.mkdir((os.getcwd() + "\\logs\\twitterCrawler\\twitterCrawler"))
 
 logger = Q2logging.out_file_instance("logs\\twitterCrawler\\twitterCrawler")
 
@@ -79,26 +81,26 @@ class twitterThread(threading.Thread):
         while 1:
             try:
                 user = self.newNamesQ.get_nowait()
-                logger.write_line('Looking for name in newNamesQ')
+                logger.write_line("Looking for name in newNamesQ")
             except Queue.Empty:
                 user = None
-                logger.write_line('No name in newNamesQ')
+                logger.write_line("No name in newNamesQ")
 
             if user == None:
                 try:
                     user = self.oldNamesQ.get_nowait()
-                    logger.write_line('Looking for name in oldNamesQ')
+                    logger.write_line("Looking for name in oldNamesQ")
                 except Queue.Empty:
                     user = None
-                    logger.write_line('No name in oldNamesQ')
+                    logger.write_line("No name in oldNamesQ")
 
             if user != None:
                 self.oldNamesQ.put(user)
-                logger.write_line('Appended %s to oldNamesQ' % user)
+                logger.write_line("Appended %s to oldNamesQ" % user)
 
                 feedGetterThread = feedGetter(user, self.api)
                 feedGetterThread.start()
-                logger.write_line('Sent name %s to feedGetter' % user)
+                logger.write_line("Sent name %s to feedGetter" % user)
 
                 finishTime = time.time()
                 loopTime = finishTime - startTime
