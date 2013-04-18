@@ -58,10 +58,10 @@ while 1:
             uniqueID = '.'.join(uniqueID)
             ext = item[-1]
 
-            # if ext == "twitter":
-            #
-            #     twitQueue.put(uniqueID)
-            #     logger.write_line("Sent %s to twitQueue" % uniqueID)
+            if ext == "twitter":
+
+                twitQueue.put(uniqueID)
+                logger.write_line("Sent %s to twitQueue" % uniqueID)
 
             if ext == "imdb":
 
