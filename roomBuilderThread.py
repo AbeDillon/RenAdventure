@@ -428,7 +428,7 @@ class BuilderThread(threading.Thread):
         if self.type == 'player':
             self.engine._Characters_Lock.acquire()
             try:
-                if isinstance(self.engine._Characters[name], Player) == True:
+                if isinstance(self.engine._Characters[name], engine_classes.Player) == True:
                     exist_flag = True
                     self.logger.write_line('is instance Player passed')
             except:
@@ -439,7 +439,7 @@ class BuilderThread(threading.Thread):
         if self.type in ['item', 'key']:
             self.engine._Objects_Lock.acquire()
             try:
-                if isinstance(self.engine._Objects[name], Item) == True:
+                if isinstance(self.engine._Objects[name], engine_classes.Item) == True:
                     exist_flag = True
             except:
                 pass
@@ -448,7 +448,7 @@ class BuilderThread(threading.Thread):
         if self.type == 'portal':
             self.engine._Objects_Lock.acquire()
             try:
-                if isinstance(self.engine._Objects[name], Portal) == True:
+                if isinstance(self.engine._Objects[name], engine_classes.Portal) == True:
                     exist_flag = True
             except:
                 pass
@@ -458,12 +458,12 @@ class BuilderThread(threading.Thread):
             self.engine._Characters_Lock.acquire()
             self.engine._NPC_Bucket_Lock.acquire()
             try:
-                if isinstance(self.engine._Characters[name], NPC) == True:
+                if isinstance(self.engine._Characters[name], engine_classes.NPC) == True:
                     exist_flag = True
             except:
                 pass
             try:
-                if isinstance(self.engine._NPC_Bucket[name], NPC) == True:
+                if isinstance(self.engine._NPC_Bucket[name], engine_classes.NPC) == True:
                     exist_flag = True
             except:
                 pass
@@ -592,7 +592,7 @@ class BuilderThread(threading.Thread):
         self.prototype['editors'] = editors
             
     def changeList(self, list):
-        my_list = list
+        
         while 1:        
             
             list_en = enumerate(list, start = 1)            
@@ -605,7 +605,7 @@ class BuilderThread(threading.Thread):
                 self.send_message_to_player('%d.  %s' % (i_num, str(value)))
             # prompt user
             prompt = '\n' + textwrap.fill('You can [a]dd or [r]emove items from the list.  You can also be [d]one.  Enter your action letter followed '
-                                    'by a space and the number of the item you wish to perform the action on.  For example to remove item 1 you would '
+                                    'by a space and the number of the item you wish to perform the action on.  For example, to remove item 1 you would '
                                     'type "r 1".', width= 100)
             self.send_message_to_player(prompt)            
             
