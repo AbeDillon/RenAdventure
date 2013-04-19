@@ -126,14 +126,15 @@ class NPC:
     - Coordinates
     - Affiliation (dictionary of opinion of each person)
     '''
-    def __init__(self, name, coords, affiliation, tweets = None, editors = []):
+    def __init__(self, name, coords, affiliation, tweets = None, textID = "not_provided", editors = []):
         self.name = name.lower()
         self.editors = editors
         self.coords = coords
+        self.textID = textID
         self.affiliation = affiliation
         self.tweets = []
         self.lifespan = 20 # Number of cycles the NPC lasts before they are recycled
         self.cycles = 0 # Number of cycles the NPC has been alive for
 
-        twitter_file = open('twitterfeeds/%s.txt' % self.name, 'a')
+        twitter_file = open('twitterfeeds/%s.txt' % self.textID, 'a')
         twitter_file.close()
