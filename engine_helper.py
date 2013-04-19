@@ -423,7 +423,7 @@ def open(room, player, object, noun, tags, engine):
     elif not object.container:
         text = "You can't open the %s." % object.name
     else:
-        sound = '_play_ open' # NEEDS A VALID SOUND
+        sound = '_play_ open_sound'
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
             alt_text = "%s has opened the %s, inside there is:" % (player.name, object.name)
@@ -571,7 +571,7 @@ def unlock(room, player, object, noun, tags, engine):
 
             text = "You have unlocked the %s." % object.name
             alt_text = "%s has unlocked the %s." % (player.name, object.name)
-            sound = '_play_ unlock' #NEEDS A VALID SOUND
+            sound = '_play_ door_unlock' #NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has unlocked." % object.name
@@ -610,7 +610,7 @@ def lock(room, player, object, noun, tags, engine):
 
             text = "You have locked the %s." % object.name
             alt_text = "%s has locked the %s." % (player.name, object.name)
-            sound = '_play_ lock' # NEEDS A VALID SOUND
+            sound = '_play_ door_lock' # NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has locked." % object.name
@@ -644,11 +644,13 @@ def inventory(room, player, object, noun, tags, engine):
     return [(player.name, text)]
 
 def say(room, player, object, noun, tags, engine):
-    text = "<sound>You say %s</sound>" % noun
-    alt_text = "<sound>%s says %s</sound>" % (player.name, noun)
-
+    text = "<sound> You say %s </sound>" % noun
+    alt_text = "<sound> %s says %s </sound>" % (player.name, noun)
+    sound = "_play_ say_sound"
+    
     messages = []
     messages.append((player.name, text))
+    messages.append((player.name, sound))
 
     for alt_player in room.players:
         if alt_player != player.name:
@@ -660,7 +662,8 @@ def say(room, player, object, noun, tags, engine):
 def shout(room, player, object, noun, tags, engine):
     text = "<sound>You shout %s</sound>" % noun
     alt_text = "<sound>%s shouted %s</sound>" % (player.name, noun)
-
+    sound = "_play_ shout_sound"
+    
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
         for j in range(-2,3):
@@ -673,7 +676,7 @@ def shout(room, player, object, noun, tags, engine):
 
     messages = []
     messages.append((player.name, text))
-
+    messages.append((player.name, sound))
     for coords in trimmed_bubble:
         for alt_player in engine._Rooms[coords].players:
             if alt_player != player.name:
@@ -756,27 +759,28 @@ def script_delay(player, script, engine):
 def reveal(room, player, object, noun, tags, engine):
     # Reveals a hidden object
     messages = []
-
+    sound = "_play_ reveal_sound"
     if object != None:
         object.hidden = False
         text = "<sight>A %s appears in the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
+            messages.append((player, sound))
 
     return messages
 
 def hide(room, player, object, noun, tags, engine):
     # Hides an object
     messages = []
-
+    sound = "_play_ reveal_sound"
     if object != None:
         object.hidden = True
         text = "<sight>The %s disappears from the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
-
+            messages.append((player, sound))
     return messages
 
 def add_status_effect(room, player, object, noun, tags, engine):
