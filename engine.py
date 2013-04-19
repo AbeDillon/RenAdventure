@@ -67,25 +67,25 @@ class Engine:
         kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
         
         affiliation = {'Obama': 1, 'Gottfried': 1, 'OReilly': 1, 'Kanye': 1, 'Burbiglia': 1}
-#        ermah = NPC('ermahgerd', (0,0,1,0), affiliation)
-#        pr = NPC('philosoraptor', (0,0,1,0), affiliation)
-#        lolcat = NPC('lolcat', (0,0,1,0), affiliation)
-#        hb = NPC('honeybadger', (0,0,1,0), affiliation)
-#        oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
-#        ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
-#        ayb = NPC("allyourbase", (0,0,1,0), affiliation)
-#        xyz = NPC("inyourbase", (0,0,1,0), affiliation)
+        ermah = NPC('ermahgerd', (0,0,1,0), affiliation)
+        pr = NPC('philosoraptor', (0,0,1,0), affiliation)
+        lolcat = NPC('lolcat', (0,0,1,0), affiliation)
+        hb = NPC('honeybadger', (0,0,1,0), affiliation)
+        oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
+        ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
+        ayb = NPC("allyourbase", (0,0,1,0), affiliation)
+        xyz = NPC("inyourbase", (0,0,1,0), affiliation)
 
         self._NPC_Bucket_Lock.acquire()
         self._NPC_Bucket['@mr_kanyewest'] = kanye
-#        self._NPC_Bucket['ermahgerd'] = ermah
-#        self._NPC_Bucket['philosoraptor'] = pr
-#        self._NPC_Bucket['lolcat'] = lolcat
-#        self._NPC_Bucket['honeybadger'] = hb
-#        self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
-#        self._NPC_Bucket['conspiracykeanu'] = ck
-#        self._NPC_Bucket['allyourbase] = ayb
-#        self._NPC_Bucket['inyourbase'] = xyz
+        self._NPC_Bucket['ermahgerd'] = ermah
+        self._NPC_Bucket['philosoraptor'] = pr
+        self._NPC_Bucket['lolcat'] = lolcat
+        self._NPC_Bucket['honeybadger'] = hb
+        self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
+        self._NPC_Bucket['conspiracykeanu'] = ck
+        self._NPC_Bucket['allyourbase'] = ayb
+        self._NPC_Bucket['inyourbase'] = xyz
         
 
         npcs = self._NPC_Bucket.values()
@@ -189,14 +189,7 @@ class Engine:
 
             self.logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1]))
 
-        forwarded_messages = []
-        for player_name, message in messages:
-            if message == '_play_ death': # Remove all other sound messages for a player that has died
-                for alt_player_name, alt_message in messages:
-                    if player_name != alt_player_name or '_play_' not in alt_message:
-                        forwarded_messages.append((alt_player_name, alt_message))
-
-        return forwarded_messages
+        return messages
 
     def command_thread(self):
         # Runs commands from the command queue

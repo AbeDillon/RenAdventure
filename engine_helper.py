@@ -646,16 +646,13 @@ def inventory(room, player, object, noun, tags, engine):
 def say(room, player, object, noun, tags, engine):
     text = "<sound> You say %s </sound>" % noun
     alt_text = "<sound> %s says %s </sound>" % (player.name, noun)
-    sound = "_play_ say_sound"
-    
+
     messages = []
     messages.append((player.name, text))
-    messages.append((player.name, sound))
 
     for alt_player in room.players:
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
-            #messages.append((alt_player, '<dont_filter>_play_ talking</dont_filter>')) # Needs a valid sound
 
     return messages
 
