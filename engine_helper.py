@@ -397,7 +397,7 @@ def take(room, player, object, noun, tags, engine):
         rem_item(room, object.name)
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
-        sound = '_play_ sound' # NEEDS A VALID SOUND
+        sound = '_play_ pickup'
 
     text = '<sight>' + text + '</sight>'
     alt_text = '<sight>' + alt_text + '</sight>'
@@ -631,7 +631,6 @@ def lock(room, player, object, noun, tags, engine):
     return messages
 
 def inventory(room, player, object, noun, tags, engine):
-    print 'test'
     if len(player.items) > 0:
         text = "Inventory:"
         for item in player.items:
@@ -645,8 +644,8 @@ def inventory(room, player, object, noun, tags, engine):
     return [(player.name, text)]
 
 def say(room, player, object, noun, tags, engine):
-    text = "<sound> You say %s </sound>" % noun
-    alt_text = "<sound> %s says %s </sound>" % (player.name, noun)
+    text = "<sound>You say %s</sound>" % noun
+    alt_text = "<sound>%s says %s</sound>" % (player.name, noun)
 
     messages = []
     messages.append((player.name, text))

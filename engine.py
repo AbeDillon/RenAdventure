@@ -185,12 +185,18 @@ class Engine:
         messages = []
         while not self._MessageQueue.empty():
             message = self._MessageQueue.get()
-            
             messages.append(message)
 
             self.logger.write_line("Sending message to server: (%s, %s)" % (message[0], message[1]))
 
-        return messages
+        forwarded_messages = []
+        for player_name, message in messages:
+            if message == '_play_ death': # Remove all other sound messages for a player that has died
+                for alt_player_name, alt_message in messages:
+                    if player_name != alt_player_name or '_play_' not in alt_message:
+                        forwarded_messages.append((alt_player_name, alt_message))
+
+        return forwarded_messages
 
     def command_thread(self):
         # Runs commands from the command queue
@@ -229,7 +235,6 @@ class Engine:
             time.sleep(.05) # Sleep for 50ms
 
         self.logger.write_line("Closing command thread.")
-
     def npc_thread(self):
         # Runs the commands for all NPC's in the game
 

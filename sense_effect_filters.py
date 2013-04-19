@@ -147,3 +147,7 @@ def leet(message, stacks):
                 break
 
     return ' '.join(words)
+
+def hipster(message, stacks):
+    # Replaces a percentage of words in the message with hipster words
+    hipster_words = ['portland', 'messenger bag', 'bicycle rights', 'try-hard', 'iphone', 'bespoke', 'hoodie', 'ugh', 'sriracha', 'YOLO', 'wolf', 'thundercats', 'church-key', 'odd', 'future', '8-bit', 'mumblecore', 'fingerstache', 'pug', 'post-ironic', 'sartorial', 'neutra', 'photo', 'booth', 'small', 'batch', 'scenester', 'wes', 'anderson', 'kale', 'chips', 'trust', 'fund', 'tousled', 'mumblecore', 'disrupt', 'shoreditch', 'synth', 'kogi', 'biodiesel', 'yr', 'ethical', 'organic', 'direct', 'trade', 'authentic', 'trust', 'fund', 'cosby', 'sweater', '+1', 'american', 'apparel', 'vhs', 'forage', 'fashion', 'axe']
