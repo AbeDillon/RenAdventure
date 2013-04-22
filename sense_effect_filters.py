@@ -1,4 +1,4 @@
-import engine
+import engine_classes
 import re
 import random
 
@@ -13,7 +13,7 @@ _Stack_Probability = {1: .50,
                       4: .87,
                       5: .95}
 
-def filter_messages(messages):
+def filter_messages(messages, engine):
     # Runs all of the messages through the appropriate filters
     filtered_messages = []
 
@@ -22,7 +22,7 @@ def filter_messages(messages):
         player = engine._Characters[player_name]
         engine._Characters_Lock.release()
 
-        if isinstance(player, engine.Player):   # Make sure that we are not looking at an NPC
+        if isinstance(player, engine_classes.Player):   # Make sure that we are not looking at an NPC
             filtered_message = ''
 
             while len(message) > 0:
@@ -40,7 +40,7 @@ def filter_messages(messages):
                         message = ''
                     else:
                         tag_string = message[:tag_index] # Get the segment that is before the next tag
-                        message.replace(tag_string, '')
+                        message = message.replace(tag_string, '')
                         filtered_message += tag_string
 
             filtered_messages.append((player.name, filtered_message))
@@ -49,6 +49,11 @@ def filter_messages(messages):
 
 def filter_message_segment(player, message, tag):
     # Runs the segment through the appropriate filters
+    filter_map = {'blind': blind,
+                  'deaf': deaf,
+                  'hallucinating': hallucinating,
+                  'leet': leet}
+
     tag = tag.replace('<', '')
     tag = tag.replace('>', '')
 
@@ -56,8 +61,10 @@ def filter_message_segment(player, message, tag):
         sense = _Sense_Effect_Map.get(effect, None) # Get the affected sense
         if sense == tag:
             stacks = player.sense_effects[effect]
-            script = effect + '(message, stacks)'
-            message = eval(script) # Apply the filter to the message
+            filter_method = filter_map.get(effect, None)
+
+            if filter_method != None:
+                message = filter_method(message, stacks)
 
     return message
 
@@ -140,3 +147,7 @@ def leet(message, stacks):
                 break
 
     return ' '.join(words)
+
+def hipster(message, stacks):
+    # Replaces a percentage of words in the message with hipster words
+    hipster_words = ['portland', 'messenger bag', 'bicycle rights', 'try-hard', 'iphone', 'bespoke', 'hoodie', 'ugh', 'sriracha', 'YOLO', 'wolf', 'thundercats', 'church-key', 'odd', 'future', '8-bit', 'mumblecore', 'fingerstache', 'pug', 'post-ironic', 'sartorial', 'neutra', 'photo', 'booth', 'small', 'batch', 'scenester', 'wes', 'anderson', 'kale', 'chips', 'trust', 'fund', 'tousled', 'mumblecore', 'disrupt', 'shoreditch', 'synth', 'kogi', 'biodiesel', 'yr', 'ethical', 'organic', 'direct', 'trade', 'authentic', 'trust', 'fund', 'cosby', 'sweater', '+1', 'american', 'apparel', 'vhs', 'forage', 'fashion', 'axe']

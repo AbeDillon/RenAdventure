@@ -1,71 +1,120 @@
 
 import urllib2
+import Queue
+import Q2logging
+import threading
+import time
 import os
-import re
-
 
 
 """
 
-This works by being given a character name and the link to the IMDB "quotes" page for the character,
-NOT the actor playing said character.
+This works by being given a unique character ID number from a "quotes" page and the
+file extension which is the site the quotes came from, i.e. imdb.
+
+This supports IMDB only at this time.
 
 """
 
-
-# Creates the directory "saves" if it.'s not already there.
-directories = os.listdir(os.getcwd())
-if "saves" not in directories:
-    os.mkdir("saves")
-
+translation = {"&#x27;": "'",
+               "&#x22;": "\"",
+               "[<i>": "[",
+               "</i>]": "]",
+               "&amp;": "&",
+               "  ": ""}
 
 #================================================xxxxxxxxxxxxxxxxxxxx===============================================
 
 """
-Need to:
-    arguments to das_Quotemaker will change from url, charactername to imdb character ID number, imdb(extension)
-
-    clean up quotes
-    save quotes to file that was given to me
+to to:
 
 
 """
 
-
-siteRef = {'imdb.com': ("%s</a></i>:", "<br/>")}
-
-
-def getPrefixSuffix(url):
-
-    siteRef = {'imdb.com': ("%s</a></i>:", "<br/>")}
-
-    for site in siteRef:
-        if site in url:
-            return siteRef[site]
-    print "This site is not in our database."
+logger = Q2logging.out_file_instance("logs\\quoteCrawler\\quoteCrawler")
 
 
-# takes in url and character name
-def das_Quotemaker(url, characterName):
+def main():
+    workQueue = Queue.Queue()
+    qThread = quoteThread(workQueue)
+    qThread.start()
 
-    quotes = []
 
-    prefix, suffix = getPrefixSuffix(url)
-    prefix = prefix % characterName
-    print prefix
-    site = urllib2.urlopen(url)
-    siteHtml = site.read()
-    chunks = siteHtml.split(prefix)
-    chunks = chunks[1:]
+class quoteThread(threading.Thread):
+    def __init__(self, newNamesQ):
+        threading.Thread.__init__(self)
+        self.newNamesQ = newNamesQ
+        self.oldNamesQ = Queue.Queue()
 
-    for chunk in chunks:
-        line = chunk.split(suffix)
-        line = line[0]
-        quotes.append(line)
-    print quotes
+    # takes in imdb id number and character name from the queue
+    def run(self):
 
+        while 1:
+
+            time.sleep(1)
+
+            try:
+                quoteInfo = self.newNamesQ.get_nowait()
+                logger.write_line("Received quoteInfo from the newNames queue to process.")
+                # log stuff
+            except Queue.Empty:
+                quoteInfo = None
+                # log stuff
+
+            if quoteInfo == None:
+                try:
+                    quoteInfo = self.oldNamesQ.get_nowait()
+                    logger.write_line("Received quoteInfo from the oldNames queue to process.")
+                    # log stuff
+                except Queue.Empty:
+                    quoteInfo = None
+
+            if quoteInfo != None:
+
+                uniqueID, characterName = quoteInfo
+                logger.write_line("Processing quoteInfo .")
+
+                self.oldNamesQ.put(quoteInfo)
+
+                quotes = []
+
+                # these are used to isolate the quotes we are after
+                prefix = characterName + "</a></i>:"
+                suffix = "<br/>"
+
+                # format for inserting the imdb character number into the url
+                url = "http://www.imdb.com/character/%s/quotes" % uniqueID
+
+                # opens the site and breaks out quotes by prefix
+                site = urllib2.urlopen(url)
+                logger.write_line("Opened %s" % url)
+                siteHtml = site.read()
+                logger.write_line("Read %s" % url)
+                chunks = siteHtml.split(prefix)
+                chunks = chunks[1:]
+
+                # takes the quotes and removes the suffix
+                for chunk in chunks:
+                    line = chunk.split(suffix)
+                    line = line[0]
+                    quotes.append(line)
+
+                # cleans up quotes and writes them to a .imdb file
+                qout = open("twitterFeeds\\" + uniqueID + ".imdb", "w")
+                logger.write_line("Opened the IMDB file to write quotes")
+
+                for quote in quotes:
+
+                    quote = quote.encode("utf-8")
+
+                    for word in translation.keys():
+                        quote = quote.replace(word, translation[word])
+
+                    qout.write(quote)
+                    qout.write('\n')
+                    logger.write_line("Quotes have been processed.")
+                qout.close()
+                logger.write_line("Closed the IMDB file. Moving to the next file in the queue.")
 
 if __name__ == "__main__":
-    das_Quotemaker("http://www.imdb.com/character/ch0008323/quotes", "Max Fischer")
-    das_Quotemaker("http://www.imdb.com/character/ch0000177/quotes", "Batman")
-    das_Quotemaker("http://www.imdb.com/character/ch0000216/quotes", "Dick Grayson")
+    main()

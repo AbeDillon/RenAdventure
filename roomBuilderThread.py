@@ -3,23 +3,24 @@ import textwrap
 import Queue
 import time
 import copy
-import engine
+import engine_classes
 import Q2logging
 import twitter
 import os
-
+import requests # a http lib.  Used to verify webiste exisits
 
 class BuilderThread(threading.Thread):
     """
     Room builder thread
     """
 
-    def __init__(self, type_of_object, cmd_queue, msg_queue, game_cmd_queue, room_coords=None, player_name=""):
+    def __init__(self, engine, type_of_object, cmd_queue, msg_queue, game_cmd_queue, room_coords=None, player_name=""):
         """
         Initialize a Room Builder thread
         """
         
         threading.Thread.__init__(self)
+        self.engine = engine
         self.type = type_of_object # being built
         self.cmd_queue = cmd_queue
         self.msg_queue = msg_queue
@@ -29,9 +30,7 @@ class BuilderThread(threading.Thread):
         self.prototype = {}
         self.logger = Q2logging.out_file_instance('logs/builder/'+player_name)
         if self.type == "room":
-            self.prototype["name"] = room_coords
-        
-        
+            self.prototype["name"] = room_coords        
         
     def run(self):
         """
@@ -51,23 +50,35 @@ class BuilderThread(threading.Thread):
             
     def buildRoom(self):
         
+        self.logger.write_line('Entered build room Function.')
         text = textwrap.fill('In this module you will be building a "room" or "area" to your liking with some limits of course.  '
                         'We will walk you through the process of building and populating the room with things like Portals, '
                         'Containers, Items, and some other stuff.  So lets get started.', width=100).strip()
-        self.logger.write_line('Entered build room Function.')               
+                       
         self.send_message_to_player(text)
+        # description
         self.logger.write_line('Sent to addDescription Function.')
         self.addDescription()
+        # Portals
         self.logger.write_line('Sent to addPortals Function.')
         self.addPortals()
+        # Items
         self.logger.write_line('Sent to addItems Function.')
         self.addItems()
-        self.logger.write_line('skips adding NPC WE NEED BUIDLER/SELECTOR.')
-        #add functionality for placing NPCs
+        # NPCs
+        self.logger.write_line('Sent to addNPCs ')
+        self.addNPC()
+        # Editors
+        self.logger.write_line('sent to getEditors function')
+        self.getEditors()
+        # Review
         self.logger.write_line('Sent to reviewObject function.')
         self.reviewObject()
+        # Make
         self.logger.write_line('Sent to makeRoom function.')
         self.makeRoom()
+        
+        self.send_message_to_player('You are now exiting the room builder')
         self.logger.write_line('Exited room builder.')
     
     def buildPortal(self):
@@ -75,51 +86,58 @@ class BuilderThread(threading.Thread):
         function to build a portal step by step.  Direction has been predetermined from room builder function.
         """
         self.logger.write_line('Arrived buildPortal function')
-        self.logger.write_line('Send to addName')
+        self.send_message_to_player('You have entered the Portal Builder and will now begin building a Portal.')
+        
         
         # Name Portal 
+        self.logger.write_line('Send to addName')
         self.addName()
-        self.logger.write_line('Send to addDescription')
-        
+                
         # Description
+        self.logger.write_line('Send to addDescription')
         self.addDescription()
-        self.logger.write_line('Send to addInspectionDescription')
-        
+                
         # Inspection Description
+        self.logger.write_line('Send to addInspectionDescription')
         self.addInspectionDescription()
-        self.logger.write_line('Send to getDirection function')
-        
+                
         # Direction
+        self.logger.write_line('Send to getDirection function')
         direction = self.getDirection()
-        self.logger.write_line('Send to assignCoords function w/ direction = '+direction)
-        
+                
         # Coords        
+        self.logger.write_line('Send to assignCoords function w/ direction = '+direction)
         self.assignCoords(direction)
-        self.logger.write_line('Send to isLocked function.')
-        
+                
         # Locked        
+        self.logger.write_line('Send to isLocked function.')
         self.isLocked()
-        self.logger.write_line('Send to addKey function.')
-            
+                    
         # Key        
+        self.logger.write_line('Send to addKey function.')
         self.addKey()
-        self.logger.write_line('Send to isHidden function.')
-        
+                
         # Hidden        
+        self.logger.write_line('Send to isHidden function.')
         self.isHidden()
-        self.logger.write_line('Send to buildScripts Function')
-        
+                
         # Scripts        
+        self.logger.write_line('Send to buildScripts Function')
         self.buildScripts()        
-        self.logger.write_line('Send to reviewObject Function')
+                
+        # Get editors
+        self.logger.write_line('Send to get Editors function.')
+        self.getEditors()
         
         #review object
+        self.logger.write_line('Send to reviewObject Function')
         self.reviewObject()
-        self.logger.write_line('Send to makePortal Function.')
-        
+                
         #make portal
+        self.logger.write_line('Send to makePortal Function.')
         self.makePortal()
         
+        self.send_message_to_player('You will now be leaving the Portal Builder')
         self.logger.write_line('exit buildPortal function')
         
     def buildItem(self):
@@ -127,32 +145,27 @@ class BuilderThread(threading.Thread):
         function to build items
         """
         self.logger.write_line('arrive buildItem function')
+        self.send_message_to_player('You have entered the item builder')
+        # Name Item
         self.logger.write_line('send to addName function')
-        #Name Item
         self.addName()
-        self.logger.write_line('send to addDescription function')
-        
         #Item Description
+        self.logger.write_line('send to addDescription function')
         self.addDescription()
-        self.logger.write_line('send to addInspectionDescription function')
-        
         #Inspection Description
+        self.logger.write_line('send to addInspectionDescription function')
         self.addInspectionDescription()
-        self.logger.write_line('send to buildScripts function')
-        
         #Scripts
+        self.logger.write_line('send to buildScripts function')
         self.buildScripts()
-        self.logger.write_line('send to isPortable function')
-        
         #Portable
+        self.logger.write_line('send to isPortable function')
         self.isPortable()
-        self.logger.write_line('send to isHidden function')
-        
         #Hidden
+        self.logger.write_line('send to isHidden function')
         self.isHidden()
-        self.logger.write_line('send to isContainer function')
-        
         #Container
+        self.logger.write_line('send to isContainer function')
         self.isContainer()
 
         if self.prototype['container'] == True:
@@ -165,19 +178,23 @@ class BuilderThread(threading.Thread):
             self.logger.write_line('send to addItems function')
             #items in item
             self.addItems()
-        else:
+        else: # set defaults for items that are not containers
             self.prototype['locked'] = False
             self.prototype['key'] = None
             self.prototype['items'] = []
             self.logger.write_line('container = False so prototype locked = False, key = none, items = [] values set')
-        self.logger.write_line('send to reviewObject function')
         
-        #review object    
+        # Editors
+        self.logger.write_line('send to getEditors')
+        self.getEditors()
+        # Review
+        self.logger.write_line('send to reviewObject function')        
         self.reviewObject()
+        # Make
         self.logger.write_line('send to makeItem function')
-        
-        #review makeItem
         self.makeItem()
+        
+        self.send_message_to_player('You are now exiting the item builder.')
         
         self.logger.write_line('exit buildItem function')
         
@@ -190,21 +207,35 @@ class BuilderThread(threading.Thread):
         twitter feed = 
         """
         self.logger.write_line('entered build NPC function')
-        self.logger.write_line('send to addName function')
+        self.send_message_to_player('You have entered the NPC builder.')
+        
         # name NPC
-        self.addName()
+        self.logger.write_line('send to addName function')
+        self.addName()        
+        
+        # assign starting coords as current room coords coords
         self.logger.write_line('send to getValidCoords function')
-        
-        # Get starting coords
         self.getValidCoords()
-        self.logger.write_line('send to getTwitter function')
-        
+                
         #Twitter handle
-        self.getTwitter()
-        self.logger.write_line('send to getAffiliation function')
-        
+        self.logger.write_line('send to getTextID function')
+        self.getTextID()
+                
         # affiliation
+        self.logger.write_line('send to getAffiliation function')
         self.getAffiliation()
+        
+        # Editors
+        self.logger.write_line('send to getEditors function')
+        self.getEditors()
+    
+        # Review NPC
+        self.logger.write_line('send to reviewObject function')
+        self.reviewObject()
+        
+        # Make NPC
+        self.logger.write_line('send to makeNPC function')
+        self.makeNPC()
     
     def buildScripts(self):
         """
@@ -216,65 +247,66 @@ class BuilderThread(threading.Thread):
         valid_verbs = ['take', 'drop', 'move']  # this list needs to be made dynamic
         scripts = {}
         
-        intro_text = '\n' +textwrap.fill('You can [b]uild a script for this '+self.type+', e[x]it scripts, or get [h]elp?  What is your preference?', width=100).strip()
+        intro_text = '\n' +textwrap.fill('You can [b]uild a script for this %s, e[x]it scripts, or get [h]elp?  What is your preference?' % self.type, width=100).strip()
         valid_responses = (('build', 'b'), ('exit', 'x'), ('help', 'h'))
         #get user input
         ans = self.get_valid_response(intro_text, validResponses=valid_responses)
-        self.logger.write_line('user input recieved = '+ str(ans))
+        
         while ans != 'exit':
             if ans == 'build':
-               self.logger.write_line('entered build script get valid verb')
+               self.logger.write_line('entered build script getting valid verb')
                # get verb
                while 1:
                    verb_text = '\n'+textwrap.fill('Enter the verb you wish to replace.')
                    self.send_message_to_player(verb_text)
                    verb = self.get_cmd_from_player()
-                   self.logger.write_line('verb to replace, input recieved = '+str(verb))
                    if verb in valid_verbs:
-                       self.logger.write_line(str(verb) + ' found in list & accepted')
+                       self.logger.write_line('%s found in list & accepted' % verb)
                        break
                    else:
-                       self.logger.write_line(str(verb) + ' not in list & rejected')
+                       self.logger.write_line('%s not in list & rejected' % verb)
                        self.send_message_to_player('The verb must be in list of valid verbs try again.')
+               
                # get actions
                self.logger.write_line('begin getting actions.')
                action_list = []
-               self.send_message_to_player(action_list)
-               action_text = '\n' + textwrap.fill('Enter the a action(s) you want to happen. Example - take apple 3 or take apple 3, take knife 0').strip()
+               action_text = '\n' + textwrap.fill('Enter the a action(s) you want to happen. Example - take apple 3 or take apple 3, take knife 0, ....').strip()
                
-               actions_complete = False
-               while actions_complete == False:    
+               while True:    
                    self.send_message_to_player(action_text)
                    actions = self.get_cmd_from_player().strip().split(', ')
-                   self.logger.write_line('input recieved = ' +str(actions))
+                   
+                   # validate each action for proper form 
                    for action in actions:
-                       self.logger.write_line(str(action)+ 'sent for validation')
+                       self.logger.write_line('%s sent for validation' % str(action))
                        valid_action = self.validateAction(action)
                        if valid_action != None:
                            action_list.append(valid_action)
-                           self.logger.write_line('action appended to list.  List now looks like '+str(action_list))
+                           self.logger.write_line('action appended to list.  List now looks like %s' % str(action_list))
+                   
+                   # prompt complete
                    done_action_text = '\n'+textwrap.fill('Do you want to [a]dd more action(s) for this verb or are you [d]one with actions?', width=100).strip()
                    done_valid_response = (('add', 'a'), ('done', 'd'))
                    ans = self.get_valid_response(done_action_text,validResponses=done_valid_response)
-                   self.logger.write_line('get done response = ' + str(ans))
+                   
                    if ans == 'done':
-                       actions_complete = True
-                       self.logger.write_line('exit actions portion of script builder')        
+                       self.logger.write_line('exit actions portion of script builder')
+                       break
+                           
                scripts[verb] = tuple(action_list)
                self.logger.write_line('scripts dict appended action list converted.  Now looks like  '+str(scripts))
                #prompt scripts again for another one
                ans = self.get_valid_response(intro_text, validResponses=valid_responses)
                self.logger.write_line('got input for scripts text. = '+str(ans))
+            
             elif ans == 'help':
-                # User wants help
+                # User wants help. Display help function
                 self.logger.write_line('send to scriptsHelp function')
                 self.scriptsHelp()
                 ans = self.get_valid_response(intro_text, validResponses=valid_responses)
-                self.logger.write_line('got input for scripts text. = '+str(ans))
         
         self.prototype['scripts'] = scripts
-        self.send_message_to_player(str(self.prototype['scripts']))
-        self.logger.write_line('wrote scripts to prototype looks like '+str(scripts))
+        self.logger.write_line('wrote scripts to prototype looks like %s' % str(scripts))
         self.logger.write_line('exit buildScripts function')
         
     def scriptsHelp(self):
@@ -305,10 +337,10 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('exit scriptsHelp function')
         
     def validateAction(self, action):
-        """  function to validate actions portion f a script 
-        returns None for invalid action and tuple (verb, object, delay) for valid actions
+        """  function to validate actions portion of a script 
+        returns None for invalid action,  and tuple (verb, object, delay) for valid actions
         """
-        self.logger.write_line('enter validateActions function w/action = '+str(action))
+        self.logger.write_line('enter validateActions function w/action = %s' % str(action))
         print_action = action
         action = action.split(" ")    
         verb = action[0]
@@ -328,136 +360,177 @@ class BuilderThread(threading.Thread):
             except:
                 noAccept = '\n'+print_action+' was not accepted.  The delay portion must be a whole number integer.'
                 self.send_message_to_player(noAccept)
-                slef.logger.write_line('action not accepted delay not integer.')
+                self.logger.write_line('action not accepted delay not integer.')
                 return None
-    
-    def review_room():
-        """
-        
-        """
-        self.logger.write_line('entered reviewRoom function')
-        self.logger.write_line('exiting reviewRoom function')
         
     def addName(self):
         """
         function for adding a name
         does not allow names that have already been used.
         """
-        self.logger.write_line('enter addName function.  type of object = '+str(self.type))
-        text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
-        accept_text = '\n' +textwrap.fill ('Name accepted for the ' + self.type , width=100).strip()
-        deny = '\n' + textwrap.fill('That name has already been used try again.',  width=100).strip()
+        self.logger.write_line('enter addName function.  type of object = %s' % self.type)
+        text = '\n' +textwrap.fill ('Enter a name for the % s' % self.type , width=100).strip()        
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
-        # I tried using the check name function for all this validating but it would have required locking the objects 2 times once for search and
-        # once for write.  I wanted to avoid that so I left as 2 different functions.  Cannot alter check name in such a way as to make it not append
-        # write none types for names when adding items and keys by name.
         
-        if self.type != 'npc':  # For Items (NPC's require seperate name validation) 
-            
-            self.logger.write_line('name input = '+str(name)+ ', validating as non NPC type')
-            
+        accept_text = '\n' +textwrap.fill ('Name accepted for the %s' % self.type , width=100).strip()
+        deny = '\n' + textwrap.fill('%s has already been used try again.' % str(name),  width=100).strip()
+        
+        if self.type != 'npc':  # For Items (NPC's require seperate name validation)            
+            self.logger.write_line('name input = % s, validating as non NPC type' % str(name))            
             while True:
-                exist_flag = False            
-                engine._Characters_Lock.acquire()
-                self.logger.write_line('characters list lock acquired')
-                if name in engine._Characters:
-                    exist_flag = True
-                    engine._Characters_Lock.release()
-                    self.send_message_to_player(deny)
-                    self.logger.write_line('name in characters list, name denied , characters lock released')
-                else:
-                    engine._Characters_Lock.release()
-                    self.logger.write_line('name not in characters list, Characters lock released')           
-        
-                if exist_flag == False:
-                    engine._Objects_Lock.acquire()
-                    self.logger.write_line('objects lock acquired')
-                    if name not in engine._Objects:                        
-                        engine._Objects[name] = None
-                        engine._Objects_Lock.release()
-                        self.logger.write_line('name not in list, _Objects[name] = none inserted, Objects lock released')
-                        break                        
-                    else:
-                        engine._Objects_Lock.release()
-                        self.send_message_to_player(deny)
-                        self.write_line('name in _objects list, name denied, Objects lock released')
+                self.engine._Characters_Lock.acquire()
+                self.engine._Objects_Lock.acquire()
+                self.engine._NPC_Bucket_Lock.acquire()
+                self.logger.write_line('Locks acquired Character, NPC bucket,  & Object')
+                if name not in self.engine._Characters:
+                    if name not in self.engine._NPC_Bucket:
+                        if name not in self.engine._Objects:                        
+                            self.engine._Objects[name] = None
+                            self.engine._Characters_Lock.release()
+                            self.engine._Objects_Lock.release()
+                            self.engine._NPC_Bucket_Lock.release()
+                            self.logger.write_line('Placeholder inserted in objects, Character, NPC bucket, & Objects locks released')                        
+                            break                        
+                self.engine._Characters_Lock.release()
+                self.engine._NPC_Bucket_Lock.release()
+                self.engine._Objects_Lock.release()
+                self.send_message_to_player(deny)
+                self.write_line('Locks released Characters, NPC Bucket, & Objects, %s already exists user denied, & Reprompted' % str(name))
                 #reprompt player
                 self.send_message_to_player(text)
                 name = self.get_cmd_from_player() 
                 
-        if self.type == 'npc':  # requires different validation and appending to dict than items
-            
-            self.logger.write_line('name input = %s validating as NPC type' % str(name))
-            
+        if self.type == 'npc':  # requires different validation and appending to dict than items            
+            self.logger.write_line('name input = %s validating as NPC type' % str(name))            
             while True:
-                exist_flag = False            
-                engine._Characters_Lock.acquire()
-                self.logger.write_line('characters list lock acquired')
-                if name in engine._Characters:
-                    exist_flag = True
-                    engine._Characters_Lock.release()
-                    self.send_message_to_player(deny)
-                    self.logger.write_line('%s in characters list, name denied , characters lock released' % (str(name)))
-                else:
-                    engine._Characters_Lock.release()
-                    self.logger.write_line('name not in characters list, Characters lock released')
-                
-                if exist_flag == False:
-                    engine._NPC_Bucket_Lock.acquire()
-                    self.logger.write_line('NPC Bucket Lock acquired')
-                    if name not in engine._NPC_Bucket:
-                        engine._NPC_Bucket[name] = None
-                        engine._NPC_Bucket_Lock.release()
-                        self.logger.write_line('%s name not found in NPC bucket.  Written as Nonetype placeholder, bucket lock released' % str(name))
-                        break
-                    else:
-                        engine._NPC_Bucket_Lock.release()
-                        self.send_message_to_player(deny)
-                        self.logger.write_line('%s in NPC Bucket denied NPC Bucket Lock released.' % str(name))
+                self.engine._Characters_Lock.acquire()
+                self.engine._Objects_Lock.acquire()
+                self.engine._NPC_Bucket_Lock.acquire()
+                self.logger.write_line('characters, objects, NPC bucket locks acquired')
+                if name not in self.engine._Characters:
+                    self.logger.write_line('%s not found in characters' % str(name))
+                    if name not in self.engine._Objects:
+                        self.logger.write_line('%s not found in objects' % str(name))
+                        if name not in self.engine._NPC_Bucket:
+                            self.engine._NPC_Bucket[name] = None
+                            self.engine._Characters_Lock.release()
+                            self.engine._NPC_Bucket_Lock.release()
+                            self.engine._Objects_Lock.release()
+                            break
+                self.engine._Characters_Lock.release()
+                self.engine._NPC_Bucket_Lock.release()
+                self.engine._Objects_Lock.release()                    
+                self.send_message_to_player(deny)
+                self.logger.write_line('%s name denied exists in another list Characters, NPC, and Objects locks released' % str(name))
                 #reprompt player
                 self.send_message_to_player(text)
                 name = self.get_cmd_from_player()
                 
         self.prototype['name'] = name
-        self.logger.write_line(str(name)+' accepted written to '+str(self.type)+ ' prototype')
+        self.logger.write_line('%s accepted written to prototype' % str(name))
         
-        self.send_message_to_player(str(self.prototype))
         self.logger.write_line('exiting addName function')
 
+    def addNPC(self):
+        """ function for adding NPC's to room """
+        self.logger.write_line('entered addNPC function')
+        NPCs = []
+        text = '\n' +textwrap.fill('NPC (non-player characters) can be added by [n]ame, by [c]reating a new one, or you can just e[x]it to the next step. '
+                                   , width=100).strip()
+        valid_responses = (('name','n') , ('create', 'c') , ('exit', 'x'))
+        ans = self.get_valid_response(text, validResponses = valid_responses)
+        
+        while ans != 'exit':
+            # temp type
+            temp_type = self.type
+            self.type = 'npc'
+            
+            if ans == 'name':
+                tple = self.checkName()
+                if tple[1] == True:
+                    NPCs.append(tple[0])
+                else:
+                    self.send_message_to_player('We could not find a NPC character with that name.')
+            if ans == 'create':
+                temp_prototype = copy.deepcopy(self.prototype)
+                self.prototype = {}
+                self.logger.write_line('prototype copied and established anew.')
+                npc = self.buildNPC()
+                name = self.prototype['name']
+                NPCs.append(name)
+                self.logger.write_line('%s added to list of NPCs now looks like %s' % (name, str(NPCs)))
+                self.send_message_to_player('%s has been added to the rooms NPC list.'% name)
+                self.prototype = temp_prototype
+                self.logger.write_line('prototype restored to prior prototype')
+                
+            # Restore type
+            self.type = temp_type
+            # Prompt again    
+            ans = self.get_valid_response(text, validResponses = valid_responses)
+            
+        self.prototype['npcs'] = NPCs            
+        self.logger.write_line('exiting addNPC function')
+                
     def checkName(self):
         """
         function to take name and check if it exists or not returns tuple (name, T/F flag)       
         """
-        self.logger.write_line('enter checkName function')
+        
+        self.logger.write_line('enter checkName function with type = %s' % self.type)
+        
         # Get desired name
-        text = '\n' +textwrap.fill ('Enter a name for the ' + self.type , width=100).strip()
+        text = '\n' +textwrap.fill ('Enter a name for the %s' % self.type , width=100).strip()
         self.send_message_to_player(text)
         name = self.get_cmd_from_player()
-        self.logger.write_line('input recieved = '+str(name))
+        name = str(name)
         
         exist_flag = False
-        self.logger.write_line('checking non NPC type')
-        engine._Characters_Lock.acquire()
-        self.logger.write_line('characters lock acquired')
-        if name in engine._Characters:
-            exist_flag = True
-        engine._Characters_Lock.release()  
-        self.logger.write_line('name checked characters lock released')          
         
-        if exist_flag == False:
-            engine._Objects_Lock.acquire()
-            self.logger.write_line('objects lock acquired')
-            if name in engine._Objects:            
-                exist_flag = True                        
-            engine._Objects_Lock.release()
-            self.logger.write_line('name checked objects lock released')
-        
-        if exist_flag == True:
-            self.logger.write_line('exiting checkName returned ('+str(name)+', True)')
+        if self.type == 'player':  # for adding editors
+            #checks to see if we have a login file for the name they enter.
+            if os.path.isfile('login_file/%s.txt' % name) == True:
+                exist_flag = True
+
+        if self.type in ['item', 'key']: # for adding items
+            self.engine._Objects_Lock.acquire()
+            try:
+                if isinstance(self.engine._Objects[name], engine_classes.Item) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Objects_Lock.release()
+            
+        if self.type == 'portal': # for adding portals
+            self.engine._Objects_Lock.acquire()
+            try:
+                if isinstance(self.engine._Objects[name], engine_classes.Portal) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Objects_Lock.release()
+                
+        if self.type == 'npc':  # for adding NPCs
+            self.engine._Characters_Lock.acquire()
+            self.engine._NPC_Bucket_Lock.acquire()
+            try:
+                if isinstance(self.engine._Characters[name], engine_classes.NPC) == True:
+                    exist_flag = True
+            except:
+                pass
+            try:
+                if isinstance(self.engine._NPC_Bucket[name], engine_classes.NPC) == True:
+                    exist_flag = True
+            except:
+                pass
+            self.engine._Characters_Lock.release()
+            self.engine._NPC_Bucket_Lock.release()
+            
+        if exist_flag == True: # return name and flag to exit
+            self.logger.write_line('exiting checkName returned ( %s, True )' % str(name))
             return (name,True)
         else:
-            self.logger.write_line('exiting checkName returned ('+str(name)+', False)')
+            self.logger.write_line('exiting checkName returned ( %s, False )' % str(name))
             return (name,False)
     
     def addDescription(self):
@@ -469,11 +542,9 @@ class BuilderThread(threading.Thread):
                                     
         self.send_message_to_player(text)        
         desc = self.get_cmd_from_player()        
-        self.logger.write_line('input rec = '+str(desc))
         
         self.prototype['description'] = desc
-        self.send_message_to_player(str(self.prototype))
-        self.logger.write_line('prototype[description] = '+str(self.prototype['description']+ ' exiting add description'))
+        self.logger.write_line('prototype[description] = %s,  exiting addDescription' % str(self.prototype['description']))
  
     def addInspectionDescription(self):
         """
@@ -487,8 +558,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('input rec = '+str(i_desc))        
         
         self.prototype['inspection_description'] = i_desc
-        self.send_message_to_player(str(self.prototype))
-        self.logger.write_line('prototype[inspection_description] = '+str(self.prototype['inspection_description']+ ' exiting addInspectionDescription'))        
+        self.logger.write_line('prototype[inspection_description] = %s exiting addInspectionDescription'% str(self.prototype['inspection_description']))        
         
     def getAffiliation(self):
         """function to assign affilliatons for NPC.  Possible to use it for players also."""
@@ -504,27 +574,34 @@ class BuilderThread(threading.Thread):
         #Entry text
         self.send_message_to_player(entry_text+'\n')
         for name in aff_list: #loop just to print 
-            self.send_message_to_player(name)        
+            self.send_message_to_player('\t' + str(name))        
         #start ranking
         self.logger.write_line('begin affiliation ranking')
         for name in aff_list: # loop for input
             rank_text = '\n'+ textwrap.fill('Please rank %s from 1 to 5,  with 1 being your favorite and 5 your least favorite.'%name, width=100)
             self.send_message_to_player(rank_text)
             ans= self.get_cmd_from_player()
-            self.logger.write_line('name = %s, ans = %d') % (name, ans)
+            while 1:
+                try:
+                    ans = int(ans)
+                    break
+                except:
+                    self.send_message_to_player('Your answer must be a number between 1 and 5. Try again.')
+                    ans= self.get_cmd_from_player()
+            self.logger.write_line('name = %s, ans = %d' % (name, ans))
             while ans not in num_list: #if answer not available
                 self.send_message_to_player('Invlaid response.  Each number can only be used once.  Try again\n')                
                 # message and prompt again
                 self.send_message_to_player(rank_text)
                 ans= self.get_cmd_from_player()
-                self.logger.write_line('ans = %d, not valid or available prompt again.')%ans
+                self.logger.write_line('ans = %d, not valid or available prompt again.'%ans)
             # answer is available write to dict remove answer so cannot be used again
             affiliation[name] = ans
             num_list.remove(ans)
-            self.logger.write_line('affiliation written = %s : %s')% (name, str(affiliation[name]))
+            self.logger.write_line('affiliation written = %s : %s' % (name, affiliation[name]) )
         
         self.prototype['affiliation'] = affiliation   
-        self.logger.write_line('getAffiliations complete exiting function with prototype[affiliations] = %s')% str(self.prototype['affiliations'])
+        self.logger.write_line('getAffiliations complete exiting function with prototype[affiliation] = %s'% str(self.prototype['affiliation']))
     
     def getDirection(self):
         """
@@ -539,104 +616,194 @@ class BuilderThread(threading.Thread):
         direction = self.get_valid_response(dir_text, validResponses = valid_responses)
         
         self.prototype['direction'] = direction
-        self.logger.write_line('response recieved = '+str(direction) + ' & assigned to protoype[direction]')
-        self.logger.write_line('returning '+str(direction)+ ' exiting getDirection function')
+        self.logger.write_line('prototype[direction] written, return %s, exiting getDirection function' % direction)
         return direction
 
-    def getTwitter(self):
-        """ Function to get a valid Twitter user handle
-        creates file for valid handle that crawler accesses and writes to """ 
+    def getEditors(self):
+        """Function to assign editor permisions"""
+        self.logger.write_line('entered getEditors function')
+        
+        # Create new list of editors with creating player added by default
+        if 'editors' not in self.prototype:
+            self.prototype['editors'] = [self.player_name]
+            self.logger.write_line('established editors list with %s as initial entry.'% str(self.player_name))
+        
+        editors = self.prototype['editors']
+        text = ""
+        if len(editors) >= 1:            
+            for n , editor in enumerate(editors):
+                if len(editors) == 1:
+                    text = '%s has editor privileges for this %s.' % (editor, self.type)
+                elif len(editors) == 2:
+                    if n == 0:
+                        text += '%s ' % editor
+                    if n == 1:
+                        text += 'and %s have editor permisions for this %s' % (editor, self.type)
+                elif len(editors) > 2:
+                    if n == (len(editors) - 1):
+                        text += ' and %s have editor privileges for this %s' % (editor, self.type)
+                    else:
+                        text += '%s, ' % editor
+        text += '  Do you want to make any changes ?  y or n '
+        text = '\n' + textwrap.fill(text, width= 100)
+        ans = self.get_valid_response(text)
+        if ans == 'yes':
+            # send to change list function
+            editors = self.changeList(editors)
+        
+        # write to prototype
+        self.prototype['editors'] = editors
+            
+    def changeList(self, list):
+        
+        while 1:        
+            
+            list_en = enumerate(list, start = 1)            
+            # Print current list with number.
+            if len(list) == 0:
+                self.send_message_to_player('The List is Empty.')
+            for item in enumerate(list, start = 1):
+                i_num = item[0]
+                value = item[1]
+                self.send_message_to_player('%d.  %s' % (i_num, str(value)))
+            # prompt user
+            prompt = '\n' + textwrap.fill('You can [a]dd or [r]emove items from the list.  You can also be [d]one.  Enter your action letter followed '
+                                    'by a space and the number of the item you wish to perform the action on.  For example, to remove item 1 you would '
+                                    'type "r 1".', width= 100)
+            self.send_message_to_player(prompt)            
+            
+            ans = self.get_cmd_from_player().split(' ')
+            action = ans[0]
+            try:
+                num = int(ans[1])
+            except:
+                print '2nd part must be integer in list'
+            
+            if action == 'd': # done
+                break
+            if action == 'r': # remove
+                list.remove(list[num-1])
+            if action == 'a': # add
+                temp_type = self.type
+                self.type = 'player'
+                tple = self.checkName()
+                self.type = temp_type
+                if tple[1] == True:
+                    list.append(tple[0])                
+            
+        return list
+    
+    def getTextID(self):
+        """gets textID to be used by NPC builder to make files that are populated by crawlers"""
+        
+        self.logger.write_line('enter getTextID function')
+        
+        text= '\n' + textwrap.fill('Your %s can be given text that he/she/it says throughout the course of the game.  We currently '
+                                    'support twitter handles and imdb.com characterIDs.  Do you want to associate one of these with your %s.  '
+                                    'y or n' % (self.type, self.type), width=100)
+        
+        ans = self.get_valid_response(text)
+        
+        if ans == 'no':
+            self.prototype['textID'] = "not_provided"
+        else:
+            while True:                
+                self.send_message_to_player('\nEnter the twitter handle or IMDB characterID.')
+                ans = self.get_cmd_from_player()
+            
+                if ans[0] == '@': #Looks like, smells like twitter does it taste like twitter?
+                    if self.validateTwitter(ans) == True:
+                        # must be twitter
+                        self.prototype['textID'] = ans +'.twitter'
+                        break
+                    else:
+                        self.send_message_to_player('That twitter handle does not appear to be valid.')
+                
+                # looks and smells like IMDB
+                elif len(ans) == 9 and ans[0:2] == 'ch':
+                    if self.validateIMDB(ans) == True:
+                        #must be IMDB qoutes page
+                        self.prototype['textID'] = ans+'.imdb'
+                        break
+                    else:
+                        self.send_message_to_player('We could not find a qoutes page for that character ID')
+                else:
+                    self.send_message_to_player('That is not a valid twitter handle or IMDB characterID')
+                    
+        self.logger.write_line('exiting getTextID function')
+
+    def validateIMDB(self, ID):
+        
+        self.logger.write_line('enter validateIMDB function')
+        r = requests.get('http://www.imdb.com/character/%s/quotes' % ID)
+        if r.status_code == 200: # yep
+            self.logger.write_line('found site return true exit function')
+            return True
+        else:
+            self.logger.write_line('site not found return false exit function')
+            return False
+    
+    def validateTwitter(self, handle):
+        """ Function to validate Twitter handle passed in """ 
         
         self.logger.write_line('entered getTwitter function')
-        
-        self.logger.write_line('make list of Twitter Handles we already crawl')
-        path = (os.listdir(os.getcwd() + "\\twitterFeeds"))
-        handles = []
-        
-        for filename in path:
-            name = filename.lower().split('.')
-            name = name[0]
-            handles.append(name)
-            self.logger.write_line('Appended the handle %s to the handles list' % name)
-        self.logger.write_line('END OF HANDLES LIST')
-        
-        handle_text = '\n'+textwrap.fill('Enter a valid twitter handle for this Non Player Character.', width = 100)
-        accept_text = '\n'+textwrap.fill('The Twitter handle ' +str(handle)+ ' has been validated and accepted.')
-        deny_text = '\n'+textwrap.fill('The Twitter handle ' +str(handle)+ ' cannot be validated try again.')
-        
-        # get handle
-        while True:    
-            valid_handle = False
-            self.send_message_to_player(handle_text)
-            handle = self.get_cmd_from_player().lower() #twitter handles are all lower...itized  :-)
-            if handle in handles:
-                #name already being scraped break validation loop
-                break
-            if handle not in handles:
-                #check twitter
-                try:  # twitter api throws error if name does not exist
-                    api = twitter.Api()
-                    api.GetUser(str(handle))
-                    self.logger.write_line(str(handle)+ ' validated as twitter handle')
-                    valid_handle = True               
-                except:
-                    self.logger.write_line(str(handle)+ ' does not validate with twitter')
-                    pass
-                                            
-            if valid_handle == True:
-                # make file in \\twitterfeeds
-                fout = open('twitterFeeds\\' + str(handle) + '.txt', 'a')
-                self.logger.write_line('file created for crawler at twitterFeeds\\'+str(handle)+'.txt')
-                fout.close()
-                break
 
-        self.prototype['twitter'] = str(handle)        
-        self.send_message_to_player(accept_text)
-        self.logger.write_line('exiting getTwitter function, prototype[twitter] = '+self.prototype['twitter'])
-        
+        try:  # twitter api throws error if name does not exist
+            api = twitter.Api()
+            api.GetUser(handle)
+            self.logger.write_line('%s validated as twitter handle' % handle)
+            return True               
+        except:
+            self.logger.write_line('%s does not validate with twitter' % handle)
+            return False
+            
+        self.logger.write_line('exiting getTwitter function')
+    
     def getValidCoords(self):
         """
-        function to get valid Coords
+        function to get valid Coords.
+        valid coords are 4 part tuple of ints (x,y,z,a)
         """
         self.logger.write_line('arrive getValidCoords function')
+        
+        if self.type == 'npc':
+            self.prototype['coords'] = self.room_coords
+            return
+        
         ask_coords = '\n' + textwrap.fill('Enter your 4 part coordinates seperated by a space. For Example  - 4 3 12 5', width=100).strip()
         coords = self.get_cmd_from_player(ask_coords).split(" ")
-        self.logger.write_line('input rec = '+ str(coords))
         
-        valid_coords = False
-        while valid_coords == False:
-            if len(coords) != 4:
-                deny_text = '\n' + textwrap.fill('Your input must be 4 whole numbers seperated by a space.')
+        while True:
+            if len(coords) != 4:    #    Must be 4 parts
+                deny_text = '\n' + textwrap.fill('Your input must be 4 whole numbers seperated by a space.  Try Again.')
                 self.send_message_to_player(deny_text)
-                self.logger.write_line('coords denied not valid length')
-                # prompt again
-                coords = self.get_cmd_from_player(ask_coords).split(" ")
-                self.logger.write_line('new input = '+str(coords))
+                self.logger.write_line('coords denied not valid length (4)')                
             else:
-                try:
+                try:    #    verify they are all integers
                     x, y, z, a = coords
-                    (int(x), int(y), int(z), int(a))
-                    self.prototype['coords'] = (x,y,z,a)
-                    self.logger.write_line('coords validate prototype[coords] = '+str((x,y,z,a)))
+                    coords = (int(x), int(y), int(z), int(a))  # put in tuple and cast as ints
+                    self.prototype['coordinates'] = (x,y,z,a)
+                    self.logger.write_line('coords validate, prototype[coordinates] = %s' % coords)
                     self.send_message_to_player('\nYour coordinates have been accepted')
-                    valid_coords = True
-                except:
+                    break
+                except: #    fails int casting deny
                     self.send_message_to_player(deny_text)
-                    coords = self.get_cmd_from_player(ask_coords).split(" ")
-                    self.logger.write_line('coords not integers.  new input = '+str(coords))
+            
+            # prompt again
+            coords = self.get_cmd_from_player(ask_coords).split(" ")
         
         self.logger.write_line('exiting getValidCoords function')
         
     
     def assignCoords(self, direction):    
         """ function to assign coordinates for item based upon 
-        room coordinates and direction given.  Typical use portal
-        destination assignment
+        room coordinates and direction given.  Used in Portal assignment.
         """
-        self.logger.write_line('entering assignCoords with direction param = '+str(direction)+ ', room_coords = '+str(self.room_coords))
+        self.logger.write_line('entering assignCoords with direction = %s, room_coords = %s' % ( str(direction), str(self.room_coords)))
         
         coords = self.room_coords
         x,y,z,a = coords
+        #    assign new coords according to direction
         if direction == 'north':
             coords = (x, y+1, z, a) 
         elif direction == 'south':
@@ -654,61 +821,62 @@ class BuilderThread(threading.Thread):
         elif direction == 'out':
             coords = (x,y,z,a-1)
     
-        self.prototype['coords'] = coords
-        self.send_message_to_player(str(self.prototype))
-        self.logger.write_line('exiting assignCoords, prototype[coords] = '+str(self.prototype['coords']))
+        self.prototype['coordinates'] = coords
+        self.send_message_to_player('\nThe deafualt coordinates have been assigned to your %s' % self.type)
+        self.logger.write_line('exiting assignCoords, prototype[coordinates] = %s  ' % str(self.prototype['coordinates']))
         
         
     def isLocked(self):
         """
         Function to define lock state
         """
+        
         self.logger.write_line('entering isLocked function')
-        lock_text = '\n' + textwrap.fill('This ' +self.type+ ' can be [l]ocked or [u]nlocked.  Which do you prefer?',  width=100).strip()
+        lock_text = '\n' + textwrap.fill('This %s can be [l]ocked or [u]nlocked.  Which do you prefer?' % str(self.type), width=100).strip()
         valid_responses = (('unlocked', 'u'), ('locked', 'l'))
         
         lock_state = self.get_valid_response(lock_text, validResponses=valid_responses)
-        self.logger.write_line('input recieved = '+str(lock_state))
         
         if lock_state == 'unlocked':
             self.prototype['locked'] = False
         else:
             self.prototype['locked'] = True
         
-        self.logger.write_line('exiting isLocked, prototype[locked] = '+str(self.prototype['locked']))    
-        self.send_message_to_player(str(self.prototype))        
+        self.logger.write_line('exiting isLocked, prototype[locked] = '+str(self.prototype['locked']))
     
     def addKey(self):
         """
         Function to add a key to items and portals
         """
         self.logger.write_line('entered addKey function')
+        
         key_text = '\n' + textwrap.fill('This ' +self.type+ ' can have a key (any item).  Do you want to [n]ame a key, [b]uild a key,  or leave it [k]eyless?',  width=100).strip()
         valid_responses = (('name', 'n'), ('build', 'b'), ('keyless', 'k'))
         ans = self.get_valid_response(key_text, validResponses=valid_responses)
-        self.logger.write_line('input rec = '+str(ans))
         
         key = None
         while ans != 'keyless':
             orig_type = self.type #capture type we are currently making
             self.type = 'key' #change type to key for proper wording in functions
-            self.logger.write_line('type changed from '+str(orig_type)+ ' to '+str(self.type))
+            self.logger.write_line('type changed from %s to %s.' % (orig_type, str(self.type) ) )
+            
             if ans == 'name':
                 # get key name
-                self.logger.write_line(' Player provideing name of existing item sending to checkName function.')
+                self.logger.write_line('Player providing name of existing item sending to checkName function.')
                 check_name = self.checkName() # check name returns Tuple (name, T/F)
                 name = check_name[0]
                 flag = check_name[1]
-                self.logger.write_line('Check name parsed = ' +str(name)+ ' ' +str(flag))
+                self.logger.write_line('Check name parsed name = %s, flag = %s' % ( str(name), str(flag) ) )
+                
                 if flag == True: #name was accepted
                     key = name
                     self.prototype['key'] = key
-                    accept = '\n' + textwrap.fill('The '+str(name)+ ' is now the key to your '+str(orig_type)+'.', width=100).strip()        
-                    self.logger.write_line('name accepted prototype[key] = '+str(self.prototype['key']))
+                    accept = '\n' + textwrap.fill('The %s is now the key to your %s.' % ( str(name), orig_type ), width=100).strip()        
+                    self.logger.write_line('name accepted prototype[key] = %s' % str(self.prototype['key']))
                     self.send_message_to_player(accept)
                     ans = 'keyless' #break loop
                 else:
-                    deny = '\n' +textwrap.fill('We cannot find '+str(name)+'.  You will have to try again.', width=100).strip()
+                    deny = '\n' +textwrap.fill('We cannot find %s.  Try again.' % str(name), width=100).strip()
                     self.send_message_to_player(deny)
                     self.logger.write_line('name not accepted.')
                     
@@ -733,9 +901,7 @@ class BuilderThread(threading.Thread):
             self.logger.write_line('self.type (original type) restored = '+ str(orig_type))
         # set value of original prototype key
         self.prototype['key'] = key
-        self.logger.write_line('prototype[key] = '+ str(self.prototype['key']))
-        self.send_message_to_player(str(self.prototype))
-        
+        self.logger.write_line('prototype[key] = %s' % str(self.prototype['key']))        
         
     def isPortable(self):
         """
@@ -746,34 +912,30 @@ class BuilderThread(threading.Thread):
         valid_responses = (('portable', 'p'), ('non portable', 'n'))
         
         portable_state = self.get_valid_response(portable_text, validResponses=valid_responses)
-        self.logger.write_line('input recieved = '+portable_state)
         
         if portable_state == "portable":
             self.prototype['portable'] = True            
         else:
             self.prototype['portable'] = False
         
-        self.logger.write_line('exiting isPortable with prototype[portable] = '+str(self.prototype['portable']))    
-        self.send_message_to_player(str(self.prototype))
+        self.logger.write_line('exiting isPortable with prototype[portable] = %s' % str(self.prototype['portable']))    
             
     def isHidden(self):
         """
         Function sets hidden state
         """
         self.logger.write_line('entered isHidden function')
-        hidden_text = '\n' + textwrap.fill('This ' +str(self.type)+ ' can be [h]idden or [v]isible.  Which do you prefer?',  width=100).strip()
+        hidden_text = '\n' + textwrap.fill('This %s can be [h]idden or [v]isible.  Which do you prefer?' % self.type,  width=100).strip()
         valid_responses = (('hidden', 'h'), ('visible', 'v'))
         
         hidden_state = self.get_valid_response(hidden_text, validResponses=valid_responses)
-        self.logger.write_line('input recieved = '+hidden_state)
         
         if hidden_state == "hidden":
             self.prototype['hidden'] = True
         else:
             self.prototype['hidden'] = False
         
-        self.logger.write_line('exiting isHidden with prototype[hidden] = '+str(self.prototype['hidden']))    
-        self.send_message_to_player(str(self.prototype))
+        self.logger.write_line('exiting isHidden with prototype[hidden] = '+str(self.prototype['hidden']))
     
     def isContainer(self):
         """
@@ -783,21 +945,20 @@ class BuilderThread(threading.Thread):
         container_text = '\n' + textwrap.fill('Items can be containers that hold other items. Do you want to make it a container?  [y]es or [n]o',  width=100).strip()
                 
         container_state = self.get_valid_response(container_text)
-        self.logger.write_line('input recieved = '+str(container_state))
         
         if container_state == "yes":
             self.prototype['container'] = True
         else:
             self.prototype['container'] = False
             
-        self.logger.write_line('exiting isContainer with prototype[container] = '+str(self.prototype['container']))
-        self.send_message_to_player(str(self.prototype))
+        self.logger.write_line('exiting isContainer with prototype[container] = %s' % str(self.prototype['container']) )
             
     def addPortals(self):
         """
         
         """        
         self.logger.write_line('enter addPortals Function')
+        
         portals = {}
         #  confirm they want to add portal(s)
         portal_text = '\n' + textwrap.fill('Portals (doors) can be added to your room. Do you want to add portal?  [y]es or [n]o',  width=100).strip()
@@ -811,24 +972,21 @@ class BuilderThread(threading.Thread):
         
         while True: 
             if ans == 'yes':                             
-                
-                self.logger.write_line('make portal? input recieved =' +str(ans))
                 self.type = "portal"
                 self.prototype = {}
                 # build a new portal
-                self.logger.write_line('type = ' +self.type+ ' empty prototype established.  Send to buildPortal function')
+                self.logger.write_line('type = %s empty prototype established.  Send to buildPortal function' % self.type)
                 self.buildPortal()
                 # get the portal's name
                 name = self.prototype['name']
                 self.logger.write_line('returned to addPortals from buildPortal captured name of portal created = '+name)
                 #add to dict for room
                 portals[name] = portals.get(name, 0) + 1
-                self.logger.write_line('portals dict for room to now looks like ' + str(portals)+ ' Prompt again....')
+                #self.logger.write_line('portals dict for room now looks like %s. Prompt again....' % str(self.prototype['portals']))
                 #prompt for more
                 ans = self.get_valid_response(more_portal)
                 self.logger.write_line('user prompted for adding more portals (y or n)')
             else:
-                self.logger.write_line('make portal?  input recieved = '+str(ans))
                 break
                 
         # restore the prototype to the room prototype
@@ -914,25 +1072,45 @@ class BuilderThread(threading.Thread):
         function to display the object created and allow for the player to make edits.
         """
         self.logger.write_line('enter reviewObject function')
-        self.send_message_to_player('Here is a look at the characteristics of your '+str(self.type)+'.')
-        self.logger.write_line('send to printObject function')
-        self.printObject()
+        self.send_message_to_player('\nHere is a look at the characteristics of your %s.' % self.type)
         
-        self.logger.write_line('exit reviewObject function')
-        #I want to add editing capabilities here later hence the review object and print object functions
-    
-    def printObject(self):
-        """
-        Displays object in printable format.
-        """
-        self.logger.write_line('enter printObject function')
+        # using key list gives me control over the order in which things display.  lending uniformity to game experience        
+        key_list = ['name', 'description', 'inspection_description', 'direction', 'coordinates', 'portable', 'hidden', 'container',
+                    'locked', 'key', 'items', 'scripts', 'npc', 'textID', 'affiliation', 'editors' ]
+        #  keyword : function to run
+        dispatcher = {'name': self.addName, 'description': self.addDescription, 'inspection description': self.addInspectionDescription, 'direction': [self.getDirection, self.assignCoords],
+                       'coordinates': None, 'portable':self.isPortable, 'hidden':self.isHidden, 'container':self.isContainer,'locked':self.isLocked, 'key':self.addKey, 
+                       'items':None, 'scripts':None, 'npc':None, 'textID': self.getTextID, 'affiliation':self.getAffiliation, 'editors':self.getEditors}
         
-        text = ""
-        for key in self.prototype:
-            text += key + '=   ' + str(self.prototype[key]) + "\n"
+        while True:
+            # display prototype
+            for i in key_list:
+                if i in self.prototype:
+                    key = i.replace('_', "").lower()
+                    text = (i + ' '*(25-len(i)) + '=  ' + str(self.prototype[i])).strip('[]').replace("'", "").replace('_', " ")        
+                    self.send_message_to_player(text)
             
-        self.send_message_to_player(text)
-        self.logger.write_line('exit printObject function')
+            text = '\n' + textwrap.fill('Enter the name of the part you would like to change or type submit to create the %s' % self.type, width= 100)
+            self.send_message_to_player(text)
+            ans = self.get_cmd_from_player().lower()
+            
+            if ans != 'submit':
+                if ans in self.prototype:
+                    if isinstance(dispatcher[ans], list): # is list of functions to run
+                        for i in dispatcher[ans]:
+                            if i == self.assignCoords:
+                                i(self.prototype['direction'])# the assignCoords function requires a parameter to be passed.  This is my workaround for that
+                            else:
+                                i()
+                    else:
+                         dispatcher[ans]()
+                else:
+                    deny = '\n' + textwrap.fill('%s is not part of the %s''s prototype.  Try again.' % (ans, self.type), width= 100).strip() 
+            if ans == 'submit':
+                break
+           
+        self.logger.write_line('exit reviewObject function')
+
         
     def makeRoom(self):
         """
@@ -945,16 +1123,18 @@ class BuilderThread(threading.Thread):
         portals = self.prototype['portals']
         items = self.prototype['items']
         players = [] # updated only by engine
-        npcs = []   # when NPC builder complete we need to have this list populated by builder.
+        npcs = []   # updated by engine
+        editors = self.prototype['editors']
         self.logger.write_line('prototype dict parsed to variables')
         
-        room = engine.Room(desc, portals, items, players, npcs)
+        # Instantiate room object
+        room = engine_classes.Room(desc, portals, items, players, npcs, editors)
         self.logger.write_line(str(self.type) + ' instantiated @ ' +str(room)+ 'as ' + str(self.prototype))
         self.send_message_to_player("Your "+str(self.type)+" has been built.")
         
         #add room to list of rooms
-        # NEED LOCKS OR QUEUE FOR THIS
-        engine._Rooms[self.room_coords] = room
+        #  need locks for this
+        self.engine._Rooms[self.room_coords] = room
         self.logger.write_line('room object added to list of rooms')
         
         # send messsage to game_cmd_queue signaling done with builder.
@@ -970,17 +1150,19 @@ class BuilderThread(threading.Thread):
         # Parse Prototype for readability
         name = self.prototype['name']
         coords = self.prototype['coords']
-        affilitation = self.prototype['affiliation']
+        affiliation = self.prototype['affiliation']
+        textID = self.prototype['textID']
+        editors = self.prototype['editors']
         
         # build NPC object
-        npc = engine.NPC(name, coords, affilitation)
+        npc = engine_classes.NPC(name, coords, affiliation, textID=textID, editors=editors)
         self.logger.write_line('%s object instantiated with attributes %s' %(self.type, str((name, coords, affiliation))))
         
         # update placeholder in NPC Bucket
-        engine._NPC_Bucket_Lock.acquire()
+        self.engine._NPC_Bucket_Lock.acquire()
         self.logger.write_line('NPC Bucket Lock acquired')
-        engine._NPC_Bucket[name] = npc
-        engine._NPC_Bucket_Lock.release()
+        self.engine._NPC_Bucket[name] = npc
+        self.engine._NPC_Bucket_Lock.release()
         self.logger.write_line('NPC Object placeholder updated, NPC bucket lock released')
         
         self.send_message_to_player('The NPC %s has been built and added to the character bucket.' % str(name))
@@ -997,7 +1179,7 @@ class BuilderThread(threading.Thread):
         desc = self.prototype['description']
         i_desc = self.prototype['inspection_description']
         dir = self.prototype['direction']
-        coords = self.prototype['coords']
+        coords = self.prototype['coordinates']
         locked = self.prototype['locked']
         key = self.prototype['key']
         hidden = self.prototype['hidden']
@@ -1005,14 +1187,14 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('prototype dict parsed to variables')
         
         # Build Portal
-        portal = engine.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
+        portal = engine_classes.Portal(name, dir, desc, i_desc, coords, scripts = scripts, locked = locked, hidden = hidden, key = key)
         self.logger.write_line('%s instantiated @ %s with attributes = %s' % (self.type, str(portal), str(self.prototype))) 
         
         #update placeholder objects list
-        engine._Objects_Lock.acquire()
+        self.engine._Objects_Lock.acquire()
         self.logger.write_line('Objects lock acquired')
-        engine._Objects[name] = portal        
-        engine._Objects_Lock.release()
+        self.engine._Objects[name] = portal        
+        self.engine._Objects_Lock.release()
         self.logger.write_line('Objects Dict updated, Objects Lock released')
         
         self.send_message_to_player('Your %s has been built.' % self.type)
@@ -1037,14 +1219,14 @@ class BuilderThread(threading.Thread):
         items = self.prototype['items']
         self.logger.write_line('prototype dict parsed to variables')
         
-        item = engine.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
+        item = engine_classes.Item(name, desc, i_desc, scripts = scripts, portable = portable, hidden = hidden, container = container, locked = locked, key = key, items = items)
         self.logger.write_line(str(self.type) + ' instantiated @ ' +str(item)+ 'with attribs = ' +str(self.prototype))
         #write item to objects list
-        engine._Objects_Lock.acquire()
+        self.engine._Objects_Lock.acquire()
         self.logger.write_line('Objects lock acquired')
-        engine._Objects[name] = item
+        self.engine._Objects[name] = item
         self.logger.write_line('Objects Dict updated')
-        engine._Objects_Lock.release()
+        self.engine._Objects_Lock.release()
         self.logger.write_line('Objects lock released')
         
         self.send_message_to_player('Your '+self.type+ ' has been built.')
@@ -1082,7 +1264,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('enter get_cmd_from_player function.')
         command = self.cmd_queue.get()
         message = command[1]
-        self.logger.write_line('command recieved = '+str(command)+' message = '+ str(message)+', exiting get_cmd_from_player')
+        self.logger.write_line('command recieved = %s,  message = %s, exiting get_cmd_from_player'% (str(command), str(message)))
         return message
 
     def send_message_to_player(self, message):
@@ -1095,4 +1277,4 @@ class BuilderThread(threading.Thread):
         
         self.msg_queue.put(message_tuple)
         
-        self.logger.write_line('message sent to player = '+str(message_tuple)+' message printed = '+str(message))
+        self.logger.write_line('message sent to player = %s,  message printed = %s' % (str(message_tuple), str(message)))

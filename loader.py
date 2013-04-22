@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import engine
+import engine_classes
 import Q2xml.base_xml as xml
 
 ############## LOAD METHODS #############
@@ -26,7 +26,7 @@ def load_player(path):
         else:
             player_attributes['sense_effects'][node.tag] = int(node.text)
 
-    return engine.Player(**player_attributes)
+    return engine_classes.Player(**player_attributes)
     
 # Loads a room from an xml file
 def load_room(path):
@@ -47,7 +47,7 @@ def load_room(path):
         elif node.tag == 'portal':
             room_attributes['portals'].append(node.text)
     
-    return engine.Room(**room_attributes)
+    return engine_classes.Room(**room_attributes)
 
 # Loads an item from a node
 def load_item(root):
@@ -68,7 +68,7 @@ def load_item(root):
         elif '_script' in node.tag:
             item_attributes['scripts'][node.tag.replace('_script', '')] = load_script(node)
 
-    return engine.Item(**item_attributes)
+    return engine_classes.Item(**item_attributes)
 
 # Loads a portal from a node
 def load_portal(root):
@@ -88,7 +88,7 @@ def load_portal(root):
         if '_script' in node.tag:
             portal_attributes['scripts'][node.tag.replace('_script', '')] = load_script(node)
 
-    return engine.Portal(**portal_attributes)
+    return engine_classes.Portal(**portal_attributes)
 
 # Loads a script from a node
 def load_script(root):
@@ -120,9 +120,9 @@ def load_objects(path):
 def save_objects(objects, directory):
     child_nodes = []
     for object in objects:
-        if isinstance(object, engine.Item):
+        if isinstance(object, engine_classes.Item):
             child_nodes.append(create_item_node(object))    # Create an item node
-        elif isinstance(object, engine.Portal):
+        elif isinstance(object, engine_classes.Portal):
             child_nodes.append(create_portal_node(object))  # Create a portal node
 
     objects_node = xml.XMLNode('objects', children=child_nodes)

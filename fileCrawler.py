@@ -2,65 +2,68 @@
 import os
 import Q2logging
 import quoteCrawler
-import TwitterCrawler
+import twitterCrawler
+import siteConverter
+import time
+import Queue
 
 
 """
 
-this code looks at the media folder, finds new files and figures out what type of files they are,
-and sends them to either the quoteCrawler or TwitterCrawler
+This code looks at the media folder, finds new files and figures out what type of files they are,
+and sends them to either twitterCrawler or to siteConverter/quoteCrawler
 
 """
-
-logger = Q2logging.out_file_instance('logs\\fileCrawler\\fileCrawler')
-
 
 #===================================================================================================
 
-oldnames = {}
+"""
+to do:
 
-newnames = {}
+"""
 
-Names =
+logger = Q2logging.out_file_instance("logs\\fileCrawler\\fileCrawler")
+
+
+oldNames = set()
 
 # this assumes that the file names for the quotes stuff is like this ch0008323.imdb.
 # ch0008323 is the imdb "character ID" that we can insert into a url to get the quotes page.
 
-filelist = os.listdir(os.getcwd() + "\\mediafiles")
-filelist = set(filelist)
+# Sets up queue for twitter and inits twitterCrawler
+twitQueue = Queue.Queue()
+twitThread = twitterCrawler.twitterThread(twitQueue)
+twitThread.start()
 
-tempSet = set(os.listdir(os.getcwd() + "\\mediafiles"))
-new_set = tempSet - Names
-Names |= new_set
-# for name in new_names
-for filename in filelist:
-    if filename in oldnames:
-        pass
-
+# Sets up queue for quotes and inits quoteCrawler
+quoteQueue = Queue.Queue()
+qThread = quoteCrawler.quoteThread(quoteQueue)
+qThread.start()
 
 
-    if ext == "twitter":
-        file = filename.split('.')
-        name = file[0]
-        ext = file[1]
-        if name not in oldnames:
-            # this goes away
-            TwitterCrawler.Names.append(name)
-            TwitterCrawler.newNamesQ.put(name)
+while 1:
 
-    if ext == "imdb":
-        url = "http://www.imdb.com/character/%s/quotes" % name
+    filelist = os.listdir(os.getcwd() + "\\twitterFeeds")
+    fileset = set(filelist)
 
+    newNames = fileset - oldNames
+    oldNames |= newNames
 
+    for name in newNames:
 
+            time.sleep(1)
 
-## Abe's example:
-# tempSet = set(getnames())
-# new_set = temp_set - Names
-# Names |= new_set
-# for name in new_names
+            item = name.split('.')
+            uniqueID = item[:-1]
+            uniqueID = '.'.join(uniqueID)
+            ext = item[-1]
 
-# # unused crap
-#     file = filename.split('.')
-#     name = file[0]
-#     ext = file[1]
+            if ext == "twitter":
+
+                twitQueue.put(uniqueID)
+                logger.write_line("Sent %s to twitQueue" % uniqueID)
+
+            if ext == "imdb":
+
+                quoteQueue.put(siteConverter.getFullinfo(uniqueID, ext))
+                logger.write_line("Sent %s to quoteQueue" % uniqueID)

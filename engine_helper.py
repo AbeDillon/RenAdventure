@@ -1,29 +1,46 @@
 __author__ = 'EKing'
 
-import engine, roomBuilderThread, sense_effect_filters
-import thread, threading, random
+import engine_classes
+import roomBuilderThread, sense_effect_filters
+import threading, random
 import Queue
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
-def do_command(player_name, command, tags):
+def do_command(player_name, command, tags, engine):
+    action_map = {'look': look,
+                  'take': take,
+                  'open': open,
+                  'go': go,
+                  'drop': drop,
+                  'unlock': unlock,
+                  'lock': lock,
+                  'inventory': inventory,
+                  'say': say,
+                  'shout': shout,
+                  'damage': damage,
+                  'bad_command': bad_command,
+                  'reveal': reveal,
+                  'hide': hide,
+                  'add_status_effect': add_status_effect,
+                  'lose_status_effect': lose_status_effect}
+
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
-
     verb, nouns = parse_command(command, tags)
-
+    
     if verb == 'damage' and 'npc' not in tags: # Only NPCs can use the damage command
         verb = 'bad_command'
 
     if 'script' in tags:
-        all_objects = get_all_objects(player, verb) # tuple of all objects and the room they are in
+        all_objects = get_all_objects(player, verb, engine) # tuple of all objects and the room they are in
 
         valid_objects = []
         for object_room, object in all_objects:
             valid_objects.append(object)
     else:
-        valid_objects = get_valid_objects(player, room, verb) # Find the valid objects in the room that can be acted on by the verb
-
+        valid_objects = get_valid_objects(player, room, verb, engine) # Find the valid objects in the room that can be acted on by the verb
+        
     object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
 
     if 'script' in tags: # We need to find which room the object is in
@@ -40,7 +57,7 @@ def do_command(player_name, command, tags):
 
             if delay > 0: # There is a delay for this script, spin off a timer thread
                 object.scripts[verb][n] = (object.scripts[verb][n][0], object.scripts[verb][n][1], 0) # Set delay to zero so it doesn't spin off another timer
-                timer = threading.Timer(float(delay), script_delay, args=[player, object.scripts[verb][n:]]) # Start a timer to run the remainder of the script in 'delay' seconds
+                timer = threading.Timer(float(delay), script_delay, args=[player, object.scripts[verb][n:], engine]) # Start a timer to run the remainder of the script in 'delay' seconds
                 timer.start()
                 break
             else:
@@ -48,10 +65,12 @@ def do_command(player_name, command, tags):
                 engine.put_commands([command]) # Push the command to the command queue
     else:
         noun_string = ' '.join(nouns)
-        script = verb + "(room, player, object, noun_string, tags)"
-        messages = eval(script)
+        action = action_map.get(verb, None)
 
-    return sense_effect_filters.filter_messages(messages)
+        if action != None:
+            messages = action(room, player, object, noun_string, tags, engine)
+
+    return sense_effect_filters.filter_messages(messages, engine)
 
 def scrub(scripts):
     # Scrubs the verbs in the script to make sure they are valid, no sneaky code injection
@@ -66,15 +85,12 @@ def scrub(scripts):
 
     return scripts
 
-def get_room_text(player_name, coords):
+def get_room_text(player_name, coords, engine):
     room = engine._Rooms[coords]
     text = '<sight>' + room.desc
 
-    for item in room.items:
-        print item, engine._Objects[item].hidden
-
     # Add items to the text
-    visible_items = get_visible(room.items)
+    visible_items = get_visible(room.items, engine)
 
     if len(visible_items) > 0:
         text += " You see"
@@ -88,7 +104,7 @@ def get_room_text(player_name, coords):
                 text += " %s," % item.desc
 
     # Add portals to the text
-    visible_portals = get_visible(room.portals)
+    visible_portals = get_visible(room.portals, engine)
 
     if len(visible_portals) > 0:
         text += " There is"
@@ -115,7 +131,7 @@ def get_room_text(player_name, coords):
 
     return text + '</sight>'
 
-def get_visible(object_names):
+def get_visible(object_names, engine):
     visible_objects = []
     objects = []
 
@@ -210,7 +226,7 @@ def parse_command(command, tags):
 
     return verb, nouns
 
-def npc_action(npc):
+def npc_action(npc, engine):
     room = engine._Rooms[npc.coords]
 
     if len(room.players) > 0: # There are players in the room, talk to them
@@ -220,7 +236,7 @@ def npc_action(npc):
         commands.append((npc.name, 'damage say', ['npc']))
         engine.put_commands(commands)
     else: # No players in the room, choose a random portal and go through it
-        valid_portals = get_valid_objects(npc, room, 'go')
+        valid_portals = get_valid_objects(npc, room, 'go', engine)
 
         portals = []
         for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
@@ -239,7 +255,7 @@ def npc_action(npc):
 #       'i' = player items
 
 _ValidLookUp = {'look': ('pri', {'hidden': True}),
-                'take': ('r', {'hidden': True, 'portable': False}),
+                'take': ('r', {'hidden': True}),
                 'drop': ('i', {'hidden': True}),
                 'go': ('p', {'hidden': True}),
                 'open': ('ir', {'hidden': True}),
@@ -248,7 +264,7 @@ _ValidLookUp = {'look': ('pri', {'hidden': True}),
                 'hide': ('pr', {}),
                 'reveal': ('pr', {})}
 
-def get_valid_objects(player, room, verb):
+def get_valid_objects(player, room, verb, engine):
     global _ValidLookUp
 
     flags, cull = _ValidLookUp.get(verb, ('',{}))
@@ -274,10 +290,10 @@ def get_valid_objects(player, room, verb):
 
     for object in valid_objects:
         for attribute, value in enumerate(cull):
-            if isinstance(object, engine.Item):    # Items are the only object that have all attributes
-                if attribute == 'portable' and object.portable == value:
-                    valid_objects.remove(object)
-                    break
+#            if isinstance(object, engine_classes.Item):    # Items are the only object that have all attributes
+#                if attribute == 'portable' and object.portable == value:
+#                    valid_objects.remove(object)
+#                    break
 
             if attribute == 'hidden' and object.hidden == value:
                 valid_objects.remove(object)
@@ -285,7 +301,7 @@ def get_valid_objects(player, room, verb):
 
     return valid_objects
 
-def get_all_objects(player, verb):
+def get_all_objects(player, verb, engine):
     # Returns all valid objects in the game for a verb and the room they are in
     global _ValidLookUp
 
@@ -307,7 +323,7 @@ def get_all_objects(player, verb):
 
     for room, object in valid_objects:
         for attribute, value in enumerate(cull):
-            if isinstance(object, engine.Item):    # Items are the only object that have all attributes
+            if isinstance(object, engine_classes.Item):    # Items are the only object that have all attributes
                 if attribute == 'portable' and object.portable == value:
                     valid_objects.remove((room, object))
                     break
@@ -336,7 +352,7 @@ def get_object(nouns, valid_objects):
     # break the list of valid objects into individual words
     object_bits = {}
     for object in valid_objects:
-        if isinstance(object, engine.Portal):
+        if isinstance(object, engine_classes.Portal): 
             name = object.direction + ' ' + object.name # So we can detect both direction and name as an identifier for a portal
         else:
             name = object.name
@@ -356,10 +372,10 @@ def get_object(nouns, valid_objects):
                 return object_bits[bit][0]
 
 ########### ACTIONS #############
-def look(room, player, object, noun, tags):
+def look(room, player, object, noun, tags, engine):
     if object == None:
         if 'room' in noun or noun == '':
-            text = get_room_text(player.name, player.coords)
+            text = get_room_text(player.name, player.coords, engine)
         else:
             text = "There is no %s here." % noun
     else:
@@ -367,19 +383,21 @@ def look(room, player, object, noun, tags):
 
     return [(player.name, text)]
 
-def take(room, player, object, noun, tags):
+def take(room, player, object, noun, tags, engine):
     alt_text = ''
     sound = '_play_ outlaw'
 
     if object == None:
         text = "There is no %s to take." % noun
+    elif not object.portable:
+        text = "You can't take the %s." % noun
     else:
         # Move object from room to player
         add_item(player, object.name)
         rem_item(room, object.name)
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
-        sound = '_play_ sound' # NEEDS A VALID SOUND
+        sound = '_play_ pickup'
 
     text = '<sight>' + text + '</sight>'
     alt_text = '<sight>' + alt_text + '</sight>'
@@ -394,7 +412,7 @@ def take(room, player, object, noun, tags):
 
     return messages
 
-def open(room, player, object, noun, tags):
+def open(room, player, object, noun, tags, engine):
     alt_text = ''
     sound = '_play_ outlaw'
 
@@ -405,7 +423,7 @@ def open(room, player, object, noun, tags):
     elif not object.container:
         text = "You can't open the %s." % object.name
     else:
-        sound = '_play_ open' # NEEDS A VALID SOUND
+        sound = '_play_ open_sound'
         if len(object.items) > 0:
             text = "You have opened the %s, inside you find:" % object.name
             alt_text = "%s has opened the %s, inside there is:" % (player.name, object.name)
@@ -445,7 +463,7 @@ def open(room, player, object, noun, tags):
 
     return messages
 
-def go(room, player, object, noun, tags):
+def go(room, player, object, noun, tags, engine):
     alt_text = ''
     messages = []
 
@@ -469,7 +487,7 @@ def go(room, player, object, noun, tags):
         engine._Characters_Lock.release()
 
         engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
-        builder_thread = roomBuilderThread.BuilderThread('room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+        builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
         builder_thread.start()  # Spin off builder thread
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
@@ -487,7 +505,7 @@ def go(room, player, object, noun, tags):
                 room.npcs.remove(player.name) # Remove NPC from the last room
                 engine._Rooms[player.coords].npcs.append(player.name) # Add the NPC to the new room
 
-            text = get_room_text(player.name, player.coords)
+            text = get_room_text(player.name, player.coords, engine)
             alt_text = "%s has left the room through the %s door." % (player.name.title(), noun)
 
         alt_text = '<sight>' + alt_text + '</sight>'
@@ -503,7 +521,7 @@ def go(room, player, object, noun, tags):
 
     return messages
 
-def drop(room, player, object, noun, tags):
+def drop(room, player, object, noun, tags, engine):
     alt_text = ''
 
     if object == None:
@@ -530,7 +548,7 @@ def drop(room, player, object, noun, tags):
 
     return messages
 
-def unlock(room, player, object, noun, tags):
+def unlock(room, player, object, noun, tags, engine):
     alt_text = ''
     sound = '_play_ outlaw'
 
@@ -542,7 +560,7 @@ def unlock(room, player, object, noun, tags):
         if check_key(player, object.key) or 'script' in tags:
             object.locked = False
 
-            if isinstance(object, engine.Portal):
+            if isinstance(object, engine_classes.Portal):
                 for portal_name in engine._Rooms[object.coords].portals: # Unlock the portal from the other side as well
                     engine._Objects_Lock.acquire()
                     portal = engine._Objects[portal_name]
@@ -553,7 +571,7 @@ def unlock(room, player, object, noun, tags):
 
             text = "You have unlocked the %s." % object.name
             alt_text = "%s has unlocked the %s." % (player.name, object.name)
-            sound = '_play_ unlock' #NEEDS A VALID SOUND
+            sound = '_play_ door_unlock' #NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has unlocked." % object.name
@@ -573,7 +591,7 @@ def unlock(room, player, object, noun, tags):
 
     return messages
 
-def lock(room, player, object, noun, tags):
+def lock(room, player, object, noun, tags, engine):
     alt_text = ''
     sound = '_play_ outlaw'
 
@@ -585,14 +603,14 @@ def lock(room, player, object, noun, tags):
         if check_key(player, object.key) or 'script' in tags:
             object.locked = True
 
-            if isinstance(object, engine.Portal):
+            if isinstance(object, engine_classes.Portal):
                 for portal in engine._Rooms[object.coords].portals.values(): # Lock the portal from the other side as well
                     if portal.coords == player.coords:
                         portal.locked = True
 
             text = "You have locked the %s." % object.name
             alt_text = "%s has locked the %s." % (player.name, object.name)
-            sound = '_play_ lock' # NEEDS A VALID SOUND
+            sound = '_play_ door_lock' # NEEDS A VALID SOUND
 
             if 'script' in tags:
                 text = alt_text = "The %s has locked." % object.name
@@ -612,7 +630,7 @@ def lock(room, player, object, noun, tags):
 
     return messages
 
-def inventory(room, player, object, noun, tags):
+def inventory(room, player, object, noun, tags, engine):
     if len(player.items) > 0:
         text = "Inventory:"
         for item in player.items:
@@ -623,11 +641,9 @@ def inventory(room, player, object, noun, tags):
     else:
         text = "Your inventory is empty."
 
-    #text = '<sight>' + text + '</sight>'
-
     return [(player.name, text)]
 
-def say(room, player, object, noun, tags):
+def say(room, player, object, noun, tags, engine):
     text = "<sound> You say %s </sound>" % noun
     alt_text = "<sound> %s says %s </sound>" % (player.name, noun)
 
@@ -637,14 +653,14 @@ def say(room, player, object, noun, tags):
     for alt_player in room.players:
         if alt_player != player.name:
             messages.append((alt_player, alt_text))
-            #messages.append((alt_player, '<dont_filter>_play_ talking</dont_filter>')) # Needs a valid sound
 
     return messages
 
-def shout(room, player, object, noun, tags):
-    text = "<sound> You shout %s </sound>" % noun
-    alt_text = "<sound> %s shouted %s </sound>" % (player.name, noun)
-
+def shout(room, player, object, noun, tags, engine):
+    text = "<sound>You shout %s</sound>" % noun
+    alt_text = "<sound>%s shouted %s</sound>" % (player.name, noun)
+    sound = "_play_ shout_sound"
+    
     bubble_coords = []
     for i in range(-2,3): # Create a 5x5 bubble around the player
         for j in range(-2,3):
@@ -657,15 +673,15 @@ def shout(room, player, object, noun, tags):
 
     messages = []
     messages.append((player.name, text))
-
+    messages.append((player.name, sound))
     for coords in trimmed_bubble:
-        for alt_player in engine._Rooms[coords].players.values():
+        for alt_player in engine._Rooms[coords].players:
             if alt_player != player.name:
                 messages.append((alt_player, alt_text))
 
     return messages
 
-def damage(room, attacker, object, noun, tags):
+def damage(room, attacker, object, noun, tags, engine):
     messages = []
 
     for player_name in room.players:
@@ -704,24 +720,24 @@ def damage(room, attacker, object, noun, tags):
 
             # Reset player
             player.fih = 30
-            player.coords = (0,0,1,0)
+            player.coords = (1,1,1,0)
             room.players.remove(player.name) # Remove player from room
-            engine._Rooms[(0,0,1,0)].players.append(player.name) # Add player to new room
-            text += "\n%s" % get_room_text(player.name, (0,0,1,0))    # Send the room description
+            engine._Rooms[(1,1,1,0)].players.append(player.name) # Add player to new room
+            text += "\n%s" % get_room_text(player.name, (1,1,1,0), engine)    # Send the room description
             messages.append((player.name, '_play_ death'))    # Send the death sound
 
         messages.append((player.name, text))
 
     return messages
 
-def bad_command(room, player, object, noun, tags):
+def bad_command(room, player, object, noun, tags, engine):
     messages = []
     messages.append((player.name, "That is not a valid command."))
     messages.append((player.name, '_play_ outlaw'))
 
     return messages
 ############# SCRIPT METHODS ##########
-def script_delay(player, script):
+def script_delay(player, script, engine):
     # Runs the remainder of a script after a delay
     for n, action in enumerate(script):
         verb = action[0]
@@ -730,40 +746,41 @@ def script_delay(player, script):
 
         if delay > 0: # There is a delay for this script, spin off a timer thread
             script[n] = (script[n][0],  script[n][1], 0) # Set delay to zero so it doesn't spin off another timer
-            timer = threading.Timer(float(delay), script_delay, args=[player, script[n:]]) # Start a timer to run the remainder of the script in 'delay' seconds
+            timer = threading.Timer(float(delay), script_delay, args=[player, script[n:], engine]) # Start a timer to run the remainder of the script in 'delay' seconds
             timer.start()
             break
         else:
             command = (player.name, verb + ' ' + noun, ['script'])
             engine.put_commands([command]) # Push the command to the command queue
 
-def reveal(room, player, object, noun, tags):
+def reveal(room, player, object, noun, tags, engine):
     # Reveals a hidden object
     messages = []
-
+    sound = "_play_ reveal_sound"
     if object != None:
         object.hidden = False
         text = "<sight>A %s appears in the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
+            messages.append((player, sound))
 
     return messages
 
-def hide(room, player, object, noun, tags):
+def hide(room, player, object, noun, tags, engine):
     # Hides an object
     messages = []
-
+    sound = "_play_ reveal_sound"
     if object != None:
         object.hidden = True
         text = "<sight>The %s disappears from the room.</sight>" % object.name
 
         for player in room.players:
             messages.append((player, text))
-
+            messages.append((player, sound))
     return messages
 
-def add_status_effect(room, player, object, noun, tags):
+def add_status_effect(room, player, object, noun, tags, engine):
     if noun in player.sense_effects:
         player.sense_effects[noun] += 1
     else:
@@ -771,7 +788,7 @@ def add_status_effect(room, player, object, noun, tags):
 
     return []
 
-def lose_status_effect(room, player, object, noun, tags):
+def lose_status_effect(room, player, object, noun, tags, engine):
     if noun in player.sense_effects:
         player.sense_effects[noun] -= 1
 
