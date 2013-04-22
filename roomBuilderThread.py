@@ -487,18 +487,12 @@ class BuilderThread(threading.Thread):
         
         exist_flag = False
         
-        if self.type == 'player':
-            self.engine._Characters_Lock.acquire()
-            try:
-                if isinstance(self.engine._Characters[name], engine_classes.Player) == True:
-                    exist_flag = True
-                    self.logger.write_line('is instance Player passed')
-            except:
-                self.logger.write_line('is instance Player failed')
-                pass
-            self.engine._Characters_Lock.release()
-            
-        if self.type in ['item', 'key']:
+        if self.type == 'player':  # for adding editors
+            #checks to see if we have a login file for the name they enter.
+            if os.path.isfile('login_file/%s.txt' % name) == True:
+                exist_flag = True
+
+        if self.type in ['item', 'key']: # for adding items
             self.engine._Objects_Lock.acquire()
             try:
                 if isinstance(self.engine._Objects[name], engine_classes.Item) == True:
@@ -507,7 +501,7 @@ class BuilderThread(threading.Thread):
                 pass
             self.engine._Objects_Lock.release()
             
-        if self.type == 'portal':
+        if self.type == 'portal': # for adding portals
             self.engine._Objects_Lock.acquire()
             try:
                 if isinstance(self.engine._Objects[name], engine_classes.Portal) == True:
@@ -516,7 +510,7 @@ class BuilderThread(threading.Thread):
                 pass
             self.engine._Objects_Lock.release()
                 
-        if self.type == 'npc':
+        if self.type == 'npc':  # for adding NPCs
             self.engine._Characters_Lock.acquire()
             self.engine._NPC_Bucket_Lock.acquire()
             try:
@@ -532,7 +526,7 @@ class BuilderThread(threading.Thread):
             self.engine._Characters_Lock.release()
             self.engine._NPC_Bucket_Lock.release()
             
-        if exist_flag == True:
+        if exist_flag == True: # return name and flag to exit
             self.logger.write_line('exiting checkName returned ( %s, True )' % str(name))
             return (name,True)
         else:
