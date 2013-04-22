@@ -27,7 +27,18 @@ logger = Q2logging.out_file_instance("logs\\siteConverter\\siteConverter")
 
 # siteRef = {imdbUrl: "http://www.imdb.com/character/%s/quotes",
 #            imdbPrefix: "<title>",
-#            imdbSuffix: " (Character)  - Quotes</title>"}
+#            imdbSuffix: " (Character)  - Quotes</title>",
+#            # first %s is the first letter of the last name of the character
+#            brainyquoteUrl: "http://www.brainyquote.com/quotes/authors/%s/%s.html",
+#            # first %s is the first letter of the first name,
+#            # the second is the name (no spaces) followed by a 6 digit number.
+#            brainyquotePrefix: "quotes/%s/%s.html",
+#            brainyquoteSuffix: "</a></span><br>",
+#            # xx is a 2 digit number different for each character
+#            saidwhatUrl: "http://www.saidwhat.co.uk/characterquotes/%s_xx",
+#            # this will miss the first quote
+#            saidwhatPrefix: "</span><br /><br />",
+#            saidwhatSuffix: "<br/>"}
 
 # get the unique ID from the (extension) quote site
 def getFullinfo(uniqueID, ext):
