@@ -41,7 +41,11 @@ def do_command(player_name, command, tags, engine):
     else:
         valid_objects = get_valid_objects(player, room, verb, engine) # Find the valid objects in the room that can be acted on by the verb
         
-    object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
+    objects = get_objects(nouns, valid_objects) # Get the object that the player is trying to act on
+    if len(objects) != 0:
+        object = objects[0] # this needs to be replaced when we add support for multiple objects in the command functions
+    else:
+        object = None
 
     if 'script' in tags: # We need to find which room the object is in
         for room, new_object in all_objects:
@@ -334,7 +338,7 @@ def get_all_objects(player, verb, engine):
 
     return valid_objects
 
-def get_object(nouns, valid_objects):
+def get_objects(nouns, valid_objects):
     """
     Recognizes short hand for nouns (i.e. if there is a gold key in the room, and the command is "get key", the
     game will recognize that you meant "get gold key" so long as there is only one key in the room.
@@ -342,34 +346,53 @@ def get_object(nouns, valid_objects):
     Returns the object pertaining to the noun.
     """
 
-    # break the nouns into individual words
-    noun_bits = []
-    for noun in nouns:
-        noun = noun.replace('_', ' ')
-        noun = noun.replace('-', ' ')
-        noun_bits.append(noun)
-
     # break the list of valid objects into individual words
-    object_bits = {}
-    for object in valid_objects:
-        if isinstance(object, engine_classes.Portal): 
-            name = object.direction + ' ' + object.name # So we can detect both direction and name as an identifier for a portal
+    unique = dict()
+    for obj in valid_objects:
+        if isinstance(obj, engine_classes.Portal):
+            name = obj.direction + ' ' + obj.name # So we can detect both direction and name as an identifier for a portal
         else:
-            name = object.name
-        name = name.replace('_', ' ')
-        name = name.replace('-', ' ')
-        name = name.split()
-        for bit in name:
-            if bit in object_bits:
-                object_bits[bit].append(object)
-            else:
-                object_bits[bit] = [object]
+            name = obj.name
 
-    # find unique matches between the nouns and the valid items
-    for bit in noun_bits:
-        if bit in object_bits:
-            if len(object_bits[bit]) == 1:
-                return object_bits[bit][0]
+        ngrams = getNgrams(name)
+
+        for ngram in ngrams:
+            unique[ngram] = unique.get(ngram, set()) | {obj}
+
+    # break the nouns into individual words
+    nounStr = " ".join(nouns)
+    nouns = nounStr.split(",")
+
+    objects = []
+    for noun in nouns:
+        noun = noun.strip().rstrip()
+        noun = noun.replace("_", " ")
+        noun = noun.replace("-", " ")
+        items = unique.get(noun, set())
+        if len(items) == 1:
+            objects.extend(set(items))
+        else:
+            print "no unique match found for: " + noun
+
+    return objects
+
+def getNgrams(text):
+    """
+
+    """
+
+    text = text.replace("_", " ")
+    text = text.replace("-", " ")
+    words = text.split()
+
+    ngrams = []
+    for n in range(len(words)):
+        for w in range(0, len(words) - n):
+            ngram = words[w: (w + n +1)]
+            ngram = " ".join(ngram)
+            ngrams.append(ngram)
+
+    return ngrams
 
 ########### ACTIONS #############
 def look(room, player, object, noun, tags, engine):
