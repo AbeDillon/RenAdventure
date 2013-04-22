@@ -50,7 +50,7 @@ class shopthread(threading.thread):
         
     def do_sell(self, item): #For when we sell them things.
         self.engine._Characters_Lock.acquire() 
-        player_money = self.engine._Characters[self.name].items['money_name'] #The quantity of monies they currently have. "money_name" is placeholder for actual currency name.
+        player_money = self.engine._Characters[self.name].items.get('money_name', 0) #The quantity of monies they currently have. "money_name" is placeholder for actual currency name. Returns 0 if none.
         if item in self.inventory: #This is something they can buy from us
             if self.inventory[item] > player_money: #If they do not have enough money, tell them such.
                 send_output("Sorry, you do not have enough money to buy %s" % item)
