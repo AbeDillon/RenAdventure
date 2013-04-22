@@ -9,7 +9,7 @@ class AAGenerator():
     an object that generates ASCII art versions of images
     """
 
-    def __init__(self, width=45, height=30, font="WINCMD8x12", grayWeight=0.2):
+    def __init__(self, width=87, height=58, font="WINCMD8x12", grayWeight=0.2):
         """
 
         """
@@ -176,5 +176,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames = sys.argv[1:]
     else:
-        filenames = ["Ackbar.jpeg", "KW.png", "Lilwayne.jpg", "FM.jpg"]
+        filenames = ["marbo.jpg"]#["Ackbar.jpeg", "KW.png", "Lilwayne.jpg", "FM.jpg"]
     main(filenames)
