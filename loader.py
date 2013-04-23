@@ -44,7 +44,7 @@ def load_room(path):
 
     room_attributes['desc'] = root.attrib['desc']
     room_attributes['id'] = root.attrib['id']
-    room_attributes['score'] = root.attrib['score']
+    room_attributes['score'] = int(root.attrib['score'])
     
     for node in root:
         if node.tag == 'item':

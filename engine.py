@@ -102,6 +102,9 @@ class Engine:
 
         thread.start_new_thread(self.npc_thread, ())
         self.logger.write_line("Starting NPC action thread")
+        
+        thread.start_new_thread(self.distribute_likes_thread, ())
+        self.logger.write_line("Starting distribute likes thread")
 
     def shutdown_game(self):
         # Winds the game down and creates a directory with all of the saved state information
@@ -310,3 +313,50 @@ class Engine:
             time.sleep(.05) # Sleep for 50ms
 
         self.logger.write_line("Closing spawn npc thread.")
+
+    def distribute_likes_thread(self):
+        while 1:
+            self._NPC_Bucket_Lock.acquire()
+            for npc in self._NPC_Bucket: #For each NPC
+                if npc.score > 0: #This has a positive overall score
+                   # dist_value = int(npc.score * npc.interactions * 0.25) #Amount of likes they recieve
+                   # if dist_value > 0: #We give this person some likes
+                    self._Characters_Lock.acquire()
+                        #self._Characters_Lock.acquire()
+                    for editor in npc.editors:
+                        #for editor in npc.editors:
+                            #self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
+                            #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
+                        self.logger.write_line("Distributing %d likes to %s" % (int(npc.score/len(npc.editors)), editor))
+                        self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + int(score/len(npc.editors))
+                        #self._Characters_Lock.release()
+                    self._Characters_Lock.release()
+                    #else: #This person gets nothing for this distribution round.
+                        #pass
+                else: #Negative over all score, presently do nothing
+                    pass
+                #npc.interactions = 0 #Reset count on interactions.
+            self._NPC_Bucket_Lock.release()
+            
+            for room in self._Rooms: #For each room
+                if room.score >0: #This has a positive overall score
+                    #dist_value = int(room.score*room.interactions*0.25)
+                    #if dist_value > 0: #We give this person some likes
+                        # self._Characters_Lock.acquire()
+                        # for editor in room.editors:
+                            # self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
+                            # self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
+                        # self._Characters_Lock.release()
+                    # else:
+                        # pass
+                        
+                    self._Characters_Lock.acquire()
+                    for editor in room.editors:
+                        self.logger.write_line("Distributing %d likes to %s" % (int(room.score/len(room.editors)), editor))
+                        self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0)+ int(score/len(room.editors))
+                    self._Characters_Lock.release()
+                    
+                else:
+                    pass
+                #room.interactions = 0
+            time.sleep(6000.0) ###Needs reworking?
