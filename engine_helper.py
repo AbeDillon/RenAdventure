@@ -102,12 +102,28 @@ def get_room_text(player_name, coords, engine):
         text += " You see"
 
         for n, item in enumerate(visible_items):
+            quantity = room.items[item.name]
+            description = item.desc
+
+            if quantity > 1:
+                name = item.name
+
+                # Pluralize the name
+                if name[-1:] == 's':
+                    name = name[:-1] +'es'
+                elif name[-1:] == 'y':
+                    name = name[:-1] + 'ies'
+                else:
+                    name = name + 's'
+
+                description = str(quantity) + ' ' + name
+
             if len(visible_items) == 1:
-                text += " %s in the room." % item.desc
+                text += " %s in the room." % description
             elif n == (len(visible_items) - 1):
-                text += " and %s in the room." % item.desc
+                text += " and %s in the room." % description
             else:
-                text += " %s," % item.desc
+                text += " %s," % description
 
     # Add portals to the text
     visible_portals = get_visible(room.portals, engine)
