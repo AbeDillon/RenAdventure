@@ -359,4 +359,4 @@ class Engine:
                 else:
                     pass
                 #room.interactions = 0
-            time.sleep(100.0) ###Needs reworking?
+            time.sleep(6000.0) ###Needs reworking?
