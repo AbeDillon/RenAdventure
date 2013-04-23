@@ -335,7 +335,10 @@ class Login(threading.Thread):
                 _Player_Data[player_name].append(player_affil) #This may be {}, but we check for that later.
                 _Player_Data_Lock.release()
 
-
+                person = engine_classes.Player(player_name, (0,0,1,0), (0,0,1,0), player_affil) #Make this person
+                loader.save_player(person) #Save the file!
+                logger.write_line("Creating player file for user <%s>" % player_name)
+                
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
@@ -829,6 +832,7 @@ class LobbyThread(threading.Thread):
                             game_engine.make_player(player, location, affil) #Make with given affiliation
                         else:
                             game_engine.make_player(player, location) #Make with default
+                            
                             
                         _Player_Data_Lock.acquire()
                         _Player_Data[player] = [] #Reset the list for this person

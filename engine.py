@@ -103,8 +103,8 @@ class Engine:
         thread.start_new_thread(self.npc_thread, ())
         self.logger.write_line("Starting NPC action thread")
         
-        thread.start_new_thread(self.distribute_likes_thread, ())
-        self.logger.write_line("Starting distribute likes thread")
+        #thread.start_new_thread(self.distribute_likes_thread, ())
+        #self.logger.write_line("Starting distribute likes thread")
 
     def shutdown_game(self):
         # Winds the game down and creates a directory with all of the saved state information
