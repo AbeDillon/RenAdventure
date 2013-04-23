@@ -319,7 +319,7 @@ class Engine:
             self._NPC_Bucket_Lock.acquire()
             for npc in self._NPC_Bucket: #For each NPC
                 if npc.score > 0: #This has a positive overall score
-                   # dist_value = int(npc.score * npc.interactions * 0.25) #Amount of likes they recieve
+                   # dist_value = int(npc.score * npc.interactions * 0.25/len(room.editors)) #Amount of likes they recieve
                    # if dist_value > 0: #We give this person some likes
                     self._Characters_Lock.acquire()
                         #self._Characters_Lock.acquire()
@@ -340,7 +340,7 @@ class Engine:
             
             for room in self._Rooms: #For each room
                 if room.score >0: #This has a positive overall score
-                    #dist_value = int(room.score*room.interactions*0.25)
+                    #dist_value = int(room.score*room.interactions*0.25/len(room.editors))
                     #if dist_value > 0: #We give this person some likes
                         # self._Characters_Lock.acquire()
                         # for editor in room.editors:
