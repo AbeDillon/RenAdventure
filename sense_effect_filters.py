@@ -5,6 +5,7 @@ import random
 _Sense_Effect_Map = {'blind': 'sight',
                      'hallucinating': 'sight',
                      'leet': 'sight',
+                     'hipster': 'sight',
                      'deaf': 'sound'}
 
 _Stack_Probability = {1: .50,
@@ -150,4 +151,26 @@ def leet(message, stacks):
 
 def hipster(message, stacks):
     # Replaces a percentage of words in the message with hipster words
-    hipster_words = ['portland', 'messenger bag', 'bicycle rights', 'try-hard', 'iphone', 'bespoke', 'hoodie', 'ugh', 'sriracha', 'YOLO', 'wolf', 'thundercats', 'church-key', 'odd', 'future', '8-bit', 'mumblecore', 'fingerstache', 'pug', 'post-ironic', 'sartorial', 'neutra', 'photo', 'booth', 'small', 'batch', 'scenester', 'wes', 'anderson', 'kale', 'chips', 'trust', 'fund', 'tousled', 'mumblecore', 'disrupt', 'shoreditch', 'synth', 'kogi', 'biodiesel', 'yr', 'ethical', 'organic', 'direct', 'trade', 'authentic', 'trust', 'fund', 'cosby', 'sweater', '+1', 'american', 'apparel', 'vhs', 'forage', 'fashion', 'axe']
+    hipster_words = ['portland', 'messenger bag', 'bicycle rights', 'try-hard', 'iphone', 'bespoke',
+                     'hoodie', 'sriracha', 'YOLO', 'wolf', 'thundercats', 'church-key', 'odd',
+                     'future', '8-bit', 'mumblecore', 'fingerstache', 'pug', 'post-ironic', 'neutra',
+                     'photo booth', 'scenester', 'wes anderson', 'kale chips', 'tousled', 'disrupt',
+                     'synth', 'biodiesel', 'ethical', 'organic', 'direct', 'trade', 'authentic',
+                     'cosby sweater', 'american apparel', 'vhs', 'forage']
+
+    message = message.lower()
+    words = message.split()
+    num_replace = int(len(words) * _Stack_Probability[stacks]) # Number of words to replace
+
+    used_words = []
+    for i in range(num_replace):
+        while 1:
+            rand_index = random.randint(0, len(words)-1)
+            if words[rand_index] not in hipster_words:  # Check if the randomly chosen word is already translated
+                word = random.choice(hipster_words)
+                if word not in used_words or len(used_words) == len(hipster_words): # Uses each word at least once
+                    used_words.append(word)
+                    words[rand_index] = word
+                    break
+
+    return ' '.join(words)

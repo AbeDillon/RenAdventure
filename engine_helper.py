@@ -19,6 +19,8 @@ def do_command(player_name, command, tags, engine):
                   'say': say,
                   'shout': shout,
                   'damage': damage,
+                  'lol': lol,
+                  'boo': boo,
                   'bad_command': bad_command,
                   'reveal': reveal,
                   'hide': hide,
@@ -100,12 +102,28 @@ def get_room_text(player_name, coords, engine):
         text += " You see"
 
         for n, item in enumerate(visible_items):
+            quantity = room.items[item.name]
+            description = item.desc
+
+            if quantity > 1:
+                name = item.name
+
+                # Pluralize the name
+                if name[-1:] == 's':
+                    name = name[:-1] +'es'
+                elif name[-1:] == 'y':
+                    name = name[:-1] + 'ies'
+                else:
+                    name = name + 's'
+
+                description = str(quantity) + ' ' + name
+
             if len(visible_items) == 1:
-                text += " %s in the room." % item.desc
+                text += " %s in the room." % description
             elif n == (len(visible_items) - 1):
-                text += " and %s in the room." % item.desc
+                text += " and %s in the room." % description
             else:
-                text += " %s," % item.desc
+                text += " %s," % description
 
     # Add portals to the text
     visible_portals = get_visible(room.portals, engine)
@@ -205,7 +223,9 @@ def parse_command(command, tags):
                       's': 'say',
                       'shout': 'shout',
                       'damage': 'damage',
-                      'inventory': 'inventory'}
+                      'inventory': 'inventory',
+                      'lol': 'lol',
+                      'boo': 'boo'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -752,6 +772,40 @@ def damage(room, attacker, object, noun, tags, engine):
         messages.append((player.name, text))
 
     return messages
+
+def lol(room, player, object, noun, tags, engine, modifier = 1):
+    # Player upvotes a room or NPC
+    if noun == 'room':
+        if player.vote_history.get(room.id, 0) != modifier:
+            room.score += modifier
+            player.vote_history[room.id] = modifier
+            text = "You have voted for the room."
+        else:
+            text = "You have already voted for this room."
+    else:
+        engine._Characters_Lock.acquire()
+        if noun in engine._Characters and isinstance(engine._Characters[noun], engine_classes.NPC):
+            if engine._Characters[noun].coords == player.coords:    # Verify in the same room
+                if player.vote_history.get(noun, 0) != modifier:
+                    engine._Characters[noun].score += modifier
+                    player.vote_history[noun] = modifier
+                    text = "You have voted for %s." % noun.title()
+                else:
+                    text = "You have already voted for %s." % noun.title()
+            else:
+                text = "You can't vote for a person in a different room."
+        else:
+            text = "You can't vote for that person."
+        engine._Characters_Lock.release()
+
+    messages = []
+    messages.append((player.name, text))
+
+    return messages
+
+def boo(room, player, object, noun, tags, engine):
+    # Player downvotes a room or NPC
+    return lol(room, player, object, noun, tags, engine, modifier=-1)
 
 def bad_command(room, player, object, noun, tags, engine):
     messages = []
