@@ -5,7 +5,7 @@ import Q2logging
 
 
 
-class shopthread(threading.thread):
+class shopthread(threading.Thread):
     def __init__(self, inventory, player, cmd_queue, engine):
         self.inventory = {}
         self.cmd_queue = cmd_queue
