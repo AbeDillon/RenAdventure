@@ -16,6 +16,7 @@ def load_player(path):
     player_attributes['items'] = []
     player_attributes['affiliation'] = {}
     player_attributes['sense_effects'] = {}
+    player_attributes['vote_history'] = {}
 
     affiliation_people = ['Obama', 'Kanye', 'OReilly', 'Gottfried', 'Burbiglia']
     for node in root:
@@ -23,6 +24,8 @@ def load_player(path):
             player_attributes['items'].append(node.text)
         elif node.tag in affiliation_people:
             player_attributes['affiliation'][node.tag] = int(node.text)
+        elif node.tag == 'vote_history':
+            player_attributes['vote_history'] = load_vote_history(node)
         else:
             player_attributes['sense_effects'][node.tag] = int(node.text)
 
@@ -40,6 +43,8 @@ def load_room(path):
     root = xml.getroot()
 
     room_attributes['desc'] = root.attrib['desc']
+    room_attributes['id'] = root.attrib['id']
+    room_attributes['score'] = root.attrib['score']
     
     for node in root:
         if node.tag == 'item':
@@ -115,6 +120,15 @@ def load_objects(path):
 
     return objects
 
+# Loads vote history from a node
+def load_vote_history(root):
+    vote_history = {}
+
+    for node in root:
+        vote_history[node] = int(node.text)
+
+    return vote_history
+
 ############# SAVE METHODS ##############
 # Writes object list to a save file
 def save_objects(objects, directory):
@@ -158,6 +172,14 @@ def save_player(player):
         sense_node = xml.XMLNode(effect, value=player.sense_effects[effect])
         child_nodes.append(sense_node)
 
+    vote_history_children = []
+    for vote in player.vote_history:
+        vote_node = xml.XMLNode(vote, value=player.vote_history[vote])
+        vote_history_children.append(vote_node)
+
+    vote_history_node = xml.XMLNode('vote_history', children=vote_history_children)
+    child_nodes.append(vote_history_node)
+
     player_node = xml.XMLNode('player', attributes, children=child_nodes)
 
     save = open('players/%s.xml' % player.name, 'w')
@@ -167,7 +189,9 @@ def save_player(player):
 # Writes a room to a save file
 def save_room(room, path):
     attributes = {}
+    attributes['id'] = room.id
     attributes['desc'] = room.desc
+    attributes['score'] = str(room.score)
 
     child_nodes = []
     for item in room.items:

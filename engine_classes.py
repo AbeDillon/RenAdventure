@@ -1,7 +1,9 @@
 class Room:
     '''
     Attributes:
+    - ID
     - Description
+    - Score
 
     Contains:
     - Portals
@@ -10,8 +12,10 @@ class Room:
     - NPCs
     - Editors = []
     '''
-    def __init__(self, desc, portals, items, players, npcs, editors = []):
+    def __init__(self, id, desc, portals, items, players, npcs, score = 0, editors = []):
+        self.id = id
         self.desc = desc
+        self.score = score
         self.players = players
         self.npcs = npcs
         self.editors = editors
@@ -99,11 +103,12 @@ class Player:
     - Faith in Humanity
     - Affiliation (dictionary of opinion of each person)
     - Senses (Sight, Sound, Smell, Seeing Dead People)
+    - Vote History
 
     Contains:
     - Items
     '''
-    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30, editors=[]):
+    def __init__(self, name, coords, prev_coords, affiliation, sense_effects = {}, items = {}, fih = 30, editors=[], vote_history = {}):
         self.name = name.lower()
         self.coords = coords
         self.prev_coords = prev_coords
@@ -111,6 +116,8 @@ class Player:
         self.affiliation = affiliation
         self.sense_effects = sense_effects
         self.editors = editors
+        self.vote_history = vote_history
+
         self.items = {}
         for item in items:
             if item in self.items:
@@ -125,13 +132,15 @@ class NPC:
     - Editors
     - Coordinates
     - Affiliation (dictionary of opinion of each person)
+    - Score
     '''
-    def __init__(self, name, coords, affiliation, tweets = None, textID = "not_provided", editors = []):
+    def __init__(self, name, coords, affiliation, score = 0, tweets = None, textID = "not_provided", editors = []):
         self.name = name.lower()
         self.editors = editors
         self.coords = coords
         self.textID = textID
         self.affiliation = affiliation
+        self.score = score
         self.tweets = []
         self.lifespan = 20 # Number of cycles the NPC lasts before they are recycled
         self.cycles = 0 # Number of cycles the NPC has been alive for
