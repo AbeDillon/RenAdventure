@@ -322,12 +322,12 @@ class Engine:
                 self.logger.write_line("Examining score for NPC %s" % npc)
                 if self._NPC_Bucket[npc].score > 0: #This has a positive overall score
                     self.logger.write_line("NPC %s has a positive score of %d" % (npc, self._NPC_Bucket[npc].score))
-                   # dist_value = int(npc.score * npc.interactions * 0.25/len(room.editors)) #Amount of likes they recieve
+                   # dist_value = int(self._NPC_Bucket[npc].score * self._NPC_Bucket[npc].interactions * 0.25/len(self._NPC_Bucket[npc].editors)) #Amount of likes they recieve
                    # if dist_value > 0: #We give this person some likes
                     self._Characters_Lock.acquire()
                         #self._Characters_Lock.acquire()
                     for editor in self._NPC_Bucket[npc].editors:
-                        #for editor in npc.editors:
+                        #for editor in self._NPC_Bucket[npc].editors:
                             #self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
                             #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
                         self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score/len(self._NPC_Bucket[npc].editors)), editor))
@@ -346,10 +346,10 @@ class Engine:
                 self.logger.write_line("Examining score for room (%d, %d, %d, %d)" % room)
                 if self._Rooms[room].score >0: #This has a positive overall score
                     self.logger.write_line("This room has a positive score of %d" % self._Rooms[room].score)
-                    #dist_value = int(room.score*room.interactions*0.25/len(room.editors))
+                    #dist_value = int(self._Rooms[room].score*self._Rooms[room].interactions*0.25/len(self._Rooms[room].editors))
                     #if dist_value > 0: #We give this person some likes
                         # self._Characters_Lock.acquire()
-                        # for editor in room.editors:
+                        # for editor in self._Rooms[room].editors:
                             # self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
                             # self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
                         # self._Characters_Lock.release()
@@ -365,5 +365,5 @@ class Engine:
                 else:
                     self.logger.write_line("This room has a non-positive score of %d" % self._Rooms[room].score)
                     pass
-                #room.interactions = 0
+                #self._Rooms[room].interactions = 0
             time.sleep(6000.0) ###Needs reworking?
