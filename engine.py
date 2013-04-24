@@ -339,7 +339,7 @@ class Engine:
                 else: #Negative over all score, presently do nothing
                     self.logger.write_line("NPC %s has a non-positive score of %d" % (npc, self._NPC_Bucket[npc].score))
                     pass
-                #npc.interactions = 0 #Reset count on interactions.
+                #self._NPC_Bucket[npc].interactions = 0 #Reset count on interactions.
             self._NPC_Bucket_Lock.release()
             
             for room in self._Rooms: #For each room
