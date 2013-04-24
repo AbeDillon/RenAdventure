@@ -568,6 +568,8 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                             logger.write_line("Saving player file for <%s>" % player)
                             game_engine._Characters_In_Builder_Lock.release()
                         game_engine.remove_player(player)
+                    else:
+                        logger.write_line("Error! Could not find player in _Characters or _Characters_In_Builder: <%s>" % player)
                     game_engine._Characters_Lock.release()
                     if player in _Logged_in:
                         _Logged_in.remove(player)
