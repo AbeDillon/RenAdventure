@@ -557,6 +557,16 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     logger.write_line('Removing <%s> from game: Timed out' % player)
                     game_engine._Characters_Lock.acquire()
                     if player in game_engine._Characters or player in game_engine._Characters_In_Builder:
+                        if player in game_engine._Characters: #Player in regular characters
+                            person = game_engine._Characters[player]
+                            loader.save_player(person)
+                            logger.write_line("Saving player file for <%s>" % player)
+                        elif player in game_engine._Characters_In_Builder: #Player in builder
+                            game_engine._Characters_In_Builder_Lock.acquire()
+                            person = game_engine._Characters_In_Builder[player]
+                            loader.save_player(person)
+                            logger.write_line("Saving player file for <%s>" % player)
+                            game_engine._Characters_In_Builder_Lock.release()
                         game_engine.remove_player(player)
                     game_engine._Characters_Lock.release()
                     if player in _Logged_in:
