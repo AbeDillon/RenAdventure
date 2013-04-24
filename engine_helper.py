@@ -164,7 +164,7 @@ def get_visible(object_names, engine):
             engine._Objects_Lock.release()
 
     for object in objects:
-        if not object.hidden:
+        if not object.hidden and object not in visible_objects:
             visible_objects.append(object)
 
     return visible_objects
