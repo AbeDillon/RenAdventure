@@ -323,15 +323,10 @@ class Engine:
                 self.logger.write_line("Examining score for NPC %s" % npc)
                 if self._NPC_Bucket[npc].score > 0: #This has a positive overall score
                     self.logger.write_line("NPC %s has a positive score of %d" % (npc, self._NPC_Bucket[npc].score))
-                    
-                    #self._Characters_Lock.acquire()
  
                     for editor in self._NPC_Bucket[npc].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)), editor))
                         likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket_[npc].editors)) #Add this to the likes going to them.
-                        #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + int(score/len(self._NPC_Bucket[npc].editors))
-
-                    #self._Characters_Lock.release()
   
                 else: #Negative over all score, presently do nothing
                     self.logger.write_line("NPC %s has a non-positive score of %d" % (npc, self._NPC_Bucket[npc].score))
@@ -342,13 +337,10 @@ class Engine:
                 self.logger.write_line("Examining score for room (%d, %d, %d, %d)" % room)
                 if self._Rooms[room].score >0: #This has a positive overall score
                     self.logger.write_line("This room has a positive score of %d" % self._Rooms[room].score)
-
-                    #self._Characters_Lock.acquire()
+                    
                     for editor in self._Rooms[room].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int(self._Rooms[room].score/len(self._Rooms[room].editors)), editor))
                         likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._Rooms[room].score/len(self._Rooms[room].editors)) #Add to the likes going to them.
-                        #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0)+ int(score/len(self._Rooms[room].editors))
-                    #self._Characters_Lock.release()
                     
                 else:
                     self.logger.write_line("This room has a non-positive score of %d" % self._Rooms[room].score)
