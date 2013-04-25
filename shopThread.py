@@ -6,13 +6,9 @@ import Q2logging
 
 
 class shopthread(threading.Thread):
-    def __init__(self, inventory, player, cmd_queue, engine):
-        self.inventory = {}
+    def __init__(self, player, cmd_queue, engine):
+        self.inventory = {"flat pack furniture":10, "mutagen":20} #Item and cost in likes.
         self.cmd_queue = cmd_queue
-        
-        for item in inventory:
-            self.inventory[item] = inventory[item] #Transfer item and cost.
-            
         self.msg_queue = engine._MessageQueue
         self.name = player
         self.logger = Q2logging.out_file_instance('logs/shops/'+player)
@@ -46,15 +42,17 @@ class shopthread(threading.Thread):
                 
         leave_msg = "Thank you, please come again!"
         send_output(leave_msg)
+        engine._Command_Queue.put((player, 'done_shopping', []))
+        self.logger.write_line("Command sent to the game queue to exit shop")
         
         
     def do_sell(self, item): #For when we sell them things.
         self.engine._Characters_Lock.acquire() 
-        player_money = self.engine._Characters[self.name].items.get('likes', 0) #The quantity of monies they currently have. "money_name" is placeholder for actual currency name. Returns 0 if none.
+        player_money = self.engine._Characters[self.name].items.get('likes', 0) #The quantity of likes they currently have.  Returns 0 if none.
         if item in self.inventory: #This is something they can buy from us
             if self.inventory[item] > player_money: #If they do not have enough money, tell them such.
                 send_output("Sorry, you do not have enough likes to buy %s" % item)
-            else: #They have at least as much as they nead if not more.
+            else: #They have at least as much as they need if not more.
                 self.engine._Characters[self.name].items[item] = self.engine._Characters[self.name].items.get(item, 0) + 1 #If item is in inventory, increment count, else add with count 1
                 self.engine._Characters[self.name].items['likes'] -= self.inventory[item]
                 send_output("You purchased %s" % item)
@@ -74,4 +72,3 @@ class shopthread(threading.Thread):
         ret_tuple = (self.name, message, [])
         self.msg_queue.put(ret_tuple)
         self.logger.write_line("Sending message to %s:  %s" % (self.name, msg))
-    

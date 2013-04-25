@@ -227,10 +227,26 @@ class Engine:
                         self._BuilderQueues[player_name].put(command)
         
                         self.logger.write_line("Forwarded command to builder queue (%s, %s)" % (player_name, command))
+                        
+                elif player_name in self._ShopQueues: 
+                    if command_str == 'done_shopping':
+                        self._Characters_In_Shop_Lock.acquire()
+                        self._Characters[player_name] = self._Characters_In_Shop[player_name] #Move from shop back to _Characters
+                        self._Characters_In_Shop_Lock.release()
+                        
+                        self._Rooms[player.coords].players.append(player.name) #Add the player back to the room, they are done shopping.
+                        self._MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords, self)))
+                        self.logger.write_line("Player ("+player.name+") is done shopping, moved back to the game at coordinates (%d,%d,%d,%d)." % player.coords)
+                        
+                    else: #Not done shopping
+                        self._ShopQueues[player_name].put(command)
+                        self.logger.write_line("Forwarded command to shop queue (%s, %s)" % (player_name, command))
+                        
 
             time.sleep(.05) # Sleep for 50ms
 
         self.logger.write_line("Closing command thread.")
+        
     def npc_thread(self):
         # Runs the commands for all NPC's in the game
 
@@ -336,10 +352,10 @@ class Engine:
  
                     for editor in self._NPC_Bucket[npc].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)), editor))
-                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)) #Add this to the likes going to them.
+                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket_[npc].editors)) #Add this to the likes going to them.
   
                 else: #Negative over all score, presently do nothing
-                    self.logger.write_line("NPC %s has a non-positive score of %d" % (npc, self._NPC_Bucket[npc].score))
+                    self.logger.write_line("NPC %s has a non-positive score of %d, moving on to the next NPC." % (npc, self._NPC_Bucket[npc].score))
                     pass
             self._NPC_Bucket_Lock.release()
             
@@ -353,21 +369,43 @@ class Engine:
                         likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._Rooms[room].score/len(self._Rooms[room].editors)) #Add to the likes going to them.
                     
                 else:
-                    self.logger.write_line("This room has a non-positive score of %d" % self._Rooms[room].score)
+                    self.logger.write_line("This room has a non-positive score of %d, moving on to the next Room." % self._Rooms[room].score)
                     pass
-                    
-            self._Characters_Lock.acquire()
             
             for person in likes_distribution: #Distribute the likes after taxes to the people, then reset the distribution total
+  
                 initial_payout = likes_distribution[person]
-                ceiling = 1
-                factor = 1000
-                amt_removed = int(((initial_payout*initial_payout)/((initial_payout*initial_payout)+factor))*ceiling)
-                final_payout = initial_payout - amt_removed
-                self._Characters[person].items['likes'] = self._Characters[person].items.get('likes', 0) + final_payout #Put the likes in their inventory
-                self._MessageQueue.put((person, "You earned %d likes for the hour, however after taxes you get %d likes." % (initial_payout, final_payout)))
-                likes_distribution[person] = 0 #Reset the income level for the next tick.
-            self._Characters_Lock.release()
+                max_tax = 1.0
+                inflection_point = 500.0
+                welfare_const = 10.0
+                welfare = ((initial_payout+welfare_const)/(initial_payout+1))
+                intermediate_payout = initial_payout+inflection_point * max_tax*(math.log(initial_payout+inflection_point)-math.log(initial_payout)-(initial_payout/inflection_point))
+                final_payout = intermediate_payout+welfare
+                if person in self._Characters:
+                    self._Characters_Lock.acquire()
+                    self._Characters[person].items['likes'] = self._Characters[person].items.get('likes', 0) + final_payout #Put the likes in their inventory
+                    self._Characters_Lock.release()
+                    self.logger.write_line("Distributing %d likes to player %s in the game" % (final_payout, person))
+                    self._MessageQueue.put((person, "You earned %d likes, however after taxes you get %d likes." % (initial_payout, final_payout)))
+                    likes_distribution[person] = 0 #Reset the income level for the next tick.
+                else: #This person is not in the game, either builder or shop?
+                    if person in self._Characters_In_Builder: #Builder, not _Characters
+                        self._Characters_In_Builder_Lock.acquire()
+                        self._Characters_In_Builder[person].items['likes'] = self._Characters_In_Builder[person].items.get('likes', 0) + final_payout
+                        self._Characters_In_Builder_Lock.release()
+                        self.logger.write_line("Distributing %d likes to player %s in the builder" % (final_payout, person))
+                        self._MessageQueue.put((person, "You earned %d likes, however after taxes you get %d likes." % (initial_payout, final_payout)))
+                        likes_distribution[person] = 0
+                        
+                    elif person in self._Characters_In_Shop:
+                        self._Characters_In_Shop_Lock.acquire()
+                        self._Characters_In_Shop[person].items['likes'] = self._Characters_In_Shop[person].items.get('likes', 0) + final_payout
+                        self._Characters_In_Shop_Lock.release()
+                        self.logger.write_line("Distributing %d likes to player %s in the shop" % (final_payout, person))
+                        self._MessageQueue.put((person, "You earned %d likes, however after taxes you get %d likes." % (initial_payout, final_payout)))
+                        likes_distribution[person]  = 0
+                    else: #This person is not in a shop, the builder or the game.
+                        self.logger.write_line("User %s not logged in, holding off on distribution of %d likes" % (person, likes_distribution[person]))
             
             time.sleep(3600.0) ###Ticks once an hour.
         
