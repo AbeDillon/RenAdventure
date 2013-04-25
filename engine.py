@@ -315,55 +315,57 @@ class Engine:
         self.logger.write_line("Closing spawn npc thread.")
 
     def distribute_likes_thread(self):
+        likes_distribution = {} #Dictionary of player_name -> likes they get this turn around.
         while 1:
             self.logger.write_line("Running iteration of distribute_likes_thread")
             self._NPC_Bucket_Lock.acquire()
-            for npc in self._NPC_Bucket: #For each NPC
+            for npc in self._NPC_Bucket: #For each NPC, tally up likes going to people.
                 self.logger.write_line("Examining score for NPC %s" % npc)
                 if self._NPC_Bucket[npc].score > 0: #This has a positive overall score
                     self.logger.write_line("NPC %s has a positive score of %d" % (npc, self._NPC_Bucket[npc].score))
-                   # dist_value = int(self._NPC_Bucket[npc].score * self._NPC_Bucket[npc].interactions * 0.25/len(self._NPC_Bucket[npc].editors)) #Amount of likes they recieve
-                   # if dist_value > 0: #We give this person some likes
-                    self._Characters_Lock.acquire()
-                        #self._Characters_Lock.acquire()
+                    
+                    #self._Characters_Lock.acquire()
+ 
                     for editor in self._NPC_Bucket[npc].editors:
-                        #for editor in self._NPC_Bucket[npc].editors:
-                            #self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
-                            #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
-                        self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score/len(self._NPC_Bucket[npc].editors)), editor))
-                        self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + int(score/len(self._NPC_Bucket[npc].editors))
-                        #self._Characters_Lock.release()
-                    self._Characters_Lock.release()
-                    #else: #This person gets nothing for this distribution round.
-                        #pass
+                        self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)), editor))
+                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket_[npc].editors)) #Add this to the likes going to them.
+                        #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + int(score/len(self._NPC_Bucket[npc].editors))
+
+                    #self._Characters_Lock.release()
+  
                 else: #Negative over all score, presently do nothing
                     self.logger.write_line("NPC %s has a non-positive score of %d" % (npc, self._NPC_Bucket[npc].score))
                     pass
-                #self._NPC_Bucket[npc].interactions = 0 #Reset count on interactions.
             self._NPC_Bucket_Lock.release()
             
-            for room in self._Rooms: #For each room
+            for room in self._Rooms: #For each room, tally up the likes going to people
                 self.logger.write_line("Examining score for room (%d, %d, %d, %d)" % room)
                 if self._Rooms[room].score >0: #This has a positive overall score
                     self.logger.write_line("This room has a positive score of %d" % self._Rooms[room].score)
-                    #dist_value = int(self._Rooms[room].score*self._Rooms[room].interactions*0.25/len(self._Rooms[room].editors))
-                    #if dist_value > 0: #We give this person some likes
-                        # self._Characters_Lock.acquire()
-                        # for editor in self._Rooms[room].editors:
-                            # self.logger.write_line("Distributing %d likes to %s" % (dist_value, editor))
-                            # self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0) + dist_value
-                        # self._Characters_Lock.release()
-                    # else:
-                        # pass
-                        
-                    self._Characters_Lock.acquire()
+
+                    #self._Characters_Lock.acquire()
                     for editor in self._Rooms[room].editors:
-                        self.logger.write_line("Distributing %d likes to %s" % (int(room.score/len(self._Rooms[room].editors)), editor))
-                        self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0)+ int(score/len(self._Rooms[room].editors))
-                    self._Characters_Lock.release()
+                        self.logger.write_line("Distributing %d likes to %s" % (int(self._Rooms[room].score/len(self._Rooms[room].editors)), editor))
+                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._Rooms[room].score/len(self._Rooms[room].editors)) #Add to the likes going to them.
+                        #self._Characters[editor].items['likes'] = self._Characters[editor].items.get('likes', 0)+ int(score/len(self._Rooms[room].editors))
+                    #self._Characters_Lock.release()
                     
                 else:
                     self.logger.write_line("This room has a non-positive score of %d" % self._Rooms[room].score)
                     pass
-                #self._Rooms[room].interactions = 0
-            time.sleep(6000.0) ###Needs reworking?
+                    
+            self._Characters_Lock.acquire()
+            
+            for person in likes_distribution: #Distribute the likes after taxes to the people, then reset the distribution total
+                initial_payout = likes_distribution[person]
+                ceiling = 1
+                factor = 1000
+                amt_removed = int(((initial_payout*initial_payout)/((initial_payout*initial_payout)+factor))*ceiling)
+                final_payout = initial_payout - amt_removed
+                self._Characters[person].items['likes'] = self._Characters[person].items.get('likes', 0) + final_payout #Put the likes in their inventory
+                self._MessageQueue.put((person, "You earned %d likes for the hour, however after taxes you get %d likes." % (initial_payout, final_payout)))
+                likes_distribution[person] = 0 #Reset the income level for the next tick.
+            self._Characters_Lock.release()
+            
+            time.sleep(3600.0) ###Ticks once an hour.
+        
