@@ -3,7 +3,8 @@ class Room:
     Attributes:
     - ID
     - Description
-    - Score
+    - Up Votes
+    - Down Votes
 
     Contains:
     - Portals
@@ -12,10 +13,11 @@ class Room:
     - NPCs
     - Editors = []
     '''
-    def __init__(self, id, desc, portals, items, players, npcs, score = 0, editors = []):
+    def __init__(self, id, desc, portals, items, players, npcs, up_votes = 0, down_votes = 0, editors = []):
         self.id = id
         self.desc = desc
-        self.score = score
+        self.up_votes = up_votes
+        self.down_votes = down_votes
         self.players = players
         self.npcs = npcs
         self.editors = editors
@@ -132,15 +134,17 @@ class NPC:
     - Editors
     - Coordinates
     - Affiliation (dictionary of opinion of each person)
-    - Score
+    - Up Votes
+    - Down Votes
     '''
-    def __init__(self, name, coords, affiliation, score = 0, tweets = None, textID = "not_provided", editors = []):
+    def __init__(self, name, coords, affiliation, up_votes = 0, down_votes = 0, tweets = None, textID = "not_provided", editors = []):
         self.name = name.lower()
         self.editors = editors
         self.coords = coords
         self.textID = textID
         self.affiliation = affiliation
-        self.score = score
+        self.up_votes = up_votes
+        self.down_votes = down_votes
         self.tweets = []
         self.lifespan = 20 # Number of cycles the NPC lasts before they are recycled
         self.cycles = 0 # Number of cycles the NPC has been alive for

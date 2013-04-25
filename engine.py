@@ -314,9 +314,19 @@ class Engine:
 
         self.logger.write_line("Closing spawn npc thread.")
 
+    def spawn_resources_thread(self):
+        # Spawns Likes, Mutagen and Flat Pack Furniture randomly throughout the game world
+
+        if self._StillAlive:
+            threading.Timer(900.0, self.spawn_resources_thread).start() # Runs every 15 minutes
+
+
+        else:
+            self.logger.write_line("Closing spawn resources thread.")
+
     def distribute_likes_thread(self):
         likes_distribution = {} #Dictionary of player_name -> likes they get this turn around.
-        while 1:
+        while self._StillAlive:
             self.logger.write_line("Running iteration of distribute_likes_thread")
             self._NPC_Bucket_Lock.acquire()
             for npc in self._NPC_Bucket: #For each NPC, tally up likes going to people.
@@ -326,7 +336,7 @@ class Engine:
  
                     for editor in self._NPC_Bucket[npc].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)), editor))
-                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket_[npc].editors)) #Add this to the likes going to them.
+                        likes_distribution[editor] = likes_distribution.get(editor, 0) + int(self._NPC_Bucket[npc].score*2/len(self._NPC_Bucket[npc].editors)) #Add this to the likes going to them.
   
                 else: #Negative over all score, presently do nothing
                     self.logger.write_line("NPC %s has a non-positive score of %d" % (npc, self._NPC_Bucket[npc].score))

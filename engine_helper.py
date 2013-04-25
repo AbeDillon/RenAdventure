@@ -780,7 +780,11 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
     if noun == 'room':
         vote_history = player.vote_history.get(room.id, 0)
         if vote_history != modifier:
-            room.score += modifier
+            if modifier > 0: # Player is up voting
+                room.up_votes += 1
+            else:   # Player is down voting
+                room.down_votes += 1
+
             player.vote_history[room.id] = modifier
 
             if vote_history == 0:
@@ -795,7 +799,11 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
             if engine._Characters[noun].coords == player.coords:    # Verify in the same room
                 vote_history = player.vote_history.get(room.id, 0)
                 if vote_history != modifier:
-                    engine._Characters[noun].score += modifier
+                    if modifier > 0:    # Player is up voting
+                        engine._Characters[noun].up_votes += 1
+                    else:
+                        engine._Characters[noun].down_votes += 1
+
                     player.vote_history[noun] = modifier
 
                     if vote_history == 0:

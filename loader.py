@@ -44,7 +44,8 @@ def load_room(path):
 
     room_attributes['desc'] = root.attrib['desc']
     room_attributes['id'] = root.attrib['id']
-    room_attributes['score'] = int(root.attrib['score'])
+    room_attributes['up_votes'] = int(root.attrib['up_votes'])
+    room_attributes['down_votes'] = int(root.attrib['down_votes'])
     
     for node in root:
         if node.tag == 'item':
@@ -191,7 +192,8 @@ def save_room(room, path):
     attributes = {}
     attributes['id'] = room.id
     attributes['desc'] = room.desc
-    attributes['score'] = str(room.score)
+    attributes['up_votes'] = str(room.up_votes)
+    attributes['down_votes'] = str(room.down_votes)
 
     child_nodes = []
     for item in room.items:
