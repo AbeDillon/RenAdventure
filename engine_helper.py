@@ -775,10 +775,17 @@ def damage(room, attacker, object, noun, tags, engine):
 
 def lol(room, player, object, noun, tags, engine, modifier = 1):
     # Player upvotes a room or NPC
+    vote_successful = False
+
     if noun == 'room':
-        if player.vote_history.get(room.id, 0) != modifier:
+        vote_history = player.vote_history.get(room.id, 0)
+        if vote_history != modifier:
             room.score += modifier
             player.vote_history[room.id] = modifier
+
+            if vote_history == 0:
+                vote_successful = True
+
             text = "You have voted for the room."
         else:
             text = "You have already voted for this room."
@@ -786,9 +793,14 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
         engine._Characters_Lock.acquire()
         if noun in engine._Characters and isinstance(engine._Characters[noun], engine_classes.NPC):
             if engine._Characters[noun].coords == player.coords:    # Verify in the same room
-                if player.vote_history.get(noun, 0) != modifier:
+                vote_history = player.vote_history.get(room.id, 0)
+                if vote_history != modifier:
                     engine._Characters[noun].score += modifier
                     player.vote_history[noun] = modifier
+
+                    if vote_history == 0:
+                        vote_successful = True
+
                     text = "You have voted for %s." % noun.title()
                 else:
                     text = "You have already voted for %s." % noun.title()
@@ -801,11 +813,43 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
     messages = []
     messages.append((player.name, text))
 
+    if vote_successful: # Vote was successful, give the player some likes
+        likes_rewarded = give_vote_reward(player)
+
+        reward_text = "You have received %d likes for voting!" % likes_rewarded
+        messages.append((player.name, reward_text))
+
     return messages
 
 def boo(room, player, object, noun, tags, engine):
     # Player downvotes a room or NPC
     return lol(room, player, object, noun, tags, engine, modifier=-1)
+
+def give_vote_reward(player):
+    # Rewards the player for voting on something, returns the number of likes rewarded
+    vote_count = 0
+
+    for vote in player.vote_history.values():
+        vote_count += vote
+
+    # Determine the amount of likes to give based on the player's voting history
+    if vote_count == 0:
+        likes_count = 5
+    elif vote_count >= 1 and vote_count < 5:
+        likes_count = 4
+    elif vote_count >= 5 and vote_count < 15:
+        likes_count = 3
+    elif vote_count >= 15 and vote_count < 25:
+        likes_count = 2
+    else:
+        likes_count = 1
+
+    if 'likes' in player.items:
+        player.items['likes'] += likes_count
+    else:
+        player.items['likes'] = likes_count
+
+    return likes_count
 
 def bad_command(room, player, object, noun, tags, engine):
     messages = []
