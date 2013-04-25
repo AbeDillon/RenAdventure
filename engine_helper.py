@@ -6,7 +6,6 @@ import threading, random
 import Queue
 import shopThread
 
-
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
 def do_command(player_name, command, tags, engine):
@@ -873,6 +872,7 @@ def bad_command(room, player, object, noun, tags, engine):
 def shop(room, player, object, noun, tags, engine):
     alt_text = ''
     messages = []
+    room.players.remove(player.name)
     engine._Characters_In_Shop_Lock.acquire()
     engine._Characters_In_Shop[player.name] = player #Put player in shop.
     engine._Characters_In_Shop_Lock.release()

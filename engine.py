@@ -25,7 +25,7 @@ class Engine:
         self._Characters_In_Builder = {} # All Players that are currently in a builder thread
         self._Characters_In_Builder_Lock = threading.RLock()
         
-        self._ShopQueues = {} #player -> queue for messages
+        self._ShopQueues = {} # All players currently in the shop.
         
         self._Characters_In_Shop = {} #Players that are currently in a shop
         self._Characters_In_Shop_Lock = threading.RLock()
@@ -236,17 +236,20 @@ class Engine:
                 elif player_name in self._ShopQueues: 
                     if command_str == 'done_shopping':
                         self._Characters_In_Shop_Lock.acquire()
+                        self._Characters_Lock.acquire()
                         self._Characters[player_name] = self._Characters_In_Shop[player_name] #Move from shop back to _Characters
+                        player = self._Characters[player_name]
+                        self._Characters_Lock.release()
                         del self._Characters_In_Shop[player_name]
                         self._Characters_In_Shop_Lock.release()
-                        
-                        self._Rooms[player.coords].players.append(player.name) #Add the player back to the room, they are done shopping.
-                        self._MessageQueue.put((player.name, engine_helper.get_room_text(player.name, player.coords, self)))
+
+                        self._Rooms[player.coords].players.append(player_name) #Add the player back to the room, they are done shopping.
+                        self._CommandQueue.put((player.name, 'look', []))
                         self.logger.write_line("Player ("+player.name+") is done shopping, moved back to the game at coordinates (%d,%d,%d,%d)." % player.coords)
                         
                     else: #Not done shopping
-                        self._ShopQueues[player_name].put(command)
-                        self.logger.write_line("Forwarded command to shop queue (%s, %s)" % (player_name, command))
+                        self._ShopQueues[player_name].put(command_str)
+                        self.logger.write_line("Forwarded command to shop queue (%s, %s)" % (player_name, command_str))
                         
 
             time.sleep(.05) # Sleep for 50ms
