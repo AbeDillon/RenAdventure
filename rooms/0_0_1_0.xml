@@ -1,1 +1,1 @@
-<room score="0" id="0010" desc="The intersection at the center of town."><portal>room1_e</portal><portal>room1_n</portal><portal>room1_w</portal><portal>room1_s</portal><item>arrow</item><item>arrow</item><item>arrow</item></room>
+<room down_votes="0" up_votes="0" id="0010" desc="The intersection at the center of town."><item>arrow</item><portal>room1_e</portal><portal>room1_n</portal><portal>room1_w</portal><portal>room1_s</portal></room>
