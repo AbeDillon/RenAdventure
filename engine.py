@@ -349,7 +349,6 @@ class Engine:
                 self.logger.write_line("Examining score for NPC %s" % npc)
                 if (self._NPC_Bucket[npc].up_votes - self._NPC_Bucket[npc].down_votes) > 0: #This has a positive overall score
                     self.logger.write_line("NPC %s has a positive score of %d" % (npc, self._NPC_Bucket[npc].up_votes-self._NPC_Bucket[npc].down_votes))
- 
                     for editor in self._NPC_Bucket[npc].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int((self._NPC_Bucket[npc].up_votes - self._NPC_Bucket[npc].down_votes)/len(self._NPC_Bucket[npc].editors)), editor))
                         likes_distribution[editor] = likes_distribution.get(editor, 0) + int((self._NPC_Bucket[npc].up_votes - self._NPC_Bucket[npc].down_votes)/len(self._NPC_Bucket_[npc].editors)) #Add this to the likes going to them.
@@ -362,8 +361,7 @@ class Engine:
             for room in self._Rooms: #For each room, tally up the likes going to people
                 self.logger.write_line("Examining score for room (%d, %d, %d, %d)" % room)
                 if (self._Rooms[room].up_votes - self._Rooms[room].down_votes)>0: #This has a positive overall score
-                    self.logger.write_line("This room has a positive score of %d" % self._Rooms[room].up_votes - self._Rooms[room].down_votes
-                    
+                    self.logger.write_line("This room has a positive score of %d" % self._Rooms[room].up_votes - self._Rooms[room].down_votes)
                     for editor in self._Rooms[room].editors:
                         self.logger.write_line("Distributing %d likes to %s" % (int((self._Rooms[room].up_votes - self._Rooms[room].down_votes)/len(self._Rooms[room].editors)), editor))
                         likes_distribution[editor] = likes_distribution.get(editor, 0) + int((self._Rooms[room].up_votes - self._Rooms[room].down_votes)/len(self._Rooms[room].editors)) #Add to the likes going to them.
