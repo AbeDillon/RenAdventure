@@ -254,20 +254,27 @@ def parse_command(command, tags):
     return verb, nouns
 
 def npc_action(npc, engine):
+    # Rooms that the NPCs are not allowed to enter
+    restricted_rooms = [(-2,2,1,0), (-2,1,1,0), (-2,0,1,0), (-2,-1,1,0), (-2,-2,1,0),
+                        (-1,2,1,0), (-1,1,1,0), (-1,0,1,0), (-1,-1,1,0), (-1,-2,1,0),
+                        (0,2,1,0), (0,1,1,0), (0,0,1,0), (0,-1,1,0), (0,-2,1,0),
+                        (1,2,1,0), (1,1,1,0), (1,0,1,0), (1,-1,1,0), (1,-2,1,0),
+                        (2,2,1,0), (2,1,1,0), (2,0,1,0), (2,-1,1,0), (2,-2,1,0)]
+
     room = engine._Rooms[npc.coords]
 
     if len(room.players) > 0: # There are players in the room, talk to them
         message = random.choice(npc.tweets)
-#        commands = []
-#        commands.append((npc.name, 'say %s' % message, ['npc']))
-#        commands.append((npc.name, 'damage say', ['npc']))
-#        engine.put_commands(commands)
+        commands = []
+        commands.append((npc.name, 'say %s' % message, ['npc']))
+        commands.append((npc.name, 'damage say', ['npc']))
+        engine.put_commands(commands)
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go', engine)
 
         portals = []
-        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
-            if not portal.locked and engine._Rooms.get(portal.coords, None) != None:
+        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt or restricted room
+            if not portal.locked and engine._Rooms.get(portal.coords, None) != None and portal.coords not in restricted_rooms:
                 portals.append(portal)
 
         if len(portals) > 0:

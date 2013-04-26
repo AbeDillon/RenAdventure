@@ -68,17 +68,17 @@ class Engine:
 
         # Add some NPCs to the bucket
         affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-        kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
+        kanye = NPC('@mr_kanyewest', (-3,3,1,0), affiliation)
         
         affiliation = {'Obama': 1, 'Gottfried': 1, 'OReilly': 1, 'Kanye': 1, 'Burbiglia': 1}
-        ermah = NPC('ermahgerd', (0,0,1,0), affiliation)
-        pr = NPC('philosoraptor', (0,0,1,0), affiliation)
-        lolcat = NPC('lolcat', (0,0,1,0), affiliation)
-        hb = NPC('honeybadger', (0,0,1,0), affiliation)
-        oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
-        ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
-        ayb = NPC("allyourbase", (0,0,1,0), affiliation)
-        xyz = NPC("inyourbase", (0,0,1,0), affiliation)
+        ermah = NPC('ermahgerd', (-3,3,1,0), affiliation)
+        pr = NPC('philosoraptor', (-3,3,1,0), affiliation)
+        lolcat = NPC('lolcat', (-3,3,1,0), affiliation)
+        hb = NPC('honeybadger', (-3,3,1,0), affiliation)
+        oagf = NPC('overlyattachedgirlfriend', (-3,3,1,0), affiliation)
+        ck = NPC("conspiracykeanu", (-3,3,1,0), affiliation)
+        ayb = NPC("allyourbase", (-3,3,1,0), affiliation)
+        xyz = NPC("inyourbase", (-3,3,1,0), affiliation)
 
         self._NPC_Bucket_Lock.acquire()
         self._NPC_Bucket['@mr_kanyewest'] = kanye
