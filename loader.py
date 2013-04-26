@@ -166,8 +166,9 @@ def save_player(player):
         child_nodes.append(person_node)
 
     for item in player.items: # Create the item nodes
-        item_node = xml.XMLNode('item', value=item)
-        child_nodes.append(item_node)
+        for i in range(0,player.items[item]):
+            item_node = xml.XMLNode('item', value=item)
+            child_nodes.append(item_node)
 
     for effect in player.sense_effects: # Create the sense nodes
         sense_node = xml.XMLNode(effect, value=player.sense_effects[effect])

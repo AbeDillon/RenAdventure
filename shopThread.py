@@ -71,8 +71,10 @@ class shopthread(threading.Thread):
         
     def do_buy(self, item): #For when we buy back items from them
         if item in self.inventory: #We sell it, so we will buy it.
+            self.engine._Characters_In_Shop_Lock.acquire()
             if item in self.engine._Characters_In_Shop[self.name].items: #The player has this item in their inventory, so they can sell it to us.
                 self.send_output("How many %s would you like to sell?" % item)
+                self.engine._Characters_In_Shop_Lock.release()
                 while 1:
                     qty = self.get_input()
                     if qty != '': #Non empty string
@@ -85,6 +87,8 @@ class shopthread(threading.Thread):
                     qty = 0 #If we can't make a number out of it, don't buy it.
                 self.engine._Characters_In_Shop_Lock.acquire()
                 self.engine._Characters_In_Shop[self.name].items[item] = self.engine._Characters_In_Shop[self.name].items[item] - qty
+                if self.engine._Characters_In_Shop[self.name].items[item] == 0: #We took all of this item from them, delete it?
+                    del self.engine._Characters_In_Shop[self.name].items[item]
                 if item == 'mutagen': #Give them 20 likes * qty
                     self.engine._Characters_In_Shop[self.name].items['like'] = self.engine._Characters_In_Shop[self.name].items.get('like', 0) + (20*qty)
                     self.send_output("You sold %d mutagen, and in return you received %d likes" % (qty, (qty*20)))
@@ -94,6 +98,7 @@ class shopthread(threading.Thread):
                 self.engine._Characters_In_Shop_Lock.release()
                     
             else: #Item not in character items, they can't sell it
+                self.engine._Characters_In_Shop_Lock.release()
                 self.send_output("You do not have any %s to sell." % item)
         else:
             self.send_output("Sorry, I do not buy %s" % item)
