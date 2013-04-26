@@ -6,9 +6,11 @@ import Q2logging
 
 
 class shopthread(threading.Thread):
-    def __init__(self, player, cmd_queue, engine):
+    def __init__(self, player, cmd_queue, engine, inventory):
         threading.Thread.__init__(self)
-        self.inventory = {"flat pack furniture":10, "mutagen":20} #Item and cost in likes.
+        self.inventory = {} #Item and cost in likes.
+        for item in inventory:
+            self.inventory[item] = inventory[item]
         self.cmd_queue = cmd_queue
         self.msg_queue = engine._MessageQueue
         self.name = player.name
@@ -50,13 +52,15 @@ class shopthread(threading.Thread):
         
     def do_sell(self, item): #For when we sell them things.
         self.engine._Characters_In_Shop_Lock.acquire() 
-        player_money = self.engine._Characters_In_Shop[self.name].items.get('likes', 0) #The quantity of likes they currently have.  Returns 0 if none.
+        player_money = self.engine._Characters_In_Shop[self.name].items.get('like', 0) #The quantity of likes they currently have.  Returns 0 if none.
         if item in self.inventory: #This is something they can buy from us
             if self.inventory[item] > player_money: #If they do not have enough money, tell them such.
                 self.send_output("Sorry, you do not have enough likes to buy %s" % item)
             else: #They have at least as much as they need if not more.
                 self.engine._Characters_In_Shop[self.name].items[item] = self.engine._Characters_In_Shop[self.name].items.get(item, 0) + 1 #If item is in inventory, increment count, else add with count 1
-                self.engine._Characters_In_Shop[self.name].items['likes'] -= self.inventory[item]
+                self.engine._Characters_In_Shop[self.name].items['like'] -= self.inventory[item]
+                if self.engine._Characters_In_Shop[self.name].items['like'] == 0: #There are no more likes
+                    del self.engine._Characters_In_Shop[self.name].items['like'] #So we delete likes from the inventory.
                 self.send_output("You purchased %s" % item)
         else: #This is not something they can buy from us?
             self.send_output("Sorry, I do not have any %s" % item)

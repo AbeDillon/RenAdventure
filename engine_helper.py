@@ -874,19 +874,35 @@ def bad_command(room, player, object, noun, tags, engine):
 def shop(room, player, object, noun, tags, engine):
     alt_text = ''
     messages = []
-    room.players.remove(player.name)
-    engine._Characters_In_Shop_Lock.acquire()
-    engine._Characters_In_Shop[player.name] = player #Put player in shop.
-    engine._Characters_In_Shop_Lock.release()
-    
-    engine._Characters_Lock.acquire()
-    del engine._Characters[player.name] #Remove player from regular characters list for now.
-    engine._Characters_Lock.release()
+    if room.id == "-2110" or room.id == "2210": #or 'iphone' in player.items: #This is the swedish furniture store or the genetics lab, or they have the iphone with shop app?
+        room.players.remove(player.name)
+        engine._Characters_In_Shop_Lock.acquire()
+        engine._Characters_In_Shop[player.name] = player #Put player in shop.
+        engine._Characters_In_Shop_Lock.release()
+        
+        engine._Characters_Lock.acquire()
+        del engine._Characters[player.name] #Remove player from regular characters list for now.
+        engine._Characters_Lock.release()
 
-    engine._ShopQueues[player.name] = Queue.Queue()
-    
-    shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine)
-    shop_thread.start() #Execute run command?
+        engine._ShopQueues[player.name] = Queue.Queue()
+        
+        if room.id == "-2110": #Swedish furntiture store
+            inventory = {'flat pack furniture':10}
+            
+        elif room.id == "2210": #Genetics lab
+            inventory = {'mutagen':20}
+            
+            
+        else: #Using the app, not in one of the stores
+            inventory = {'flat pack furniture':10, 'mutagen':20}
+        
+        shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine, inventory)
+        shop_thread.start() #Execute run command?
+        
+    else: #They are not in a proper room or lack the necessary item:
+        messages.append((player.name, "You are unable to shop from this location presently."))
+        
+        
     return messages
         
 ############# SCRIPT METHODS ##########
