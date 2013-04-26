@@ -4,7 +4,6 @@ import engine_classes
 import Q2logging
 
 
-
 class shopthread(threading.Thread):
     def __init__(self, player, cmd_queue, engine, inventory):
         threading.Thread.__init__(self)
@@ -23,7 +22,7 @@ class shopthread(threading.Thread):
         for item in self.inventory.keys(): 
             entry_msg = entry_msg + "\t"+item+" for: "+ str(self.inventory[item])+" likes"+"\r\n"
             
-        entry_msg = entry_msg + "To buy an item, type 'buy -itemname-', or type 'done' to exit\r\n"
+        entry_msg = entry_msg + "To buy an item, type 'buy -itemname-', 'sell -itemname-', or type 'done' to exit\r\n"
         self.send_output(entry_msg)
         while 1:
             response = self.get_input()
@@ -35,6 +34,9 @@ class shopthread(threading.Thread):
             item = item.strip()
             if resp[0] == 'buy':
                 self.do_sell(item) #Sell them the item.
+                
+            elif resp[0] == 'sell':
+                self.do_buy(item) #Buy the item from them.
 
             elif resp[0] == 'done':
                 break
@@ -67,6 +69,34 @@ class shopthread(threading.Thread):
             
         self.engine._Characters_In_Shop_Lock.release()
         
+    def do_buy(self, item): #For when we buy back items from them
+        if item in self.inventory: #We sell it, so we will buy it.
+            if item in self.engine._Characters_In_Shop[self.name].items: #The player has this item in their inventory, so they can sell it to us.
+                self.send_output("How many %s would you like to sell?" % item)
+                while 1:
+                    qty = self.get_input()
+                    if qty != '': #Non empty string
+                        break
+                try:
+                    qty = int(qty)
+                    if qty > self.engine._Characters_In_Shop[self.name].items[item]: # They are trying to sell more than they have, only accept what they have.
+                        qty = self.engine._Characters_In_Shop[self.name].items[item]
+                except:
+                    qty = 0 #If we can't make a number out of it, don't buy it.
+                self.engine._Characters_In_Shop_Lock.acquire()
+                self.engine._Characters_In_Shop[self.name].items[item] = self.engine._Characters_In_Shop[self.name].items[item] - qty
+                if item == 'mutagen': #Give them 20 likes * qty
+                    self.engine._Characters_In_Shop[self.name].items['like'] = self.engine._Characters_In_Shop[self.name].items.get('like', 0) + (20*qty)
+                    self.send_output("You sold %d mutagen, and in return you received %d likes" % (qty, (qty*20)))
+                elif item == 'flat pack furniture': #Give them 10 likes * qty
+                    self.engine._Characters_In_Shop[self.name].items['like'] = self.engine._Characters_In_Shop[self.name].items.get('like', 0)+ (10*qty)
+                    self.send_output("You sold %d flat pack furniture, and in return you received %d likes" % (qty, qty*10))
+                self.engine._Characters_In_Shop_Lock.release()
+                    
+            else: #Item not in character items, they can't sell it
+                self.send_output("You do not have any %s to sell." % item)
+        else:
+            self.send_output("Sorry, I do not buy %s" % item)
 
     def get_input(self):
         response = self.cmd_queue.get()
