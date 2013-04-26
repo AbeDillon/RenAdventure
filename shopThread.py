@@ -6,9 +6,11 @@ import Q2logging
 
 
 class shopthread(threading.Thread):
-    def __init__(self, player, cmd_queue, engine):
+    def __init__(self, player, cmd_queue, engine, inventory):
         threading.Thread.__init__(self)
-        self.inventory = {"flat pack furniture":10, "mutagen":20} #Item and cost in likes.
+        self.inventory = {} #Item and cost in likes.
+        for item in inventory:
+            self.inventory[item] = inventory[item]
         self.cmd_queue = cmd_queue
         self.msg_queue = engine._MessageQueue
         self.name = player.name
