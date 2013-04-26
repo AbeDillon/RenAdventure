@@ -260,7 +260,7 @@ class Engine:
         # Runs the commands for all NPC's in the game
 
         if self._StillAlive:
-            threading.Timer(5.0, self.npc_thread).start()
+            threading.Timer(7.0, self.npc_thread).start()
 
             npcs = {}
             self._Characters_Lock.acquire()

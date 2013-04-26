@@ -258,10 +258,10 @@ def npc_action(npc, engine):
 
     if len(room.players) > 0: # There are players in the room, talk to them
         message = random.choice(npc.tweets)
-        commands = []
-        commands.append((npc.name, 'say %s' % message, ['npc']))
-        commands.append((npc.name, 'damage say', ['npc']))
-        engine.put_commands(commands)
+#        commands = []
+#        commands.append((npc.name, 'say %s' % message, ['npc']))
+#        commands.append((npc.name, 'damage say', ['npc']))
+#        engine.put_commands(commands)
     else: # No players in the room, choose a random portal and go through it
         valid_portals = get_valid_objects(npc, room, 'go', engine)
 
@@ -779,16 +779,21 @@ def damage(room, attacker, object, noun, tags, engine):
     return messages
 
 def lol(room, player, object, noun, tags, engine, modifier = 1):
-    # Player upvotes a room or NPC
+    # Player up votes a room or NPC
     vote_successful = False
 
     if noun == 'room':
         vote_history = player.vote_history.get(room.id, 0)
         if vote_history != modifier:
-            if modifier > 0: # Player is up voting
+            if modifier == 1: # Player is up voting
                 room.up_votes += 1
             else:   # Player is down voting
                 room.down_votes += 1
+
+            if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                room.down_votes -= 1
+            elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                room.up_votes -= 1
 
             player.vote_history[room.id] = modifier
 
@@ -802,12 +807,17 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
         engine._Characters_Lock.acquire()
         if noun in engine._Characters and isinstance(engine._Characters[noun], engine_classes.NPC):
             if engine._Characters[noun].coords == player.coords:    # Verify in the same room
-                vote_history = player.vote_history.get(room.id, 0)
+                vote_history = player.vote_history.get(noun, 0)
                 if vote_history != modifier:
                     if modifier > 0:    # Player is up voting
                         engine._Characters[noun].up_votes += 1
                     else:
                         engine._Characters[noun].down_votes += 1
+
+                    if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                        engine._Characters[noun].down_votes -= 1
+                    elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                        engine._Characters[noun].up_votes -= 1
 
                     player.vote_history[noun] = modifier
 
@@ -821,6 +831,7 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
                 text = "You can't vote for a person in a different room."
         else:
             text = "You can't vote for that person."
+
         engine._Characters_Lock.release()
 
     messages = []
