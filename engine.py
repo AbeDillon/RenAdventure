@@ -36,7 +36,6 @@ class Engine:
         self._NPC_Bucket = {} # List of NPCs
         self._NPC_Bucket_Lock = threading.RLock()
 
-#        self._New_NPC_Queue = Queue.Queue()  # Queue of newly created NPCs to be added to the game
         self._NPC_Queue = Queue.Queue()  # Queue of NPCs to be added to the game
 
     def init_game(self, save_state = 0):
@@ -110,6 +109,9 @@ class Engine:
         
         thread.start_new_thread(self.distribute_likes_thread, ())
         self.logger.write_line("Starting distribute likes thread")
+
+        thread.start_new_thread(self.spawn_resources_thread, ())
+        self.logger.write_line("Starting spawn resources thread")
 
     def shutdown_game(self):
         # Winds the game down and creates a directory with all of the saved state information
@@ -322,60 +324,41 @@ class Engine:
 
         self.logger.write_line("Closing spawn npc thread.")
 
-#                rejected_npc = None # The first rejected npc
-#                while 1:
-#                    if not self._New_NPC_Queue.empty():
-#                        npc = self._New_NPC_Queue.get()
-#                        if npc is not rejected_npc:
-#                            tweet_file = open('twitterfeeds/%s.txt' % npc.name)
-#                            for line in tweet_file.readlines():
-#                                npc.tweets.append(line.strip())
-#                            tweet_file.close()
-#
-#                            if len(npc.tweets) > 0:
-#                                break
-#                            else:
-#                                if rejected_npc == None:
-#                                    rejected_npc = npc
-#                                self._New_NPC_Queue.put(npc)
-#                    elif not self._Old_NPC_Queue.empty():
-#                        npc = self._Old_NPC_Queue.get()
-#                        tweet_file = open('twitterfeeds/%s.txt' % npc.name)
-#                        for line in tweet_file.readlines():
-#                            npc.tweets.append(line.strip())
-#
-#                        if len(npc.tweets) > 0:
-#                            break
-#                        else:
-#                            self._Old_NPC_Queue.put(npc)
-#                    else:
-#                        npc = None
-#                        break
-#
-#                if npc != None:
-#                    self._Characters[npc.name] = npc
-#                    self._Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
-#                    self.logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
-#
-#            elif ((len(self._Rooms) / n) + 1) < len(npcs):
-#                name = random.choice(npcs.keys())
-#                npc = npcs[name]
-#                del self._Characters[name] # Remove from the NPC list
-#                del self._Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
-#                self.logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc))
-#
-#            self._Characters_Lock.release()
-#            time.sleep(.05) # Sleep for 50ms
-#
-#        self.logger.write_line("Closing spawn npc thread.")
-
     def spawn_resources_thread(self):
         # Spawns Likes, Mutagen and Flat Pack Furniture randomly throughout the game world
 
         if self._StillAlive:
             threading.Timer(900.0, self.spawn_resources_thread).start() # Runs every 15 minutes
 
+            coords = self._Rooms.keys()
+            random.shuffle(coords)
+            for i in range(int(len(coords)*.33)):  # Put likes in the first third of the randomized room list
+                if self._Rooms[coords[i]] != None:
+                    if 'like' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['like'] += 5 # Add 5 'Likes' to the room
+                    else:
+                        self._Rooms[coords[i]].items['like'] = 5 # Put 5 'Likes' in the room
 
+            random.shuffle(coords)
+            for i in range(int(len(coords)*.1)):    # Put flat pack furniture in the first tenth of the randomized room list
+                if self._Rooms[coords[i]] != None:
+                    if 'flat pack furniture' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['flat pack furniture'] += 1 # Add 1 Flat Pack Furniture to the room
+                    else:
+                        self._Rooms[coords[i]].items['flat pack furniture'] = 1 # Put 1 Flat Furniture in the room
+
+            random.shuffle(coords)
+            num_rooms = int(len(coords))*.01
+
+            if num_rooms < 1:
+                num_rooms = 1   # Make sure that Mutagen spawns in at least 1 room
+
+            for i in range(num_rooms):  # Put Mutagen in 1% of the rooms
+                if self._Rooms[coords[i]] != None:
+                    if 'mutagen' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['mutagen'] += 1 # Add 1 mutagen to the room
+                    else:
+                        self._Rooms[coords[i]].items['mutagen'] = 1 # Put 1 mutagen in the room
         else:
             self.logger.write_line("Closing spawn resources thread.")
 
