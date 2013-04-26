@@ -435,9 +435,11 @@ def take(room, player, object, noun, tags, engine):
     elif not object.portable:
         text = "You can't take the %s." % noun
     else:
-        # Move object from room to player
-        add_item(player, object.name)
-        rem_item(room, object.name)
+        # Move all objects of that type from room to player
+        for i in range(room.items[object.name]):
+            add_item(player, object.name)
+            rem_item(room, object.name)
+
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
         sound = '_play_ pickup'
