@@ -4,6 +4,7 @@ import engine_classes
 import roomBuilderThread, sense_effect_filters
 import threading, random
 import Queue
+import shopThread
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
@@ -22,6 +23,7 @@ def do_command(player_name, command, tags, engine):
                   'lol': lol,
                   'boo': boo,
                   'bad_command': bad_command,
+                  'shop':shop,
                   'reveal': reveal,
                   'hide': hide,
                   'add_status_effect': add_status_effect,
@@ -225,7 +227,8 @@ def parse_command(command, tags):
                       'damage': 'damage',
                       'inventory': 'inventory',
                       'lol': 'lol',
-                      'boo': 'boo'}
+                      'boo': 'boo',
+                      'shop':'shop'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -867,6 +870,25 @@ def bad_command(room, player, object, noun, tags, engine):
     messages.append((player.name, '_play_ outlaw'))
 
     return messages
+    
+def shop(room, player, object, noun, tags, engine):
+    alt_text = ''
+    messages = []
+    room.players.remove(player.name)
+    engine._Characters_In_Shop_Lock.acquire()
+    engine._Characters_In_Shop[player.name] = player #Put player in shop.
+    engine._Characters_In_Shop_Lock.release()
+    
+    engine._Characters_Lock.acquire()
+    del engine._Characters[player.name] #Remove player from regular characters list for now.
+    engine._Characters_Lock.release()
+
+    engine._ShopQueues[player.name] = Queue.Queue()
+    
+    shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine)
+    shop_thread.start() #Execute run command?
+    return messages
+        
 ############# SCRIPT METHODS ##########
 def script_delay(player, script, engine):
     # Runs the remainder of a script after a delay
