@@ -529,21 +529,24 @@ def go(room, player, object, noun, tags, engine):
         new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
-        room.players.remove(player.name)    # Remove player from the room
-        player.coords = object.coords   # Change player coordinates to new room
-        engine._Rooms[object.coords] = None # Set new room to None
+        if player.items['flat pack furniture'] < 10 or 'flat pack furniture' not in player.items: #Not enough furniture
+            messages.append((player.name, "You do not have enough flat pack furniture to make a room, so you can't go in to an unbuilt room."))
+        else:
+            room.players.remove(player.name)    # Remove player from the room
+            player.coords = object.coords   # Change player coordinates to new room
+            engine._Rooms[object.coords] = None # Set new room to None
+            player.items['flat pack furniture'] = player.items['flat pack furniture'] - 10 #Subtract 10 for room.
+            engine._Characters_In_Builder_Lock.acquire()
+            engine._Characters_In_Builder[player.name] = player
+            engine._Characters_In_Builder_Lock.release()
 
-        engine._Characters_In_Builder_Lock.acquire()
-        engine._Characters_In_Builder[player.name] = player
-        engine._Characters_In_Builder_Lock.release()
+            engine._Characters_Lock.acquire()
+            del engine._Characters[player.name]
+            engine._Characters_Lock.release()
 
-        engine._Characters_Lock.acquire()
-        del engine._Characters[player.name]
-        engine._Characters_Lock.release()
-
-        engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
-        builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
-        builder_thread.start()  # Spin off builder thread
+            engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
+            builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+            builder_thread.start()  # Spin off builder thread
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
     else: # Room is built, enter it

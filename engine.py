@@ -272,7 +272,7 @@ class Engine:
                         self._Characters[character].cycles += 1 # Increment the NPCs cycles
                         npcs[character] = self._Characters[character]
                     else:   # NPC is out of cycles
-                        self._Old_NPC_Queue.put(self._Characters[character])
+                        self._NPC_Queue.put(self._Characters[character])
                         self._Rooms[self._Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
                         self._Characters[character].cycles = 0 # Reset cycles to 0
                         del self._Characters[character] # Remove NPC from the list of active characters
