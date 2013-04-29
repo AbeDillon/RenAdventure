@@ -59,11 +59,9 @@ def decodePrefix(prefix):
 
     return msg_len
 
-class messageObject(object):
+class command(object):
 
-    def __init__(self, sender=None, destination=None, tags=None, body=None):
-        self.sender = sender
-        self.destination = destination
+    def __init__(self, name=None, tags=None, body=None):
+        self.name = name
         self.tags = tags
         self.body = body
-
