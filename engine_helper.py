@@ -942,7 +942,7 @@ def give(room, player, object, noun, tags, engine):
         return messages
     qty = 0
     item = ''
-    if nouns[1] == 'all' or str(nouns[1]).isdigit:
+    if nouns[1] == 'all' or str(nouns[1]).isdigit():
         if nouns[1] == 'all': #In this case, we find the item, do verification, and get max quantity.
             item = nouns[2]
             if item in player.items: #They have this item
@@ -955,7 +955,7 @@ def give(room, player, object, noun, tags, engine):
                 messages.append((player.name, "You have sent %s %d %s" % (recipient, qty, item)))
             else:
                 messages.append((player.name, "Sorry, you do not have any %s in your inventory" % item))
-        elif str(nouns[1]).isdigit: #In this case, we make sure qty and item are valid.
+        elif str(nouns[1]).isdigit(): #In this case, we make sure qty and item are valid.
             try:
                 qty = int(nouns[1])
                 item = nouns[2]
