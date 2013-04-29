@@ -9,7 +9,7 @@ class AAGenerator():
     an object that generates ASCII art versions of images
     """
 
-    def __init__(self, width=45, height=30, font="WINCMD8x12", grayWeight=0.2):
+    def __init__(self, width=52, height=26, font="WINCMD10x20", grayWeight=0.2):
         """
 
         """

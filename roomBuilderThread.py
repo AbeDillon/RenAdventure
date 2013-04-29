@@ -1119,6 +1119,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('arrive makeRoom function')
         self.send_message_to_player('Your '+str(self.type)+' is being built.')
         
+        id = '%d%d%d%d' % self.room_coords
         desc = self.prototype['description']
         portals = self.prototype['portals']
         items = self.prototype['items']
@@ -1128,7 +1129,7 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('prototype dict parsed to variables')
         
         # Instantiate room object
-        room = engine_classes.Room(desc, portals, items, players, npcs, editors)
+        room = engine_classes.Room(id, desc, portals, items, players, npcs, editors)
         self.logger.write_line(str(self.type) + ' instantiated @ ' +str(room)+ 'as ' + str(self.prototype))
         self.send_message_to_player("Your "+str(self.type)+" has been built.")
         

@@ -4,6 +4,7 @@ import engine_classes
 import roomBuilderThread, sense_effect_filters
 import threading, random
 import Queue
+import shopThread
 
 valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
 
@@ -19,7 +20,10 @@ def do_command(player_name, command, tags, engine):
                   'say': say,
                   'shout': shout,
                   'damage': damage,
+                  'lol': lol,
+                  'boo': boo,
                   'bad_command': bad_command,
+                  'shop':shop,
                   'reveal': reveal,
                   'hide': hide,
                   'add_status_effect': add_status_effect,
@@ -41,7 +45,11 @@ def do_command(player_name, command, tags, engine):
     else:
         valid_objects = get_valid_objects(player, room, verb, engine) # Find the valid objects in the room that can be acted on by the verb
         
-    object = get_object(nouns, valid_objects) # Get the object that the player is trying to act on
+    objects = get_objects(nouns, valid_objects) # Get the object that the player is trying to act on
+    if len(objects) != 0:
+        object = objects[0] # this needs to be replaced when we add support for multiple objects in the command functions
+    else:
+        object = None
 
     if 'script' in tags: # We need to find which room the object is in
         for room, new_object in all_objects:
@@ -96,12 +104,28 @@ def get_room_text(player_name, coords, engine):
         text += " You see"
 
         for n, item in enumerate(visible_items):
+            quantity = room.items[item.name]
+            description = item.desc
+
+            if quantity > 1:
+                name = item.name
+
+                # Pluralize the name
+                if name[-1:] == 's':
+                    name = name[:-1] +'es'
+                elif name[-1:] == 'y':
+                    name = name[:-1] + 'ies'
+                else:
+                    name = name + 's'
+
+                description = str(quantity) + ' ' + name
+
             if len(visible_items) == 1:
-                text += " %s in the room." % item.desc
+                text += " %s in the room." % description
             elif n == (len(visible_items) - 1):
-                text += " and %s in the room." % item.desc
+                text += " and %s in the room." % description
             else:
-                text += " %s," % item.desc
+                text += " %s," % description
 
     # Add portals to the text
     visible_portals = get_visible(room.portals, engine)
@@ -142,7 +166,7 @@ def get_visible(object_names, engine):
             engine._Objects_Lock.release()
 
     for object in objects:
-        if not object.hidden:
+        if not object.hidden and object not in visible_objects:
             visible_objects.append(object)
 
     return visible_objects
@@ -201,7 +225,10 @@ def parse_command(command, tags):
                       's': 'say',
                       'shout': 'shout',
                       'damage': 'damage',
-                      'inventory': 'inventory'}
+                      'inventory': 'inventory',
+                      'lol': 'lol',
+                      'boo': 'boo',
+                      'shop':'shop'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -227,6 +254,13 @@ def parse_command(command, tags):
     return verb, nouns
 
 def npc_action(npc, engine):
+    # Rooms that the NPCs are not allowed to enter
+    restricted_rooms = [(-2,2,1,0), (-2,1,1,0), (-2,0,1,0), (-2,-1,1,0), (-2,-2,1,0),
+                        (-1,2,1,0), (-1,1,1,0), (-1,0,1,0), (-1,-1,1,0), (-1,-2,1,0),
+                        (0,2,1,0), (0,1,1,0), (0,0,1,0), (0,-1,1,0), (0,-2,1,0),
+                        (1,2,1,0), (1,1,1,0), (1,0,1,0), (1,-1,1,0), (1,-2,1,0),
+                        (2,2,1,0), (2,1,1,0), (2,0,1,0), (2,-1,1,0), (2,-2,1,0)]
+
     room = engine._Rooms[npc.coords]
 
     if len(room.players) > 0: # There are players in the room, talk to them
@@ -239,8 +273,8 @@ def npc_action(npc, engine):
         valid_portals = get_valid_objects(npc, room, 'go', engine)
 
         portals = []
-        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
-            if not portal.locked and engine._Rooms.get(portal.coords, None) != None:
+        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt or restricted room
+            if not portal.locked and engine._Rooms.get(portal.coords, None) != None and portal.coords not in restricted_rooms:
                 portals.append(portal)
 
         if len(portals) > 0:
@@ -334,7 +368,7 @@ def get_all_objects(player, verb, engine):
 
     return valid_objects
 
-def get_object(nouns, valid_objects):
+def get_objects(nouns, valid_objects):
     """
     Recognizes short hand for nouns (i.e. if there is a gold key in the room, and the command is "get key", the
     game will recognize that you meant "get gold key" so long as there is only one key in the room.
@@ -342,34 +376,53 @@ def get_object(nouns, valid_objects):
     Returns the object pertaining to the noun.
     """
 
-    # break the nouns into individual words
-    noun_bits = []
-    for noun in nouns:
-        noun = noun.replace('_', ' ')
-        noun = noun.replace('-', ' ')
-        noun_bits.append(noun)
-
     # break the list of valid objects into individual words
-    object_bits = {}
-    for object in valid_objects:
-        if isinstance(object, engine_classes.Portal): 
-            name = object.direction + ' ' + object.name # So we can detect both direction and name as an identifier for a portal
+    unique = dict()
+    for obj in valid_objects:
+        if isinstance(obj, engine_classes.Portal):
+            name = obj.direction + ' ' + obj.name # So we can detect both direction and name as an identifier for a portal
         else:
-            name = object.name
-        name = name.replace('_', ' ')
-        name = name.replace('-', ' ')
-        name = name.split()
-        for bit in name:
-            if bit in object_bits:
-                object_bits[bit].append(object)
-            else:
-                object_bits[bit] = [object]
+            name = obj.name
 
-    # find unique matches between the nouns and the valid items
-    for bit in noun_bits:
-        if bit in object_bits:
-            if len(object_bits[bit]) == 1:
-                return object_bits[bit][0]
+        ngrams = getNgrams(name)
+
+        for ngram in ngrams:
+            unique[ngram] = unique.get(ngram, set()) | {obj}
+
+    # break the nouns into individual words
+    nounStr = " ".join(nouns)
+    nouns = nounStr.split(",")
+
+    objects = []
+    for noun in nouns:
+        noun = noun.strip().rstrip()
+        noun = noun.replace("_", " ")
+        noun = noun.replace("-", " ")
+        items = unique.get(noun, set())
+        if len(items) == 1:
+            objects.extend(set(items))
+        else:
+            print "no unique match found for: " + noun
+
+    return objects
+
+def getNgrams(text):
+    """
+
+    """
+
+    text = text.replace("_", " ")
+    text = text.replace("-", " ")
+    words = text.split()
+
+    ngrams = []
+    for n in range(len(words)):
+        for w in range(0, len(words) - n):
+            ngram = words[w: (w + n +1)]
+            ngram = " ".join(ngram)
+            ngrams.append(ngram)
+
+    return ngrams
 
 ########### ACTIONS #############
 def look(room, player, object, noun, tags, engine):
@@ -392,9 +445,11 @@ def take(room, player, object, noun, tags, engine):
     elif not object.portable:
         text = "You can't take the %s." % noun
     else:
-        # Move object from room to player
-        add_item(player, object.name)
-        rem_item(room, object.name)
+        # Move all objects of that type from room to player
+        for i in range(room.items[object.name]):
+            add_item(player, object.name)
+            rem_item(room, object.name)
+
         text = "You have taken the %s." % object.name
         alt_text = "%s has taken the %s." % (player.name, object.name)
         sound = '_play_ pickup'
@@ -474,21 +529,24 @@ def go(room, player, object, noun, tags, engine):
         new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
-        room.players.remove(player.name)    # Remove player from the room
-        player.coords = object.coords   # Change player coordinates to new room
-        engine._Rooms[object.coords] = None # Set new room to None
+        if player.items['flat pack furniture'] < 10 or 'flat pack furniture' not in player.items: #Not enough furniture
+            messages.append((player.name, "You do not have enough flat pack furniture to make a room, so you can't go in to an unbuilt room."))
+        else:
+            room.players.remove(player.name)    # Remove player from the room
+            player.coords = object.coords   # Change player coordinates to new room
+            engine._Rooms[object.coords] = None # Set new room to None
+            player.items['flat pack furniture'] = player.items['flat pack furniture'] - 10 #Subtract 10 for room.
+            engine._Characters_In_Builder_Lock.acquire()
+            engine._Characters_In_Builder[player.name] = player
+            engine._Characters_In_Builder_Lock.release()
 
-        engine._Characters_In_Builder_Lock.acquire()
-        engine._Characters_In_Builder[player.name] = player
-        engine._Characters_In_Builder_Lock.release()
+            engine._Characters_Lock.acquire()
+            del engine._Characters[player.name]
+            engine._Characters_Lock.release()
 
-        engine._Characters_Lock.acquire()
-        del engine._Characters[player.name]
-        engine._Characters_Lock.release()
-
-        engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
-        builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
-        builder_thread.start()  # Spin off builder thread
+            engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
+            builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+            builder_thread.start()  # Spin off builder thread
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
     else: # Room is built, enter it
@@ -730,12 +788,144 @@ def damage(room, attacker, object, noun, tags, engine):
 
     return messages
 
+def lol(room, player, object, noun, tags, engine, modifier = 1):
+    # Player up votes a room or NPC
+    vote_successful = False
+
+    if noun == 'room':
+        vote_history = player.vote_history.get(room.id, 0)
+        if vote_history != modifier:
+            if modifier == 1: # Player is up voting
+                room.up_votes += 1
+            else:   # Player is down voting
+                room.down_votes += 1
+
+            if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                room.down_votes -= 1
+            elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                room.up_votes -= 1
+
+            player.vote_history[room.id] = modifier
+
+            if vote_history == 0:
+                vote_successful = True
+
+            text = "You have voted for the room."
+        else:
+            text = "You have already voted for this room."
+    else:
+        engine._Characters_Lock.acquire()
+        if noun in engine._Characters and isinstance(engine._Characters[noun], engine_classes.NPC):
+            if engine._Characters[noun].coords == player.coords:    # Verify in the same room
+                vote_history = player.vote_history.get(noun, 0)
+                if vote_history != modifier:
+                    if modifier > 0:    # Player is up voting
+                        engine._Characters[noun].up_votes += 1
+                    else:
+                        engine._Characters[noun].down_votes += 1
+
+                    if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                        engine._Characters[noun].down_votes -= 1
+                    elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                        engine._Characters[noun].up_votes -= 1
+
+                    player.vote_history[noun] = modifier
+
+                    if vote_history == 0:
+                        vote_successful = True
+
+                    text = "You have voted for %s." % noun.title()
+                else:
+                    text = "You have already voted for %s." % noun.title()
+            else:
+                text = "You can't vote for a person in a different room."
+        else:
+            text = "You can't vote for that person."
+
+        engine._Characters_Lock.release()
+
+    messages = []
+    messages.append((player.name, text))
+
+    if vote_successful: # Vote was successful, give the player some likes
+        likes_rewarded = give_vote_reward(player)
+
+        reward_text = "You have received %d likes for voting!" % likes_rewarded
+        messages.append((player.name, reward_text))
+
+    return messages
+
+def boo(room, player, object, noun, tags, engine):
+    # Player downvotes a room or NPC
+    return lol(room, player, object, noun, tags, engine, modifier=-1)
+
+def give_vote_reward(player):
+    # Rewards the player for voting on something, returns the number of likes rewarded
+    vote_count = 0
+
+    for vote in player.vote_history.values():
+        vote_count += vote
+
+    # Determine the amount of likes to give based on the player's voting history
+    if vote_count == 0:
+        likes_count = 5
+    elif vote_count >= 1 and vote_count < 5:
+        likes_count = 4
+    elif vote_count >= 5 and vote_count < 15:
+        likes_count = 3
+    elif vote_count >= 15 and vote_count < 25:
+        likes_count = 2
+    else:
+        likes_count = 1
+
+    if 'likes' in player.items:
+        player.items['likes'] += likes_count
+    else:
+        player.items['likes'] = likes_count
+
+    return likes_count
+
 def bad_command(room, player, object, noun, tags, engine):
     messages = []
     messages.append((player.name, "That is not a valid command."))
     messages.append((player.name, '_play_ outlaw'))
 
     return messages
+    
+def shop(room, player, object, noun, tags, engine):
+    alt_text = ''
+    messages = []
+    if room.id == "-2110" or room.id == "2210": #or 'iphone' in player.items: #This is the swedish furniture store or the genetics lab, or they have the iphone with shop app?
+        room.players.remove(player.name)
+        engine._Characters_In_Shop_Lock.acquire()
+        engine._Characters_In_Shop[player.name] = player #Put player in shop.
+        engine._Characters_In_Shop_Lock.release()
+        
+        engine._Characters_Lock.acquire()
+        del engine._Characters[player.name] #Remove player from regular characters list for now.
+        engine._Characters_Lock.release()
+
+        engine._ShopQueues[player.name] = Queue.Queue()
+        
+        if room.id == "-2110": #Swedish furntiture store
+            inventory = {'flat pack furniture':10}
+            
+        elif room.id == "2210": #Genetics lab
+            inventory = {'mutagen':20}
+            
+            
+        else: #Using the app, not in one of the stores
+            inventory = {'flat pack furniture':10, 'mutagen':20}
+        
+        shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine, inventory)
+        shop_thread.start() #Execute run command?
+        
+    else: #They are not in a proper room or lack the necessary item:
+        messages.append((player.name, "You are unable to shop from this location presently."))
+        
+        
+    return messages
+        
 ############# SCRIPT METHODS ##########
 def script_delay(player, script, engine):
     # Runs the remainder of a script after a delay

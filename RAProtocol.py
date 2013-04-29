@@ -2,31 +2,31 @@ __author__ = 'ADillon'
 
 import socket
 import sys
+import pickle
 
 def sendMessage(message, conn):
     """
 
     """
-
-    prefix = encodePrefix(message)
-    message = prefix + message
-    conn.sendall(message)
+    message_str = pickle.dumps(message)
+    prefix = encodePrefix(message_str)
+    out_message = prefix + message_str
+    conn.sendall(out_message)
 
 
 def receiveMessage(conn):
     """
 
     """
-
     prefix = conn.recv(4)
     msg_len = decodePrefix(prefix)
-    message = ""
+    message_str = ""
     while msg_len > 4096:
-        message += conn.recv(4096)
+        message_str += conn.recv(4096)
         msg_len -= 4096
 
-    message += conn.recv(msg_len)
-
+    message_str += conn.recv(msg_len)
+    message = pickle.loads(message_str)
     return message
 
 def encodePrefix(message):
@@ -59,4 +59,11 @@ def decodePrefix(prefix):
 
     return msg_len
 
+class messageObject(object):
+
+    def __init__(self, sender=None, destination=None, tags=None, body=None):
+        self.sender = sender
+        self.destination = destination
+        self.tags = tags
+        self.body = body
 

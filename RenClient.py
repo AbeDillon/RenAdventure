@@ -283,7 +283,7 @@ class InThread(threading.Thread):
             _Sound_Playing = True ###To block other plays for now.
             thread.start_new_thread(play_sound, (sound_name,))
             logger.write_line('Output: Playing sound file called %s' % sound_name) 
-            
+
         elif not '_play_' in message: #This isn't a playsound message, we can print it.
             print >>sys.stdout, "\n" + message.strip()
             logger.write_line('Output: %s' % message)
