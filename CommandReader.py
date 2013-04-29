@@ -12,12 +12,13 @@ class CommandReader(Thread):
     processTags() and processCommand() functions.
     """
 
-    def __init__(self, inQ=Queue(), outQ=Queue()):
+    def __init__(self, inQ=Queue(), outQ=Queue(), parentQ=Queue()):
         # superclass constructor
         Thread.__init__(self)
         # input and output queues
         self.inQ = inQ
         self.outQ = outQ
+        self.parentQ = parentQ
         # termination signal
         self.done = False
         # routing table
