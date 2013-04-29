@@ -2,6 +2,14 @@ __author__ = 'AYeager'
 
 from PyQt4 import QtGui, QtCore
 import sys, threading, thread, Queue
+import socket, RAProtocol, ssl
+import Q2logging
+
+logger = Q2logging.out_file_instance('logs/client/RenClient')
+
+_Local_Host = socket.gethostname() # replace with actual host address
+_Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
+_Login_Port = 60005
 
 _Out_Queue = Queue.Queue()
 _In_Queue = Queue.Queue()
@@ -16,11 +24,6 @@ class RenConsole(QtGui.QDialog):
         super(RenConsole, self).__init__(parent)
         self.setWindowTitle("A Ren Adventure")
         self.setGeometry(200,50,640,480)
-
-        self.loggedIn = False
-        self.getAff = False
-        self.playerName = ""
-        self.password = ""
 
         #self.pallette = QtGui.QPalette("fg=green, bg = black")
         # Main Display area
@@ -77,7 +80,7 @@ def login():
         if ports in ['invalid', 'banned_player', 'affiliation_get']:
             _In_Queue.put('That player/password is invalid or on the banned list.  Please try again.')
         else:
-            pass
+            return ports
 
 
 
@@ -151,8 +154,11 @@ def printMessage():
 
 
 
+def main():
 
 
+    ports = login()
+    console.mainDisplay.append(str(ports))
 
 
 
@@ -163,17 +169,18 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     console = RenConsole()
-
+    console.mainDisplay.append('\n'*15+'Welcome to the Ren Adventure!!'+ '\n'*15)
     timer = QtCore.QTimer(console)
     timer.start(35)
-    console.mainDisplay.append('\n'*15+'Welcome to the Ren Adventure!!')
-    login()
-    timer.timeout.connect(printMessage)
 
+    #Signal Connections
+    timer.timeout.connect(printMessage)
     console.inputBox.returnPressed.connect(playerInput)
 
     console.show()
     console.inputBox.setFocus()
+    while 1:
+        main()
 
     sys.exit(app.exec_())
 
