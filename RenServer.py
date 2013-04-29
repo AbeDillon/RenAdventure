@@ -259,6 +259,10 @@ class Login(threading.Thread):
         player_name = a_string[0]
         player_pass = a_string[1]
         player_affil = {} #Current player's affiliation data.
+        prev_coords = (0,0,1,0)
+        items = []
+        fih = 30
+        vote_history = {}
 
         path = 'login_file/%s.txt' % player_name
 
@@ -283,13 +287,19 @@ class Login(threading.Thread):
                     player_path = 'players/%s.xml'%player_name
                     try:
                         person = loader.load_player(player_path)
+                        prev_coords = person.prev_coords
+                        items = person.items
+                        fih = person.fih
+                        vote_history = person.vote_history
                     except:
                         logger.write_line("Error loading player file %s, file does not exist" % player_path)
                         print "Error loading player file %s, file does not exist" % player_path
                     player_affil = person.affiliation #Load in the players affiliation
                     location = person.coords
+                    
                     _Player_Data_Lock.acquire()
                     _Player_Data[player_name].append(location) #Add the location tuple to the list.
+                    
                     _Player_Data_Lock.release()
                 else:
                     print 'User <%s> failed to authenticate.' % player_name
@@ -326,6 +336,7 @@ class Login(threading.Thread):
                     _Player_Data[player_name] = []
                     _Player_Data[player_name].append(location) #Add the location tuple to the list.
                     _Player_Data_Lock.release()
+                    person = engine_classes.Player(player_name, (0,0,1,0), (0,0,1,0), player_affil) #Make this person 
                 
             if logged_in:
                 _User_Pings_Lock.acquire()
@@ -333,9 +344,15 @@ class Login(threading.Thread):
                 _User_Pings_Lock.release()
                 _Player_Data_Lock.acquire()
                 _Player_Data[player_name].append(player_affil) #This may be {}, but we check for that later.
+                _Player_Data[player_name].append(prev_coords) #(0,0,1,0) unless loaded as otherwise.
+                _Player_Data[player_name].append(items) #[] if not loaded.
+                _Player_Data[player_name].append(fih) #30 if not loaded as otherwise.
+                _Player_Data[player_name].append(vote_history) #{} if not loaded as otherwise.
                 _Player_Data_Lock.release()
 
-
+                loader.save_player(person) #Save the file!
+                logger.write_line("Creating player file for user <%s>" % player_name)
+                
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
                 oqueue = Queue.Queue()
@@ -554,7 +571,19 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     logger.write_line('Removing <%s> from game: Timed out' % player)
                     game_engine._Characters_Lock.acquire()
                     if player in game_engine._Characters or player in game_engine._Characters_In_Builder:
+                        if player in game_engine._Characters: #Player in regular characters
+                            person = game_engine._Characters[player]
+                            loader.save_player(person)
+                            logger.write_line("Saving player file for <%s>" % player)
+                        elif player in game_engine._Characters_In_Builder: #Player in builder
+                            game_engine._Characters_In_Builder_Lock.acquire()
+                            person = game_engine._Characters_In_Builder[player]
+                            loader.save_player(person)
+                            logger.write_line("Saving player file for <%s>" % player)
+                            game_engine._Characters_In_Builder_Lock.release()
                         game_engine.remove_player(player)
+                    else:
+                        logger.write_line("Error! Could not find player in _Characters or _Characters_In_Builder: <%s>" % player)
                     game_engine._Characters_Lock.release()
                     if player in _Logged_in:
                         _Logged_in.remove(player)
@@ -816,6 +845,11 @@ class LobbyThread(threading.Thread):
                     _Player_Data_Lock.acquire()
                     location = _Player_Data[player][0] #Location
                     affil = _Player_Data[player][1] #Affiliation
+                    prev_loc = _Player_Data[player][2] #Previous location
+                    items = _Player_Data[player][3] #Items
+                    fih = _Player_Data[player][4] #FIH
+                    vote_hist = _Player_Data[player][5] #Vote History
+                    
                     _Player_Data_Lock.release()
                     message = msg[1]
                     
@@ -825,10 +859,19 @@ class LobbyThread(threading.Thread):
                         _Player_Locations[player] = world #Route this players messages to that world
                         _Player_Loc_Lock.release()
 
-                        if affil != {}:
+                        if affil != {}: #We have this players affiliation, give it.
                             game_engine.make_player(player, location, affil) #Make with given affiliation
-                        else:
+                            game_engine._Characters_Lock.acquire()
+                            game_engine._Characters[player].prev_coords = prev_loc
+                            for item in items:
+                                game_engine._Characters[player].items[item] = items[item]
+                            game_engine._Characters[player].fih = fih
+                            game_engine._Characters[player].vote_history = vote_hist
+                            game_engine._Characters_Lock.release()
+
+                        else: #This player's affiliation is {}, default make without extra information.
                             game_engine.make_player(player, location) #Make with default
+                            
                             
                         _Player_Data_Lock.acquire()
                         _Player_Data[player] = [] #Reset the list for this person
