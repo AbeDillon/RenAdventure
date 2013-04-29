@@ -6,7 +6,8 @@ import threading, random
 import Queue
 import shopThread
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
+
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect', 'lol', 'boo', 'shop', 'give']
 
 def do_command(player_name, command, tags, engine):
     action_map = {'look': look,
@@ -27,7 +28,8 @@ def do_command(player_name, command, tags, engine):
                   'reveal': reveal,
                   'hide': hide,
                   'add_status_effect': add_status_effect,
-                  'lose_status_effect': lose_status_effect}
+                  'lose_status_effect': lose_status_effect,
+                  'give' : give}
 
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -228,7 +230,9 @@ def parse_command(command, tags):
                       'inventory': 'inventory',
                       'lol': 'lol',
                       'boo': 'boo',
-                      'shop':'shop'}
+                      'shop':'shop',
+                      'send':'give',
+                      'give':'give'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -924,6 +928,93 @@ def shop(room, player, object, noun, tags, engine):
         messages.append((player.name, "You are unable to shop from this location presently."))
         
         
+    return messages
+    
+    
+def give(room, player, object, noun, tags, engine):
+    messages = []
+    nouns = noun.split() # name, item, qty / name, qty, item
+    recipient = nouns[0]
+    if recipient in engine._Characters and isinstance(engine._Characters[recipient], engine_classes.Player): #This recipient is valid as a character, and is not an NPC
+        pass
+    else: #Cannot send to non-logged-in players.
+        messages.append((player.name, "Sorry, that person is not logged in, you cannot send them anything."))
+        return messages
+    qty = 0
+    item = ''
+    if nouns[1] == 'all' or str(nouns[1]).isdigit:
+        if nouns[1] == 'all': #In this case, we find the item, do verification, and get max quantity.
+            item = nouns[2]
+            if item in player.items: #They have this item
+                qty = player.items[item] #And we will send all of it.
+                engine._Characters_Lock.acquire()
+                engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty #Add this item in to the other person's inventory.
+                del engine._Characters[player.name].items[item] #Remove from sender's inventory.
+                engine._Characters_Lock.release()
+                messages.append((recipient, "%s has sent you %d %s" % (player.name, qty, item)))
+                messages.append((player.name, "You have sent %s %d %s" % (recipient, qty, item)))
+            else:
+                messages.append((player.name, "Sorry, you do not have any %s in your inventory" % item))
+        elif str(nouns[1]).isdigit: #In this case, we make sure qty and item are valid.
+            try:
+                qty = int(nouns[1])
+                item = nouns[2]
+            except:
+                qty = int(nouns[2]) #If it is not the first one, it is the second one
+                item = nouns[1]
+
+            if item in player.items: #They have this item
+                if qty < player.items[item]: #They can give this many and have some left.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    engine._Characters[player.name].items[item] = engine._Characters[player.name].items.get(item, 0) - qty
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %s %d %s" % (recipient, qty, item)))
+                    messages.append((recipient, "You recieved %d %s from %s" % (qty, item, player.name)))
+                    
+                elif qty == player.items[item]: #They have exactly this many to give, essentially giving them all.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    del engine._Characters[player.name].items[item] #Remove from player inventory since they sent all.
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                    messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+                    
+                else:
+                    messages.append((player.name, "You do not have %d %s to send, you only have %d" % (qty, item, player.items[item])))
+                    
+    else: #In this case nouns[1] is the item name, nouns[2] is qty
+        item = nouns[1]
+        if item in player.items: #This person has this item to give
+            if nouns[2] == 'all': #Give all
+                qty = player.items[item]
+                engine._Characters_Lock.acquire()
+                engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                del engine._Characters[player.name].items[item] #Remove from sender inventory
+                engine._Characters_Lock.release()
+                messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+                
+            elif str(nouns[2]).isdigit():
+                qty = int(nouns[2])
+                if qty < player.items[item]: #They have this many to give.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    engine._Characters[player.name].items[item] = engine._Characters[recipient].items.get(item, 0) - qty 
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                    messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+            
+                else:
+                    messages.append((player.name, "You do not have %d %s to send, you only have %d" % (qty, item, player.items[item])))
+                    
+            else: #nouns[2] was not a digit or all?
+                messages.append((player.name, "Invalid command format for 'give'")) 
+            
+        else: #This person does not have this item to give
+            messages.append((player.name, "Sorry, you do not have any %s to give" % item))
+            
+    
     return messages
         
 ############# SCRIPT METHODS ##########
