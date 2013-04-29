@@ -46,7 +46,7 @@ def getFullinfo(uniqueID, ext):
     # format for inserting the imdb character number into the url
     url = "http://www.imdb.com/character/%s/quotes" % uniqueID
 
-    # first we get the character name from the url above
+    # first we get the character name from the url aboveDatabase.py
     prefix = "<title>"
     suffix = " (Character)  - Quotes</title>"
 
