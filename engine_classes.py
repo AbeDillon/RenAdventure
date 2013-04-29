@@ -137,7 +137,7 @@ class NPC:
     - Up Votes
     - Down Votes
     '''
-    def __init__(self, name, coords, affiliation, up_votes = 0, down_votes = 0, tweets = None, textID = "not_provided", editors = []):
+    def __init__(self, name, coords, affiliation, up_votes = 1, down_votes = 0, tweets = None, textID = "not_provided", editors = []):
         self.name = name.lower()
         self.editors = editors
         self.coords = coords

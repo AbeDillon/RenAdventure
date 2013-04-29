@@ -89,13 +89,13 @@ class KBListener(threading.Thread):
         elif code == 83:    # delete
             self.delete()
         elif code == 73:    # page up
-            pass
+            self.pageUp()
         elif code == 81:    # page down
-            pass
+            self.pageDown()
         elif code == 71:    # home key
-            pass
+            self.homeKey()
         elif code == 79:    # end key
-            pass
+            self.endKey()
 
     def newLine(self):
         # Add command to the output Queue and command history
@@ -133,19 +133,22 @@ class KBListener(threading.Thread):
     def tab(self):
         # send a tab-complete message or cycle through tab-complete options
         if self.tabOptions.empty():
+            # send a request for a tab-completion list
             message = (self.leftLine, ['tab-complete'])
             self.outQ.put(message)
+            # listen for a response
             options = self.inQ.get()
-            if options == None:
-                pass
-            else:
+            if options != None:
+                # fill the FIFO Queue with response
                 for option in options:
                     self.tabOptions.put(option)
+                # begin cycling through tab-options
                 self.tab()
         else:
             self.leftLine = self.tabOptions.get()
             self.tabOptions.put(self.leftLine)
             if self.insert:
+                # overwrite the end of the line
                 self.rightLine = ""
 
     def upArrow(self):

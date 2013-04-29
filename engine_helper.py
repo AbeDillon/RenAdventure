@@ -6,7 +6,8 @@ import threading, random
 import Queue
 import shopThread
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect']
+
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect', 'lol', 'boo', 'shop', 'give']
 
 def do_command(player_name, command, tags, engine):
     action_map = {'look': look,
@@ -27,7 +28,8 @@ def do_command(player_name, command, tags, engine):
                   'reveal': reveal,
                   'hide': hide,
                   'add_status_effect': add_status_effect,
-                  'lose_status_effect': lose_status_effect}
+                  'lose_status_effect': lose_status_effect,
+                  'give' : give}
 
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -228,7 +230,9 @@ def parse_command(command, tags):
                       'inventory': 'inventory',
                       'lol': 'lol',
                       'boo': 'boo',
-                      'shop':'shop'}
+                      'shop':'shop',
+                      'send':'give',
+                      'give':'give'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -254,6 +258,13 @@ def parse_command(command, tags):
     return verb, nouns
 
 def npc_action(npc, engine):
+    # Rooms that the NPCs are not allowed to enter
+    restricted_rooms = [(-2,2,1,0), (-2,1,1,0), (-2,0,1,0), (-2,-1,1,0), (-2,-2,1,0),
+                        (-1,2,1,0), (-1,1,1,0), (-1,0,1,0), (-1,-1,1,0), (-1,-2,1,0),
+                        (0,2,1,0), (0,1,1,0), (0,0,1,0), (0,-1,1,0), (0,-2,1,0),
+                        (1,2,1,0), (1,1,1,0), (1,0,1,0), (1,-1,1,0), (1,-2,1,0),
+                        (2,2,1,0), (2,1,1,0), (2,0,1,0), (2,-1,1,0), (2,-2,1,0)]
+
     room = engine._Rooms[npc.coords]
 
     if len(room.players) > 0: # There are players in the room, talk to them
@@ -266,8 +277,8 @@ def npc_action(npc, engine):
         valid_portals = get_valid_objects(npc, room, 'go', engine)
 
         portals = []
-        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt room
-            if not portal.locked and engine._Rooms.get(portal.coords, None) != None:
+        for portal in valid_portals:    # Cull locked doors and doors that lead to an unbuilt or restricted room
+            if not portal.locked and engine._Rooms.get(portal.coords, None) != None and portal.coords not in restricted_rooms:
                 portals.append(portal)
 
         if len(portals) > 0:
@@ -522,21 +533,24 @@ def go(room, player, object, noun, tags, engine):
         new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
-        room.players.remove(player.name)    # Remove player from the room
-        player.coords = object.coords   # Change player coordinates to new room
-        engine._Rooms[object.coords] = None # Set new room to None
+        if player.items['flat pack furniture'] < 10 or 'flat pack furniture' not in player.items: #Not enough furniture
+            messages.append((player.name, "You do not have enough flat pack furniture to make a room, so you can't go in to an unbuilt room."))
+        else:
+            room.players.remove(player.name)    # Remove player from the room
+            player.coords = object.coords   # Change player coordinates to new room
+            engine._Rooms[object.coords] = None # Set new room to None
+            player.items['flat pack furniture'] = player.items['flat pack furniture'] - 10 #Subtract 10 for room.
+            engine._Characters_In_Builder_Lock.acquire()
+            engine._Characters_In_Builder[player.name] = player
+            engine._Characters_In_Builder_Lock.release()
 
-        engine._Characters_In_Builder_Lock.acquire()
-        engine._Characters_In_Builder[player.name] = player
-        engine._Characters_In_Builder_Lock.release()
+            engine._Characters_Lock.acquire()
+            del engine._Characters[player.name]
+            engine._Characters_Lock.release()
 
-        engine._Characters_Lock.acquire()
-        del engine._Characters[player.name]
-        engine._Characters_Lock.release()
-
-        engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
-        builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
-        builder_thread.start()  # Spin off builder thread
+            engine._BuilderQueues[player.name] = Queue.Queue()    # Create builder queue for the player to use
+            builder_thread = roomBuilderThread.BuilderThread(engine, 'room', engine._BuilderQueues[player.name], engine._MessageQueue, engine._CommandQueue, object.coords, player.name)
+            builder_thread.start()  # Spin off builder thread
     elif new_room == None: # Room is being built, cannot enter the room
         messages.append((player.name, "This room is under construction, you cannot enter it at this time."))
     else: # Room is built, enter it
@@ -779,16 +793,21 @@ def damage(room, attacker, object, noun, tags, engine):
     return messages
 
 def lol(room, player, object, noun, tags, engine, modifier = 1):
-    # Player upvotes a room or NPC
+    # Player up votes a room or NPC
     vote_successful = False
 
     if noun == 'room':
         vote_history = player.vote_history.get(room.id, 0)
         if vote_history != modifier:
-            if modifier > 0: # Player is up voting
+            if modifier == 1: # Player is up voting
                 room.up_votes += 1
             else:   # Player is down voting
                 room.down_votes += 1
+
+            if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                room.down_votes -= 1
+            elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                room.up_votes -= 1
 
             player.vote_history[room.id] = modifier
 
@@ -802,12 +821,17 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
         engine._Characters_Lock.acquire()
         if noun in engine._Characters and isinstance(engine._Characters[noun], engine_classes.NPC):
             if engine._Characters[noun].coords == player.coords:    # Verify in the same room
-                vote_history = player.vote_history.get(room.id, 0)
+                vote_history = player.vote_history.get(noun, 0)
                 if vote_history != modifier:
                     if modifier > 0:    # Player is up voting
                         engine._Characters[noun].up_votes += 1
                     else:
                         engine._Characters[noun].down_votes += 1
+
+                    if modifier == 1 and vote_history == -1: # Player changed their down vote to an up vote
+                        engine._Characters[noun].down_votes -= 1
+                    elif modifier == -1 and vote_history == 1:  # Player changed their up vote to a down vote
+                        engine._Characters[noun].up_votes -= 1
 
                     player.vote_history[noun] = modifier
 
@@ -821,6 +845,7 @@ def lol(room, player, object, noun, tags, engine, modifier = 1):
                 text = "You can't vote for a person in a different room."
         else:
             text = "You can't vote for that person."
+
         engine._Characters_Lock.release()
 
     messages = []
@@ -874,19 +899,122 @@ def bad_command(room, player, object, noun, tags, engine):
 def shop(room, player, object, noun, tags, engine):
     alt_text = ''
     messages = []
-    room.players.remove(player.name)
-    engine._Characters_In_Shop_Lock.acquire()
-    engine._Characters_In_Shop[player.name] = player #Put player in shop.
-    engine._Characters_In_Shop_Lock.release()
-    
-    engine._Characters_Lock.acquire()
-    del engine._Characters[player.name] #Remove player from regular characters list for now.
-    engine._Characters_Lock.release()
+    if room.id == "-2110" or room.id == "2210": #or 'iphone' in player.items: #This is the swedish furniture store or the genetics lab, or they have the iphone with shop app?
+        room.players.remove(player.name)
+        engine._Characters_In_Shop_Lock.acquire()
+        engine._Characters_In_Shop[player.name] = player #Put player in shop.
+        engine._Characters_In_Shop_Lock.release()
+        
+        engine._Characters_Lock.acquire()
+        del engine._Characters[player.name] #Remove player from regular characters list for now.
+        engine._Characters_Lock.release()
 
-    engine._ShopQueues[player.name] = Queue.Queue()
+        engine._ShopQueues[player.name] = Queue.Queue()
+        
+        if room.id == "-2110": #Swedish furntiture store
+            inventory = {'flat pack furniture':10}
+            
+        elif room.id == "2210": #Genetics lab
+            inventory = {'mutagen':20}
+            
+            
+        else: #Using the app, not in one of the stores
+            inventory = {'flat pack furniture':10, 'mutagen':20}
+        
+        shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine, inventory)
+        shop_thread.start() #Execute run command?
+        
+    else: #They are not in a proper room or lack the necessary item:
+        messages.append((player.name, "You are unable to shop from this location presently."))
+        
+        
+    return messages
     
-    shop_thread = shopThread.shopthread(player, engine._ShopQueues[player.name], engine)
-    shop_thread.start() #Execute run command?
+    
+def give(room, player, object, noun, tags, engine):
+    messages = []
+    nouns = noun.split() # name, item, qty / name, qty, item
+    recipient = nouns[0]
+    if recipient in engine._Characters and isinstance(engine._Characters[recipient], engine_classes.Player): #This recipient is valid as a character, and is not an NPC
+        pass
+    else: #Cannot send to non-logged-in players.
+        messages.append((player.name, "Sorry, that person is not logged in, you cannot send them anything."))
+        return messages
+    qty = 0
+    item = ''
+    if nouns[1] == 'all' or str(nouns[1]).isdigit():
+        if nouns[1] == 'all': #In this case, we find the item, do verification, and get max quantity.
+            item = nouns[2]
+            if item in player.items: #They have this item
+                qty = player.items[item] #And we will send all of it.
+                engine._Characters_Lock.acquire()
+                engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty #Add this item in to the other person's inventory.
+                del engine._Characters[player.name].items[item] #Remove from sender's inventory.
+                engine._Characters_Lock.release()
+                messages.append((recipient, "%s has sent you %d %s" % (player.name, qty, item)))
+                messages.append((player.name, "You have sent %s %d %s" % (recipient, qty, item)))
+            else:
+                messages.append((player.name, "Sorry, you do not have any %s in your inventory" % item))
+        elif str(nouns[1]).isdigit(): #In this case, we make sure qty and item are valid.
+            try:
+                qty = int(nouns[1])
+                item = nouns[2]
+            except:
+                qty = int(nouns[2]) #If it is not the first one, it is the second one
+                item = nouns[1]
+
+            if item in player.items: #They have this item
+                if qty < player.items[item]: #They can give this many and have some left.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    engine._Characters[player.name].items[item] = engine._Characters[player.name].items.get(item, 0) - qty
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %s %d %s" % (recipient, qty, item)))
+                    messages.append((recipient, "You recieved %d %s from %s" % (qty, item, player.name)))
+                    
+                elif qty == player.items[item]: #They have exactly this many to give, essentially giving them all.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    del engine._Characters[player.name].items[item] #Remove from player inventory since they sent all.
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                    messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+                    
+                else:
+                    messages.append((player.name, "You do not have %d %s to send, you only have %d" % (qty, item, player.items[item])))
+                    
+    else: #In this case nouns[1] is the item name, nouns[2] is qty
+        item = nouns[1]
+        if item in player.items: #This person has this item to give
+            if nouns[2] == 'all': #Give all
+                qty = player.items[item]
+                engine._Characters_Lock.acquire()
+                engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                del engine._Characters[player.name].items[item] #Remove from sender inventory
+                engine._Characters_Lock.release()
+                messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+                
+            elif str(nouns[2]).isdigit():
+                qty = int(nouns[2])
+                if qty < player.items[item]: #They have this many to give.
+                    engine._Characters_Lock.acquire()
+                    engine._Characters[recipient].items[item] = engine._Characters[recipient].items.get(item, 0) + qty
+                    engine._Characters[player.name].items[item] = engine._Characters[recipient].items.get(item, 0) - qty 
+                    engine._Characters_Lock.release()
+                    messages.append((player.name, "You have sent %d %s to %s" % (qty, item, recipient)))
+                    messages.append((recipient, "You have recieved %d %s from %s" % (qty, item, player.name)))
+            
+                else:
+                    messages.append((player.name, "You do not have %d %s to send, you only have %d" % (qty, item, player.items[item])))
+                    
+            else: #nouns[2] was not a digit or all?
+                messages.append((player.name, "Invalid command format for 'give'")) 
+            
+        else: #This person does not have this item to give
+            messages.append((player.name, "Sorry, you do not have any %s to give" % item))
+            
+    
     return messages
         
 ############# SCRIPT METHODS ##########

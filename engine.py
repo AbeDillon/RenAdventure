@@ -2,7 +2,7 @@ __author__ = 'eking, adillon'
 
 from engine_classes import *
 import loader, engine_helper
-import os, random, time
+import os, random, time, math
 import thread, threading, Queue
 import Q2logging
 
@@ -36,8 +36,7 @@ class Engine:
         self._NPC_Bucket = {} # List of NPCs
         self._NPC_Bucket_Lock = threading.RLock()
 
-        self._New_NPC_Queue = Queue.Queue()  # Queue of newly created NPCs to be added to the game
-        self._Old_NPC_Queue = Queue.Queue()  # Queue of NPCs to be added to the game
+        self._NPC_Queue = Queue.Queue()  # Queue of NPCs to be added to the game
 
     def init_game(self, save_state = 0):
         # Initializes the map and starts the command thread
@@ -69,34 +68,34 @@ class Engine:
 
         # Add some NPCs to the bucket
         affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
-        kanye = NPC('@mr_kanyewest', (0,0,1,0), affiliation)
+        kanye = NPC('@mr_kanyewest', (-3,3,1,0), affiliation)
         
         affiliation = {'Obama': 1, 'Gottfried': 1, 'OReilly': 1, 'Kanye': 1, 'Burbiglia': 1}
-#        ermah = NPC('ermahgerd', (0,0,1,0), affiliation)
-#        pr = NPC('philosoraptor', (0,0,1,0), affiliation)
-#        lolcat = NPC('lolcat', (0,0,1,0), affiliation)
-#        hb = NPC('honeybadger', (0,0,1,0), affiliation)
-#        oagf = NPC('overlyattachedgirlfriend', (0,0,1,0), affiliation)
-#        ck = NPC("conspiracykeanu", (0,0,1,0), affiliation)
-#        ayb = NPC("allyourbase", (0,0,1,0), affiliation)
-#        xyz = NPC("inyourbase", (0,0,1,0), affiliation)
+        ermah = NPC('ermahgerd', (-3,3,1,0), affiliation)
+        pr = NPC('philosoraptor', (-3,3,1,0), affiliation)
+        lolcat = NPC('lolcat', (-3,3,1,0), affiliation)
+        hb = NPC('honeybadger', (-3,3,1,0), affiliation)
+        oagf = NPC('overlyattachedgirlfriend', (-3,3,1,0), affiliation)
+        ck = NPC("conspiracykeanu", (-3,3,1,0), affiliation)
+        ayb = NPC("allyourbase", (-3,3,1,0), affiliation)
+        xyz = NPC("inyourbase", (-3,3,1,0), affiliation)
 
         self._NPC_Bucket_Lock.acquire()
         self._NPC_Bucket['@mr_kanyewest'] = kanye
-#        self._NPC_Bucket['ermahgkerd'] = ermah
-#        self._NPC_Bucket['philosoraptor'] = pr
-#        self._NPC_Bucket['lolcat'] = lolcat
-#        self._NPC_Bucket['honeybadger'] = hb
-#        self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
-#        self._NPC_Bucket['conspiracykeanu'] = ck
-#        self._NPC_Bucket['allyourbase'] = ayb
-#        self._NPC_Bucket['inyourbase'] = xyz
+        self._NPC_Bucket['ermahgkerd'] = ermah
+        self._NPC_Bucket['philosoraptor'] = pr
+        self._NPC_Bucket['lolcat'] = lolcat
+        self._NPC_Bucket['honeybadger'] = hb
+        self._NPC_Bucket['overlyattachedgirlfriend'] = oagf
+        self._NPC_Bucket['conspiracykeanu'] = ck
+        self._NPC_Bucket['allyourbase'] = ayb
+        self._NPC_Bucket['inyourbase'] = xyz
         
 
         npcs = self._NPC_Bucket.values()
         random.shuffle(npcs)
         for npc in npcs: # Put all NPCs on the queue in random order
-            self._Old_NPC_Queue.put(npc)
+            self._NPC_Queue.put(npc)
         self._NPC_Bucket_Lock.release()
 
         thread.start_new_thread(self.command_thread, ())
@@ -110,6 +109,9 @@ class Engine:
         
         thread.start_new_thread(self.distribute_likes_thread, ())
         self.logger.write_line("Starting distribute likes thread")
+
+        thread.start_new_thread(self.spawn_resources_thread, ())
+        self.logger.write_line("Starting spawn resources thread")
 
     def shutdown_game(self):
         # Winds the game down and creates a directory with all of the saved state information
@@ -260,7 +262,7 @@ class Engine:
         # Runs the commands for all NPC's in the game
 
         if self._StillAlive:
-            threading.Timer(5.0, self.npc_thread).start()
+            threading.Timer(7.0, self.npc_thread).start()
 
             npcs = {}
             self._Characters_Lock.acquire()
@@ -270,7 +272,7 @@ class Engine:
                         self._Characters[character].cycles += 1 # Increment the NPCs cycles
                         npcs[character] = self._Characters[character]
                     else:   # NPC is out of cycles
-                        self._Old_NPC_Queue.put(self._Characters[character])
+                        self._NPC_Queue.put(self._Characters[character])
                         self._Rooms[self._Characters[character].coords].npcs.remove(character) # Remove NPC from the room he was in
                         self._Characters[character].cycles = 0 # Reset cycles to 0
                         del self._Characters[character] # Remove NPC from the list of active characters
@@ -289,52 +291,35 @@ class Engine:
             for character in self._Characters:
                 if isinstance(self._Characters[character], NPC):
                     npcs[character] = self._Characters[character]
+            self._Characters_Lock.release()
 
             if ((len(self._Rooms) / n) + 1) > len(npcs):
                 # Select an NPC to add to the game
-                rejected_npc = None # The first rejected npc
                 while 1:
-                    if not self._New_NPC_Queue.empty():
-                        npc = self._New_NPC_Queue.get()
-                        if npc is not rejected_npc:
-                            tweet_file = open('twitterfeeds/%s.txt' % npc.name)
-                            for line in tweet_file.readlines():
-                                npc.tweets.append(line.strip())
-                            tweet_file.close()
+                    if not self._NPC_Queue.empty():
+                        npc = self._NPC_Queue.get()
 
-                            if len(npc.tweets) > 0:
-                                break
-                            else:
-                                if rejected_npc == None:
-                                    rejected_npc = npc
-                                self._New_NPC_Queue.put(npc)
-                    elif not self._Old_NPC_Queue.empty():
-                        npc = self._Old_NPC_Queue.get()
                         tweet_file = open('twitterfeeds/%s.txt' % npc.name)
                         for line in tweet_file.readlines():
                             npc.tweets.append(line.strip())
+                        tweet_file.close()
 
-                        if len(npc.tweets) > 0:
-                            break
+                        vote_ratio = (npc.up_votes / (npc.up_votes + npc.down_votes)) * 100 # Ratio of up votes to down votes
+
+                        if len(npc.tweets) > 0 and vote_ratio >= random.randint(1,100):
+                            break # This NPC meets the criteria and will be inserted into the game
                         else:
-                            self._Old_NPC_Queue.put(npc)
-                    else:
-                        npc = None
-                        break
+                            self._NPC_Queue.put(npc)
 
-                if npc != None:
-                    self._Characters[npc.name] = npc
-                    self._Rooms[npc.coords].npcs.append(npc.name) # Add the NPC to the room he spawned in
-                    self.logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
+                    time.sleep(.05) # Sleep for 50ms
 
-            elif ((len(self._Rooms) / n) + 1) < len(npcs):
-                name = random.choice(npcs.keys())
-                npc = npcs[name]
-                del self._Characters[name] # Remove from the NPC list
-                del self._Rooms[npc.coords].npcs[npc.name] # Remove the NPC from the room
-                self.logger.write_line("Removed NPC: (%s) %s" % (npc.name, npc))
+                self._Characters_Lock.acquire()
+                self._Characters[npc.name] = npc    # Add the NPC to the game
+                self._Rooms[npc.coords].npcs.append(npc.name)   # Add the NPC to their room
+                self._Characters_Lock.release()
 
-            self._Characters_Lock.release()
+                self.logger.write_line("Spawned NPC: (%s) %s" %(npc.name, npc))
+
             time.sleep(.05) # Sleep for 50ms
 
         self.logger.write_line("Closing spawn npc thread.")
@@ -345,7 +330,35 @@ class Engine:
         if self._StillAlive:
             threading.Timer(900.0, self.spawn_resources_thread).start() # Runs every 15 minutes
 
+            coords = self._Rooms.keys()
+            random.shuffle(coords)
+            for i in range(int(len(coords)*.33)):  # Put likes in the first third of the randomized room list
+                if self._Rooms[coords[i]] != None:
+                    if 'like' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['like'] += 5 # Add 5 'Likes' to the room
+                    else:
+                        self._Rooms[coords[i]].items['like'] = 5 # Put 5 'Likes' in the room
 
+            random.shuffle(coords)
+            for i in range(int(len(coords)*.1)):    # Put flat pack furniture in the first tenth of the randomized room list
+                if self._Rooms[coords[i]] != None:
+                    if 'flat pack furniture' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['flat pack furniture'] += 1 # Add 1 Flat Pack Furniture to the room
+                    else:
+                        self._Rooms[coords[i]].items['flat pack furniture'] = 1 # Put 1 Flat Furniture in the room
+
+            random.shuffle(coords)
+            num_rooms = int(len(coords))*.01
+
+            if num_rooms < 1:
+                num_rooms = 1   # Make sure that Mutagen spawns in at least 1 room
+
+            for i in range(num_rooms):  # Put Mutagen in 1% of the rooms
+                if self._Rooms[coords[i]] != None:
+                    if 'mutagen' in self._Rooms[coords[i]].items:
+                        self._Rooms[coords[i]].items['mutagen'] += 1 # Add 1 mutagen to the room
+                    else:
+                        self._Rooms[coords[i]].items['mutagen'] = 1 # Put 1 mutagen in the room
         else:
             self.logger.write_line("Closing spawn resources thread.")
 
