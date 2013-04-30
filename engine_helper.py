@@ -539,7 +539,7 @@ def go(room, player, object, noun, tags, engine):
             room.players.remove(player.name)    # Remove player from the room
             player.coords = object.coords   # Change player coordinates to new room
             engine._Rooms[object.coords] = None # Set new room to None
-            player.items['flat pack furniture'] = player.items['flat pack furniture'] - 10 #Subtract 10 for room.
+            #player.items['flat pack furniture'] = player.items['flat pack furniture'] - 10 #Subtract 10 for room.
             engine._Characters_In_Builder_Lock.acquire()
             engine._Characters_In_Builder[player.name] = player
             engine._Characters_In_Builder_Lock.release()

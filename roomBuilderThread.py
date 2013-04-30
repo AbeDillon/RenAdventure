@@ -78,6 +78,17 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('Sent to makeRoom function.')
         self.makeRoom()
         
+        self.engine._Characters_In_Builder_Lock.acquire()
+        furn_count = self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture']
+        if furn_count > 10: #We simply subtract 10
+            self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture'] = self.engine._Characters_In_Builder[self.player_name].items.get('flat pack furniture') - 10
+        elif furn_count == 10: #We delete
+            del self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture']
+            
+        self.engine._Characters_In_Builder_Lock.release()
+        
+        self.send_message_to_player("Your room was created at the cost of 10 flat pack furniture.")
+        
         self.send_message_to_player('You are now exiting the room builder')
         self.logger.write_line('Exited room builder.')
     
@@ -209,33 +220,55 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('entered build NPC function')
         self.send_message_to_player('You have entered the NPC builder.')
         
-        # name NPC
-        self.logger.write_line('send to addName function')
-        self.addName()        
+        self.engine._Characters_In_Builder_Lock.acquire()
+        mutagen_count = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen', 0) #Get the total amount of mutagen they have.
+        self.engine._Characters_In_Builder_Lock.release()
+        if mutagen_count >= 30: #They have enough to make a NPC
         
-        # assign starting coords as current room coords coords
-        self.logger.write_line('send to getValidCoords function')
-        self.getValidCoords()
+            # name NPC
+            self.logger.write_line('send to addName function')
+            self.addName()        
+            
+            # assign starting coords as current room coords coords
+            self.logger.write_line('send to getValidCoords function')
+            self.getValidCoords()
+                    
+            #Twitter handle
+            self.logger.write_line('send to getTextID function')
+            self.getTextID()
+                    
+            # affiliation
+            self.logger.write_line('send to getAffiliation function')
+            self.getAffiliation()
+            
+            # Editors
+            self.logger.write_line('send to getEditors function')
+            self.getEditors()
+        
+            # Review NPC
+            self.logger.write_line('send to reviewObject function')
+            self.reviewObject()
+            
+            # Make NPC
+            self.logger.write_line('send to makeNPC function')
+            self.makeNPC() 
+            
+            if mutagen_count > 30:
+                self.engine._Characters_In_Builder_Lock.acquire()
+                self.engine._Characters_In_Builder[self.player_name].items['mutagen'] = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen') - 30 #Subtract mutagen used.
+                self.engine._Characters_In_Builder_Lock.release()
+                self.send_message_to_player("You spent 30 mutagen to make your NPC.")
                 
-        #Twitter handle
-        self.logger.write_line('send to getTextID function')
-        self.getTextID()
+            elif mutagen_count == 30: #Exactly 30, del from inventory.
+                self.engine._Characters_In_Builder_Lock.acquire()
+                del self.engine._Characters_In_Builder[self.player_name].items['mutagen']
+                self.engine._Characters_In_Builder_Lock.release()
+                self.send_message_to_player("You spent 30 mutagen to make your NPC.")
                 
-        # affiliation
-        self.logger.write_line('send to getAffiliation function')
-        self.getAffiliation()
-        
-        # Editors
-        self.logger.write_line('send to getEditors function')
-        self.getEditors()
-    
-        # Review NPC
-        self.logger.write_line('send to reviewObject function')
-        self.reviewObject()
-        
-        # Make NPC
-        self.logger.write_line('send to makeNPC function')
-        self.makeNPC()
+            
+        else:
+            self.logger.write_line("send not enough mutagen")
+            self.send_message_to_player("Sorry, you do not have enough mutagen to make an NPC")
     
     def buildScripts(self):
         """
@@ -594,7 +627,11 @@ class BuilderThread(threading.Thread):
                 # message and prompt again
                 self.send_message_to_player(rank_text)
                 ans= self.get_cmd_from_player()
-                self.logger.write_line('ans = %d, not valid or available prompt again.'%ans)
+                try:
+                    ans = int(ans) #typecast
+                except:
+                    pass
+                self.logger.write_line('ans = %s, not valid or available prompt again.'%ans)
             # answer is available write to dict remove answer so cannot be used again
             affiliation[name] = ans
             num_list.remove(ans)
