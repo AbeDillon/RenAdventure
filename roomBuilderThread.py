@@ -223,52 +223,48 @@ class BuilderThread(threading.Thread):
         self.engine._Characters_In_Builder_Lock.acquire()
         mutagen_count = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen', 0) #Get the total amount of mutagen they have.
         self.engine._Characters_In_Builder_Lock.release()
-        if mutagen_count >= 30: #They have enough to make a NPC
+
         
-            # name NPC
-            self.logger.write_line('send to addName function')
-            self.addName()        
-            
-            # assign starting coords as current room coords coords
-            self.logger.write_line('send to getValidCoords function')
-            self.getValidCoords()
-                    
-            #Twitter handle
-            self.logger.write_line('send to getTextID function')
-            self.getTextID()
-                    
-            # affiliation
-            self.logger.write_line('send to getAffiliation function')
-            self.getAffiliation()
-            
-            # Editors
-            self.logger.write_line('send to getEditors function')
-            self.getEditors()
+        # name NPC
+        self.logger.write_line('send to addName function')
+        self.addName()        
         
-            # Review NPC
-            self.logger.write_line('send to reviewObject function')
-            self.reviewObject()
-            
-            # Make NPC
-            self.logger.write_line('send to makeNPC function')
-            self.makeNPC() 
-            
-            if mutagen_count > 30:
-                self.engine._Characters_In_Builder_Lock.acquire()
-                self.engine._Characters_In_Builder[self.player_name].items['mutagen'] = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen') - 30 #Subtract mutagen used.
-                self.engine._Characters_In_Builder_Lock.release()
-                self.send_message_to_player("You spent 30 mutagen to make your NPC.")
+        # assign starting coords as current room coords coords
+        self.logger.write_line('send to getValidCoords function')
+        self.getValidCoords()
                 
-            elif mutagen_count == 30: #Exactly 30, del from inventory.
-                self.engine._Characters_In_Builder_Lock.acquire()
-                del self.engine._Characters_In_Builder[self.player_name].items['mutagen']
-                self.engine._Characters_In_Builder_Lock.release()
-                self.send_message_to_player("You spent 30 mutagen to make your NPC.")
+        #Twitter handle
+        self.logger.write_line('send to getTextID function')
+        self.getTextID()
                 
+        # affiliation
+        self.logger.write_line('send to getAffiliation function')
+        self.getAffiliation()
+        
+        # Editors
+        self.logger.write_line('send to getEditors function')
+        self.getEditors()
+    
+        # Review NPC
+        self.logger.write_line('send to reviewObject function')
+        self.reviewObject()
+        
+        # Make NPC
+        self.logger.write_line('send to makeNPC function')
+        self.makeNPC() 
+        
+        if mutagen_count > 30:
+            self.engine._Characters_In_Builder_Lock.acquire()
+            self.engine._Characters_In_Builder[self.player_name].items['mutagen'] = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen') - 30 #Subtract mutagen used.
+            self.engine._Characters_In_Builder_Lock.release()
+            self.send_message_to_player("You spent 30 mutagen to make your NPC.")
             
-        else:
-            self.logger.write_line("send not enough mutagen")
-            self.send_message_to_player("Sorry, you do not have enough mutagen to make an NPC")
+        elif mutagen_count == 30: #Exactly 30, del from inventory.
+            self.engine._Characters_In_Builder_Lock.acquire()
+            del self.engine._Characters_In_Builder[self.player_name].items['mutagen']
+            self.engine._Characters_In_Builder_Lock.release()
+            self.send_message_to_player("You spent 30 mutagen to make your NPC.")
+            
     
     def buildScripts(self):
         """
@@ -486,16 +482,22 @@ class BuilderThread(threading.Thread):
                 else:
                     self.send_message_to_player('We could not find a NPC character with that name.')
             if ans == 'create':
-                temp_prototype = copy.deepcopy(self.prototype)
-                self.prototype = {}
-                self.logger.write_line('prototype copied and established anew.')
-                npc = self.buildNPC()
-                name = self.prototype['name']
-                NPCs.append(name)
-                self.logger.write_line('%s added to list of NPCs now looks like %s' % (name, str(NPCs)))
-                self.send_message_to_player('%s has been added to the rooms NPC list.'% name)
-                self.prototype = temp_prototype
-                self.logger.write_line('prototype restored to prior prototype')
+                self.engine._Characters_In_Builder_Lock.acquire()
+                mutagen_cnt = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen', 0) #Get count
+                self.engine._Characters_In_Builder_Lock.release()
+                if mutagen_cnt >= 30:
+                    temp_prototype = copy.deepcopy(self.prototype)
+                    self.prototype = {}
+                    self.logger.write_line('prototype copied and established anew.')
+                    npc = self.buildNPC()
+                    name = self.prototype['name']
+                    NPCs.append(name)
+                    self.logger.write_line('%s added to list of NPCs now looks like %s' % (name, str(NPCs)))
+                    self.send_message_to_player('%s has been added to the rooms NPC list.'% name)
+                    self.prototype = temp_prototype
+                    self.logger.write_line('prototype restored to prior prototype')
+                else:
+                    self.send_message_to_player("Could not create an NPC, you do not have enough mutagen")
                 
             # Restore type
             self.type = temp_type
