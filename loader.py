@@ -21,7 +21,8 @@ def load_player(path):
     affiliation_people = ['Obama', 'Kanye', 'OReilly', 'Gottfried', 'Burbiglia']
     for node in root:
         if node.tag == 'item':
-            player_attributes['items'].append(node.text)
+            for i in range(int(node.attrib['quantity'])):
+                player_attributes['items'].append(node.text)
         elif node.tag in affiliation_people:
             player_attributes['affiliation'][node.tag] = int(node.text)
         elif node.tag == 'vote_history':
@@ -166,9 +167,9 @@ def save_player(player):
         child_nodes.append(person_node)
 
     for item in player.items: # Create the item nodes
-        for i in range(0,player.items[item]):
-            item_node = xml.XMLNode('item', value=item)
-            child_nodes.append(item_node)
+        quantity = {'quantity': '%d' % player.items[item]}
+        item_node = xml.XMLNode('item', quantity, value=item)
+        child_nodes.append(item_node)
 
     for effect in player.sense_effects: # Create the sense nodes
         sense_node = xml.XMLNode(effect, value=player.sense_effects[effect])
