@@ -78,6 +78,17 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('Sent to makeRoom function.')
         self.makeRoom()
         
+        self.engine._Characters_In_Builder_Lock.acquire()
+        furn_count = self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture']
+        if furn_count > 10: #We simply subtract 10
+            self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture'] = self.engine._Characters_In_Builder[self.player_name].items.get('flat pack furniture') - 10
+        elif furn_count == 10: #We delete
+            del self.engine._Characters_In_Builder[self.player_name].items['flat pack furniture']
+            
+        self.engine._Characters_In_Builder_Lock.release()
+        
+        self.send_message_to_player("Your room was created at the cost of 10 flat pack furniture.")
+        
         self.send_message_to_player('You are now exiting the room builder')
         self.logger.write_line('Exited room builder.')
     
@@ -209,6 +220,11 @@ class BuilderThread(threading.Thread):
         self.logger.write_line('entered build NPC function')
         self.send_message_to_player('You have entered the NPC builder.')
         
+        self.engine._Characters_In_Builder_Lock.acquire()
+        mutagen_count = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen', 0) #Get the total amount of mutagen they have.
+        self.engine._Characters_In_Builder_Lock.release()
+
+        
         # name NPC
         self.logger.write_line('send to addName function')
         self.addName()        
@@ -235,7 +251,20 @@ class BuilderThread(threading.Thread):
         
         # Make NPC
         self.logger.write_line('send to makeNPC function')
-        self.makeNPC()
+        self.makeNPC() 
+        
+        if mutagen_count > 30:
+            self.engine._Characters_In_Builder_Lock.acquire()
+            self.engine._Characters_In_Builder[self.player_name].items['mutagen'] = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen') - 30 #Subtract mutagen used.
+            self.engine._Characters_In_Builder_Lock.release()
+            self.send_message_to_player("You spent 30 mutagen to make your NPC.")
+            
+        elif mutagen_count == 30: #Exactly 30, del from inventory.
+            self.engine._Characters_In_Builder_Lock.acquire()
+            del self.engine._Characters_In_Builder[self.player_name].items['mutagen']
+            self.engine._Characters_In_Builder_Lock.release()
+            self.send_message_to_player("You spent 30 mutagen to make your NPC.")
+            
     
     def buildScripts(self):
         """
@@ -453,16 +482,22 @@ class BuilderThread(threading.Thread):
                 else:
                     self.send_message_to_player('We could not find a NPC character with that name.')
             if ans == 'create':
-                temp_prototype = copy.deepcopy(self.prototype)
-                self.prototype = {}
-                self.logger.write_line('prototype copied and established anew.')
-                npc = self.buildNPC()
-                name = self.prototype['name']
-                NPCs.append(name)
-                self.logger.write_line('%s added to list of NPCs now looks like %s' % (name, str(NPCs)))
-                self.send_message_to_player('%s has been added to the rooms NPC list.'% name)
-                self.prototype = temp_prototype
-                self.logger.write_line('prototype restored to prior prototype')
+                self.engine._Characters_In_Builder_Lock.acquire()
+                mutagen_cnt = self.engine._Characters_In_Builder[self.player_name].items.get('mutagen', 0) #Get count
+                self.engine._Characters_In_Builder_Lock.release()
+                if mutagen_cnt >= 30:
+                    temp_prototype = copy.deepcopy(self.prototype)
+                    self.prototype = {}
+                    self.logger.write_line('prototype copied and established anew.')
+                    npc = self.buildNPC()
+                    name = self.prototype['name']
+                    NPCs.append(name)
+                    self.logger.write_line('%s added to list of NPCs now looks like %s' % (name, str(NPCs)))
+                    self.send_message_to_player('%s has been added to the rooms NPC list.'% name)
+                    self.prototype = temp_prototype
+                    self.logger.write_line('prototype restored to prior prototype')
+                else:
+                    self.send_message_to_player("Could not create an NPC, you do not have enough mutagen")
                 
             # Restore type
             self.type = temp_type
@@ -594,7 +629,11 @@ class BuilderThread(threading.Thread):
                 # message and prompt again
                 self.send_message_to_player(rank_text)
                 ans= self.get_cmd_from_player()
-                self.logger.write_line('ans = %d, not valid or available prompt again.'%ans)
+                try:
+                    ans = int(ans) #typecast
+                except:
+                    pass
+                self.logger.write_line('ans = %s, not valid or available prompt again.'%ans)
             # answer is available write to dict remove answer so cannot be used again
             affiliation[name] = ans
             num_list.remove(ans)

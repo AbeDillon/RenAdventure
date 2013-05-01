@@ -13,6 +13,7 @@ import ssl
 import Q2logging
 import sense_effect_filters
 import engine
+import copy
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
@@ -47,6 +48,12 @@ _Threads_Lock = threading.RLock()
 _InThreads = {}
 _OutThreads = {}
 
+_Player_Connections = {} #player_name -> conn #Incoming
+_Player_Connections_Lock = threading.RLock()
+
+_Client_Connections = {} #Outgoing
+_Client_Connections_Lock = threading.RLock() 
+
 #Tracking players logged in
 _Logged_in = [] #List with player names
 
@@ -63,10 +70,7 @@ game_engine = engine.Engine('sandbox')
 
 _World_list['sandbox'] = game_engine #This world instance.
 
-def main():
-    """
-
-    """
+def main(): 
     global _Logger
     global game_engine
     # Initialize _Game_State
@@ -91,7 +95,7 @@ def main():
     global _Player_States
     global _Player_States_Lock
 
-    login_thread = Login()
+    login_thread = Login_Thread()
 
     _Threads_Lock.acquire()
     _Threads.append(login_thread)
@@ -101,20 +105,8 @@ def main():
 
     print "Log-in thread spawned"
     logger.write_line('Log-in thread spawned')
-
-    #rlt = ReadLineThread()
-    #rlt.start()
-
-    #print "Server console input thread spawned"
-    #logger.write_line('Server console input thread spawned')
-
-    sat = ServerActionThread()
-    sat.start()
-
-    print 'Server action thread spawned'
-    logger.write_line('Server action thread spawned')
-
-
+    
+    
     timeout = PlayerTimeout()
     timeout.start()
     print 'Player timeout thread spawned'
@@ -125,11 +117,6 @@ def main():
     print "Lobby message thread spawned"
     logger.write_line("Lobby message thread spawned")
     
-    # Spin-off NPC Spawning thread
-
-    # Spin-off Item Spawning thread
-
-    # Start Main Loop
     print "Entering main loop..."
     logger.write_line('Entering main loop...')
     #loop_cnt = 0
@@ -155,6 +142,7 @@ def main():
         #loop_cnt += 1
         time.sleep(0.05)
 
+    
 def distribute(messages):
     """
 
@@ -175,37 +163,18 @@ def distribute(messages):
             pass
 
     _Player_OQueues_Lock.release()
-
-class Login(threading.Thread):
-    """
-    This thread listens to a port for new players joining the game.
-    When a new player joins the game, the following happens:
-        1) the player's player_object is loaded (or created)
-        2) the player gets a copy of all the instanced objects in the Game_State
-           this copy is added to the player's player_state
-        3) the player gets its own output queue and I/O threads
-        4) the log-in function designates an I/O  port reserved for the player
-           and sends a message to the player indicating which ports to communicate on
-        5) the player_object is added to _Players
-
-    TO-DO:
-        1) Add checking for max players
-        2) Add log-off
-        2) Move log-in to lobby
-        3) Add registration (name, password, etc.)
-    """
-
-    def __init__(self, listen_port=60005, spawn_port=2000, host=""):
+    
+    
+    
+class Login_Thread(threading.Thread): #Thread handles getting client connections, making dict of them, doing authentication.
+    def __init__(self, listen_port=8080, host=socket.gethostbyname(socket.gethostname())):
         """
         listen_port:        the default port for logging in to the server
-        spawn_port:         keeps track of ports to allocate to new players
-        spawn_port_lock:    prevents multiple threads from assigning the same ports
+
         """
         threading.Thread.__init__(self)
         self.host = host
         self.listen_port = listen_port
-        self.spawn_port = spawn_port
-        self.spawn_port_lock = threading.RLock()
 
     def run(self):
         """
@@ -214,6 +183,17 @@ class Login(threading.Thread):
         handles new connections
         """
         global _Logger
+        global _Logged_in
+        global _Banned_names
+        global _User_Pings
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _World_list
+        global _Player_Data
+        global _Player_Data_Lock
+        global _Player_Connections
+        global _Player_Connections_Lock
+        
         # Create a socket to listen for new connections
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
@@ -224,7 +204,7 @@ class Login(threading.Thread):
         logger.write_line('Login Socket bound')
 
         # Listen for new connections
-        sock.listen(10)
+        sock.listen(1000)
         print "Login socket listening"
         logger.write_line('Login socket listening')
         while 1:
@@ -233,13 +213,33 @@ class Login(threading.Thread):
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             logger.write_line('Connected with '+str(addr[0])+':'+str(addr[1]))
             connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) 
-            thread.start_new_thread(self.addPlayer, (connstream, addr))
+            start_dialogue = RAProtocol.receiveMessage(conn)
+            a_string = start_dialogue.split() #Split on space
+            player_name = a_string[0]
+            player_pass = a_string[1]
+            flag = a_string[2] #Flag for either "_login_" to attempt to login, or "_register_" to attempt to register?
+            if flag == '_login_': #Try and log them in
+                print "Player wishes to log in as <%s>, verifying.." % player_name
+                logger.write_line("Player wishes to log in as <%s>, verifying..." % player_name)
+                proceed = self.verify_player(player_name, player_pass, connstream)
+                if proceed: #This is a valid player, we have a registration for them.
+                    _Player_Connections_Lock.acquire()
+                    _Player_Connections[player_name] = connstream
+                    _Player_Connections_Lock.release() #We now have this player in the game.
+                    
+            elif flag == '_register_': #Attempt to register them based on the data
+                print "Player wishes to register as <%s>, proceeding.." % player_name
+                logger.write_line("Player wishes to register as <%s>, proceeding..." % player_name)
+                proceed = self.register_player(player_name, player_pass, conn)
+                if proceed: #Valid player, we have their registration now.
+                    _Player_Connections_Lock.acquire()
+                    _Player_Connections[name] = connstream
+                    _Player_Connections_Lock.release()
+                
             time.sleep(0.05)
-
-    def addPlayer(self, conn, addr):
-        """
-        Add a new player to the game
-        """
+            
+    def verify_player(name, password, connection):
+    
         global _Logged_in
         global _Banned_names
         global _Logger
@@ -249,42 +249,37 @@ class Login(threading.Thread):
         global _World_list
         global _Player_Data
         global _Player_Data_Lock
+        global _Client_Connections
+        global _Client_Connections_Lock
+        path = 'login_file/%s.txt' % name 
         
-        # receive message
-        logged_in = False
-        input_data = RAProtocol.receiveMessage(conn)
-        a_string = input_data.split() #Split on space
-        player_name = a_string[0]
-        player_pass = a_string[1]
         player_affil = {} #Current player's affiliation data.
         prev_coords = (0,0,1,0)
         items = []
         fih = 30
         vote_history = {}
-
-        path = 'login_file/%s.txt' % player_name
-
-        if player_name not in _Logged_in and player_name not in _Banned_names: #This person is not already logged in to the game
-
+        
+        if name not in _Logged_in and name not in _Banned_names: #This person is not already logged in to the game, they may proceed to the next step.
             if os.path.exists(path): #This file exists
                 fin = open(path)
                 pwd = fin.readline()
                 fin.close()
 
-                if player_pass == pwd: #Login successful
-                    print 'User <%s> logged in' % player_name
-                    logger.write_line('User <%s> logged in.'%player_name)
-                    logged_in = True
-                    _Logged_in.append(player_name)
+                if password == pwd: #Login successful
+                
+                    print 'User <%s> logged in' % name
+                    logger.write_line('User <%s> logged in.'%name)
+                    _Logged_in.append(name)
                     _Player_Loc_Lock.acquire()
-                    _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
+                    _Player_Locations[name] = "lobby" #Log in to the lobby initially
                     _Player_Loc_Lock.release()
                     _Player_Data_Lock.acquire()
-                    _Player_Data[player_name] = [] #[0]: location tuple, [1]: affiliation dict
+                    _Player_Data[name] = [] #[0]: location tuple, [1]: affiliation dict
                     _Player_Data_Lock.release()
-                    player_path = 'players/%s.xml'%player_name
+                    player_path = 'players/%s.xml'%name
                     try:
                         person = loader.load_player(player_path)
+                        logged_in = True
                         prev_coords = person.prev_coords
                         items = person.items
                         fih = person.fih
@@ -292,64 +287,40 @@ class Login(threading.Thread):
                     except:
                         logger.write_line("Error loading player file %s, file does not exist" % player_path)
                         print "Error loading player file %s, file does not exist" % player_path
+                        return False
                     player_affil = person.affiliation #Load in the players affiliation
                     location = person.coords
                     
                     _Player_Data_Lock.acquire()
-                    _Player_Data[player_name].append(location) #Add the location tuple to the list.
+                    _Player_Data[name].append(location) #Add the location tuple to the list.
                     
                     _Player_Data_Lock.release()
+                    
                 else:
-                    print 'User <%s> failed to authenticate.' % player_name
-                    logger.write_line('User <%s> failed to authenticate.'%player_name)
-                    RAProtocol.sendMessage('invalid', conn)
-            else: #File does not exist
-
-                if len(a_string) == 2: #We just got name and password, not affiliation
-                    RAProtocol.sendMessage('affiliation_get', conn)
-                    print 'Getting user affiliation'
-                    logger.write_line('Required user affiliation from <%s>'%player_name)
-                elif len(a_string) == 12: #We got the affiliation data this time.
-                    print 'Creating user: <%s>'% player_name
-                    logger.write_line('Creating user: <%s>'%player_name)
-
-                    cur_person = ''
-                    for i in range(2, len(a_string)):
-                        if i % 2 == 1: #This is an odd numbered cell, and as such is an affinity.
-                            player_affil[cur_person] = int(a_string[i])
-                        else: #Even numbered, person
-                            cur_person = a_string[i]
-                            player_affil[cur_person] = 0
-                    
-                    fin = open(path, 'w')
-                    fin.write(player_pass)
-                    fin.close()
-                    location = (0,0,1,0)
-                    logged_in = True
-                    _Logged_in.append(player_name)
-                    _Player_Loc_Lock.acquire()
-                    _Player_Locations[player_name] = "lobby" #Log in to the lobby initially
-                    _Player_Loc_Lock.release()
-                    _Player_Data_Lock.acquire()
-                    _Player_Data[player_name] = []
-                    _Player_Data[player_name].append(location) #Add the location tuple to the list.
-                    _Player_Data_Lock.release()
-                    person = engine_classes.Player(player_name, (0,0,1,0), (0,0,1,0), player_affil) #Make this person 
+                    print 'User <%s> failed to authenticate.' % name
+                    logger.write_line('User <%s> failed to authenticate.'%name)
+                    RAProtocol.sendMessage('_invalid_', connection)
+                    return False
                 
-            if logged_in:
+            else: #File does not exist, require them to register
+                RAProtocol.sendMessage("_requires_registration_", connection) #Tell them they are required to register and drop them?
+                return False
+            
+            
+            if logged_in: #They have been logged in and their player data is known.
                 _User_Pings_Lock.acquire()
-                _User_Pings[player_name] = time.time()
+                _User_Pings[name] = time.time()
                 _User_Pings_Lock.release()
                 _Player_Data_Lock.acquire()
-                _Player_Data[player_name].append(player_affil) #This may be {}, but we check for that later.
-                _Player_Data[player_name].append(prev_coords) #(0,0,1,0) unless loaded as otherwise.
-                _Player_Data[player_name].append(items) #[] if not loaded.
-                _Player_Data[player_name].append(fih) #30 if not loaded as otherwise.
-                _Player_Data[player_name].append(vote_history) #{} if not loaded as otherwise.
+                _Player_Data[name].append(player_affil) #This may be {}, but we check for that later.
+                _Player_Data[name].append(prev_coords) #(0,0,1,0) unless loaded as otherwise.
+                _Player_Data[name].append(items) #[] if not loaded.
+                _Player_Data[name].append(fih) #30 if not loaded as otherwise.
+                _Player_Data[name].append(vote_history) #{} if not loaded as otherwise.
                 _Player_Data_Lock.release()
-
-                loader.save_player(person) #Save the file!
-                logger.write_line("Creating player file for user <%s>" % player_name)
+                
+                loader.save_player(person) #Save the file
+                logger.write_line("Creating player file for user <%s>" % name)
                 
                 # *create player state and add to _Player_States (to be added)
                 # add new player I/O queues
@@ -362,7 +333,7 @@ class Login(threading.Thread):
                 line = "The following people are in the lobby: \r\n"
                 _Player_Loc_Lock.acquire()
                 for person in _Player_Locations:
-                    if _Player_Locations[person] == 'lobby' and person != player_name: #This person is in the lobby, and isn't the person we're listing people to.
+                    if _Player_Locations[person] == 'lobby' and person != name: #This person is in the lobby, and isn't the person we're listing people to.
                         line+= "\t"+person+'\r\n'
                         
                 _Player_Loc_Lock.release()
@@ -371,118 +342,176 @@ class Login(threading.Thread):
                 else: #There are no people in the lobby but you
                     oqueue.put("There is no one else in the lobby at present.")
                     
-                #oqueue.put(engine_classes.engine_helper.get_room_text(player_name, location, engine))  #####NEED FILTER
-
-                _Player_OQueues_Lock.acquire()
-                _Player_OQueues[player_name] = oqueue
-                _Player_Loc_Lock.acquire()
-                for person in _Player_Locations:
-                    if _Player_Locations[person] == 'lobby' and person != player_name: #This person is in the lobby and is not who just joined. Tell everyone else.
-                        _Player_OQueues[person].put("%s has joined the lobby" % player_name)
-                _Player_Loc_Lock.release()
-                _Player_OQueues_Lock.release()
-
-                # Get I/O port
-                self.spawn_port_lock.acquire()
-                iport = self.spawn_port
-                oport = self.spawn_port + 1
-                self.spawn_port += 2
-                self.spawn_port_lock.release()
-
-                # spin off new PlayerI/O threads
-                ithread = PlayerInput(iport, player_name)
-                othread = PlayerOutput(oqueue, addr, oport, player_name)
+                #oqueue.put(engine_classes.engine_helper.get_room_text(name, location, engine))  #####NEED FILTER
+                RAProtocol.sendMessage("_get_ip_", connection) #Tell them we need their IP for outgoing messages
                 
-                _Threads_Lock.acquire()
-                _Threads.append(ithread)
-                _Threads.append(othread)
-                _Threads_Lock.release()
-
-                _InThreads[player_name] = True
-                _OutThreads[player_name] = True
-
-                ithread.start()
-                othread.start()
-
-
-                # send new I/O ports to communicate on
-                ports = str(iport) + " " + str(oport)
-                message = str(ports)
-                RAProtocol.sendMessage(message, conn)
-
-                # add player to _Players
-                _Players_Lock.acquire()
-                _Players.append(player_name)
-                _Players_Lock.release()
-
-                conn.close()
-
-                print player_name + " added to the game."
-                logger.write_line('<'+player_name+'>'+" added to the game.")
-
-        elif player_name not in _Banned_names: #Player name is in _Logged_in, and not in _Banned_names
+                ip = RAProtocol.receiveMessage(connection) # Get their IP from the client and make an outgoing connection with it.
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
+                try:
+                    ssl_sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
+                    
+                    RAProtocol.sendMesssage("_out_conn_made_", ssl_sock)
+                    _Client_Connections_Lock.acquire()
+                    _Client_Connections[name] = ssl_sock #Add the outbound socket to the outbound connections list.
+                    _Client_Connections_Lock.release()
+                    
+                except: 
+                    RAProtocol.sendMessage("_connection_fail_")
+                    
+                
+                
+                _Player_OQueues_Lock.acquire()
+                _Player_OQueues[name] = oqueue
+                _Player_Loc_Lock.acquire()
+                
+                
+                return True #Player has been logged in, et cetera if they made it this far.
+                
+        elif name not in _Banned_names: #Player name is in _Logged_in, and not in _Banned_names
             print 'Error, attempt to log in to an account already signed on'
-            logger.write_line('Error, attempting to log in to an account already signed on: <%s>'%player_name)
-            RAProtocol.sendMessage('already_logged_in', conn)
+            logger.write_line('Error, attempting to log in to an account already signed on: <%s>'%name)
+            RAProtocol.sendMessage('already_logged_in', connection)
+            return False
 
         else: #player_name in _Banned_names
-            print 'Attempt to log in with a banned name <%s>, account creation rejected' % player_name
-            logger.write_line('Attempt to log in with a banned name <%s>, account creation rejected'%player_name)
-            RAProtocol.sendMessage('banned_name',conn)
-            
-class PlayerInput(threading.Thread):
-    """
-    Listens for player input adding any input to the local queue
-    """
-
-    def __init__(self, port, player_name, host=""):
-        """
-        port:   a unique port designated for the given players input
-        name:   the name of the player
-        """
-        threading.Thread.__init__(self)
-        self.port = port
-        self.name = player_name
-        self.host = host
-
-
-    def run(self):
-        """
-        Listen for player input and push it onto the queue
-        """
-        global _InThreads
-        global _Logger
-        # Create Socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        sock.bind((self.host, self.port))
-
-        # Listen for connection
-        sock.listen(10)
-
-        while 1:
-            if not _InThreads[self.name]: #This input thread no longer needs to run
-                break
-            else:
-                conn, addr = sock.accept()
-                print 'got input from ' + self.name
-                        
-                logger.write_line('Got input from: <%s>' % self.name)
+            print 'Attempt to log in with a banned name <%s>, account creation rejected' % name
+            logger.write_line('Attempt to log in with a banned name <%s>, account creation rejected'%name)
+            RAProtocol.sendMessage('banned_name',connection)
+            return False
                 
-                connstream = ssl.wrap_socket(conn, certfile='cert.pem', server_side=True)
-                thread.start_new_thread(self.handleInput, (connstream, ))
-                time.sleep(0.05)
-        if not _InThreads[self.name]: #We stopped the loop..
-            print 'Input thread for player <%s> ending' % self.name
-            logger.write_line('Input thread for player <%s> ending' % self.name)
-            del _InThreads[self.name] #So we delete the tracker for it.
-    def handleInput(self, conn):
-        """
-        Receive input, parse the message*, and place it in the correct queue*
-
-        * message parsing and separate queuing will be implemented if the chat
-        input and game input share a port
-        """
+        
+    def register_player(name, password, connection):
+        global _Logged_in
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _Player_Data_Lock
+        global _Player_Data
+        global _User_Pings_Lock
+        global _User_Pings
+        global _Client_Connections_Lock
+        
+    
+        path = 'login_file/%s.txt' % name
+        
+        location = (0,0,1,0)
+        
+        player_affil = {} #Initially blank affiliation
+        items = []
+        prev_coords = (0,0,1,0)
+        fih = 30
+        vote_history = {}
+        
+        print 'Creating user: <%s>'% name
+        logger.write_line('Creating user: <%s>'%name)
+        RAProtocol.sendMessage("_affiliation_get_", connection) #Let them know we need their affiliation
+        temp_affil = RAProtocol.receiveMessage(connection) #Get their affiliation
+        a_string = temp_affil.split()
+        if len(a_string) == 10: #Affiliation data
+            cur_person = ''
+            for i in range(0, len(a_string)):
+                if i % 2 == 1: #This is an odd numbered cell, and as such is an affinity.
+                        player_affil[cur_person] = int(a_string[i])
+                else: #Even numbered, person
+                    cur_person = a_string[i]
+                    player_affil[cur_person] = 0
+                    
+            fin = open(path, 'w')
+            fin.write(password) #Save the player file
+            fin.close()
+            
+            logged_in = True
+            _Logged_in.append(name)
+            _Player_Loc_Lock.acquire()
+            _Player_Locations[name] = "lobby" #Log in to the lobby initially
+            _Player_Loc_Lock.release()
+            _Player_Data_Lock.acquire()
+            _Player_Data[name] = []
+            _Player_Data[name].append(location) #Add the location tuple to the list.
+            _Player_Data_Lock.release()
+            person = engine_classes.Player(name, (0,0,1,0), (0,0,1,0), player_affil) #Make this person
+            
+        else:
+            RAProtocol.sendMessage("_reject_", connection)
+            logger.write_line("User login attempt rejected")
+            return False
+            
+        if logged_in:
+            _User_Pings_Lock.acquire()
+            _User_Pings[name] = time.time()
+            _User_Pings_Lock.release()
+            _Player_Data_Lock.acquire()
+            _Player_Data[name].append(player_affil) #This may be {}, but we check for that later.
+            _Player_Data[name].append(prev_coords) #(0,0,1,0) unless loaded as otherwise.
+            _Player_Data[name].append(items) #[] if not loaded.
+            _Player_Data[name].append(fih) #30 if not loaded as otherwise.
+            _Player_Data[name].append(vote_history) #{} if not loaded as otherwise.
+            _Player_Data_Lock.release()
+            
+            
+            # *create player state and add to _Player_States (to be added)
+            # add new player I/O queues
+            oqueue = Queue.Queue()
+            line = "\r\n"
+            for world in _World_list:
+                line += "\t"+world+"\r\n"
+            
+            oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
+            line = "The following people are in the lobby: \r\n"
+            _Player_Loc_Lock.acquire()
+            for person in _Player_Locations:
+                if _Player_Locations[person] == 'lobby' and person != name: #This person is in the lobby, and isn't the person we're listing people to.
+                    line+= "\t"+person+'\r\n'
+                    
+            _Player_Loc_Lock.release()
+            if line != "The following people are in the lobby: \r\n": #We added players to this line
+                oqueue.put(line)
+            else: #There are no people in the lobby but you
+                oqueue.put("There is no one else in the lobby at present.")
+                
+            #oqueue.put(engine_classes.engine_helper.get_room_text(name, location, engine))  #####NEED FILTER
+            RAProtocol.sendMessage("_get_ip_", connection) #Tell them we need their IP for outgoing messages
+            
+            ip = RAProtocol.receiveMessage(connection) # Get their IP from the client and make an outgoing connection with it.
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
+            
+            try:
+                
+                ssl_sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
+                
+                RAProtocol.sendMessage("_out_conn_made_", ssl_sock)
+                _Client_Connections_Lock.acquire()
+                _Client_Connections[name] = ssl_sock #Add the outbound socket to the outbound connections list.
+                _Client_Connections_Lock.release()
+                
+                _Player_OQueues_Lock.acquire()
+                _Player_OQueues[name] = oqueue
+                _Player_Loc_Lock.acquire()
+                
+            except:
+                RAProtocol.sendMessage("_conn_failure_", ssl_sock)
+            
+            
+            return True 
+            
+            
+            
+        else:
+            RAProtocol.sendMessage("_reject_", connection)
+            logger.write_line("User log in rejected")
+            return False
+            
+            
+class PlayerInput(threading.Thread): #Thread polls connections for data and passes it to engine?
+    def __init__(self):
+        threading.Thread.__init__(self)
+        
+        
+    def run(self):
+        global _Player_Connections
+        global _Player_Connections_Lock
+        global _CMD_Queue
         global _Logged_in
         global _InThreads
         global _OutThreads
@@ -493,26 +522,58 @@ class PlayerInput(threading.Thread):
         global _Player_Locations
         global _Lobby_Queue
         
-        message = RAProtocol.receiveMessage(conn)
-
+        while 1:
+            _Player_Connections_Lock.acquire()
+            conn_temp = copy(_Player_Connections)
+            _Player_Connections_Lock.release() #Now we have a list to work with.
+            for player in conn_temp: #For each player, we want to try and receive on their connection then put that data in the cmd queue.
+                connection = conn_temp[player] #Get the connection
+                try:
+                    input_data = RAProtocol.receiveMessage(connection)
+                except:
+                    input_data = ''
+                    
+                if input_data != '': #We got something, yay
+                    self.handle_input(player, input_data)
+                    
+            time.sleep(0.05)
+                    
+                    
+    def handle_input(player, message):
+        global _Player_Connections
+        global _Player_Connections_Lock
+        global _CMD_Queue
+        global _Logged_in
+        global _InThreads
+        global _OutThreads
+        global _Logger
+        global _User_Pings
+        global game_engine
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _Lobby_Queue
+        global _Client_Connections_Lock
+        global _Client_Connections
+        
+        
         if message != '_ping_':
 
             # add it to the queue
             if message != 'quit':
                 _Player_Loc_Lock.acquire() ###IP
-                location = _Player_Locations.get(self.name, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
+                location = _Player_Locations.get(player, 'lobby') #Get whether player is in "Lobby" or a world? ###IP
                 _Player_Loc_Lock.release() ###IP
                 
                 if location == 'lobby': #Player is in the lobby ###IP
                     try:
-                        _Lobby_Queue.put((self.name, message))
-                        logger.write_line("Putting in the lobby message queue: <%s>; '%s'" % (self.name, message))
+                        _Lobby_Queue.put((player, message))
+                        logger.write_line("Putting in the lobby message queue: <%s>; '%s'" % (player, message))
                     except:
                         pass
                 elif location == 'sandbox': #Player is in the game instance known as sandbox ###IP
                     try:
-                        _CMD_Queue.put((self.name, message))
-                        logger.write_line('Putting in the command queue: <%s>; "%s"'%(self.name, message))
+                        _CMD_Queue.put((player, message))
+                        logger.write_line('Putting in the command queue: <%s>; "%s"'%(player, message))
                     except:
                         pass
                         
@@ -520,31 +581,74 @@ class PlayerInput(threading.Thread):
                 conn.close()
 
             elif message == 'quit':#User is quitting, we can end this thread
-                _InThreads[self.name] = False
-                _OutThreads[self.name] = False
-                _Logged_in.remove(self.name)
-                logger.write_line('Removing <%s> from _Logged_in' % self.name)
+                _Logged_in.remove(name)
+                logger.write_line('Removing <%s> from _Logged_in' % name)
                 game_engine._Characters_Lock.acquire()
-                if self.name in game_engine._Characters: #This player has been added to the game
-                    game_engine.remove_player(self.name) #Remove player existence from gamestate.
+                if name in game_engine._Characters: #This player has been added to the game
+                    game_engine.remove_player(name) #Remove player existence from gamestate.
                 game_engine._Characters_Lock.release()
                 _Player_Loc_Lock.acquire()
-                if _Player_Locations[self.name] == 'lobby': #This person is in the lobby, tell everyone they quit.
+                if _Player_Locations[name] == 'lobby': #This person is in the lobby, tell everyone they quit.
                     _Player_OQueues_Lock.acquire()
                     for person in _Player_OQueues:
-                        if person != self.name: #This is not the person quitting, tell them who quit.
-                            _Player_OQueues[person].put("%s quit."%self.name)
+                        if person != name: #This is not the person quitting, tell them who quit.
+                            _Player_OQueues[person].put("%s quit."%name)
                     _Player_OQueues_Lock.release()
                 _Player_Loc_Lock.release()
+                _Player_Connections_Lock.acquire()
+                del _Player_Connections[name]
+                _Player_Connections_Lock.release()
+                _Client_Connections_Lock.acquire()
+                del _Client_Connections[name]
+                _Client_Connections_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
-            _User_Pings[self.name] = time.time()
+            _User_Pings[name] = time.time()
             _User_Pings_Lock.release()
-            logger.write_line("Got a ping from <%s>"%self.name)
+            logger.write_line("Got a ping from <%s>"%name)
+            
 
-class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
+class PlayerOutput(threading.Thread): #Thread sends players their messages from queue.
+    def __init__(self, output_queue):
+        """
+        queue:  The queue of messages to be sent to the player
+        port:   The port that the player is listening on
+        name:   The name of the player
+        """
+        threading.Thread.__init__(self)
+        self.queue = output_queue
+        
+    def run(self):
+        global _Client_Connections_Lock
+        global _Client_Connections
+        
+        
+        
+        while 1:
+            _Client_Connections_Lock.acquire()
+            connection_list = copy(_Client_Connections)
+            _Client_Connections_Lock.release()
+            for player in self.output_queue: #For each person in the output queue...
+                connection = connection_list[player] #Get this person's connection (outbound)
+                message = ''
+                try:
+                    message = self.output_queue[player].get()
+                except:
+                    pass
+                
+                if message != "" and message != 'Error, it appears this person has timed out.':
+                    print message
+                    logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
+                    RAProtocol.sendMessage(message, connection)
+                    
+                elif message == 'Error, it appears this person has timed out.':
+                    logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%player)
+                    RAProtocol.sendMessage(message, connection)
+            time.sleep(0.05)
+            
 
+class PlayerTimeout(threading.Thread): #Thread for checking if and handling when players time out.
     def run(self):
         global _Logged_in
         global _InThreads
@@ -555,14 +659,26 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _Player_OQueues_Lock
         global _Player_OQueues
         global game_engine
-
+        
         timeout = 15
         to_rem = []
+        
         while 1:
             _User_Pings_Lock.acquire()
             for person in to_rem:
                 del _User_Pings[person]
+                _Player_OQueues_Lock.acquire()
+                del _Player_OQueues[person]
+                _Player_OQueues_Lock.release()
+                _Player_Connections_Lock.acquire()
+                del _Player_Connections[person]
+                _Player_Connections_Lock.release()
+                _Client_Connections_Lock.acquire()
+                del _Client_Connections[person]
+                _Client_Connections_Lock.release()
+                
             to_rem = []
+            
             for player in _User_Pings:
                 if time.time() - _User_Pings[player] > timeout: #This client has timed out
                     print 'Player timed out: <%s>' % player
@@ -592,146 +708,6 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
             _User_Pings_Lock.release()
             time.sleep(0.05)
 
-class PlayerOutput(threading.Thread):
-    """
-    This thread polls a player's output Queue and sends the contents to the player client
-
-    TO DOs:
-        1) handle queue.get exceptions
-        2) time-out (?)
-    """
-
-    def __init__(self, output_queue, addr, port, player_name, host=""):
-        """
-        queue:  The queue of messages to be sent to the player
-        port:   The port that the player is listening on
-        name:   The name of the player
-        """
-        threading.Thread.__init__(self)
-        self.queue = output_queue
-        self.address = addr
-        self.port = port
-        self.name = player_name
-        self.host = socket.gethostname()
-
-    def run(self):
-        """
-        poll output queue and send messages to player
-        """
-        global _OutThreads
-        global _Logger
-        while _OutThreads[self.name]:
-            # Listen to Output Queue
-            message = ""
-            try:
-                # get message
-                message = self.queue.get()
-                
-            except:
-                # this should handle exceptions
-                pass
-            if message != "" and message != 'Error, it appears this person has timed out.':
-                print message
-                    
-                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem')
-                # connect to player
-                try:
-                    ssl_sock.connect((self.address[0], self.port))
-                    # send message
-                    RAProtocol.sendMessage(message, ssl_sock)
-                    # close connection
-                    ssl_sock.close()  
-                except:
-                    #Could not make connection or send message
-                    logger.write_line('Error making connection or sending message to <%s>'%self.name)
-                time.sleep(0.05)
-            elif message == 'Error, it appears this person has timed out.':
-                print message
-                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
-                _OutThreads[self.name] = False
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile='cert.pem')
-                try:
-                    ssl_sock.connect((self.address[0], self.port))
-                    RAProtocol.sendMessage(message, ssl_sock)
-                    ssl_sock.close()
-                except:
-                    logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%self.name)
-                time.sleep(0.05)
-        if not _OutThreads[self.name]: #This thread will no longer be running...
-            print 'Output thread for player <%s> ending.' % self.name
-            logger.write_line('Output thread for player <%s> ending.'%self.name)
-            del _OutThreads[self.name] #So we delete the tracker for it.
-
-
-# class ReadLineThread(threading.Thread):
-    # """
-
-    # """
-
-    # def run(self):
-        # """
-
-        # """
-        # global _Server_Queue
-        # while True: #What would cause this to stop? Only the program ending.
-            # line = ""
-            # while 1:
-                # char = msvcrt.getche()
-                # if char == "\r": # enter
-                    # break
-
-                # elif char == "\x08": # backspace
-                    # # Remove a character from the screen
-                    # msvcrt.putch(" ")
-                    # msvcrt.putch(char)
-
-                    # # Remove a character from the string
-                    # line = line[:-1]
-
-                # elif char in string.printable:
-                    # line += char
-
-                # time.sleep(0.01)
-
-            # try:
-                # _Server_Queue.put(line)
-                # if line != '':
-                    # _Logger.debug('Input from server console: %s' % line)
-            # except:
-                # pass
-
-class ServerActionThread(threading.Thread):
-    """
-
-    """
-    def run(self):
-        """
-
-        """
-        global _Server_Queue
-        global _CMD_Queue
-        global game_engine
-        done = False
-        while not done:
-            command = ''
-            try:
-                command = _Server_Queue.get()
-            except:
-                pass
-
-            if command != '': #We got something
-                if command.lower() == 'quit':
-                    print 'Got quit, shutting down server.'
-                    done = True
-                    game_engine.shutdown_game()
-                    break
-                else: #No other commands presently.
-                    print 'Got command: %s' % command
-            time.sleep(0.05)
-        return True
 
 class NPCSpawnThread(threading.Thread):
     """
@@ -917,4 +893,3 @@ class LobbyThread(threading.Thread):
 
 if __name__ == "__main__":
     main()
-

@@ -176,5 +176,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames = sys.argv[1:]
     else:
-        filenames = ["Ackbar.jpeg", "KW.png", "Lilwayne.jpg", "FM.jpg"]
+        filenames = ["Ackbar.jpeg", "KW.png", "Lilwayne.jpg", "FM.jpg", "Troll.jpg"]
     main(filenames)

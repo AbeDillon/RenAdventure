@@ -1,3 +1,4 @@
+__author__ = 'MNutter'
 import threading
 import Queue
 import engine_classes
