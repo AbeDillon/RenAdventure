@@ -176,8 +176,6 @@ def distribute(messages):
 
     _Player_OQueues_Lock.release()
 
-
-
 class Login(threading.Thread):
     """
     This thread listens to a port for new players joining the game.
