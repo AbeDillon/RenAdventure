@@ -606,32 +606,32 @@ class PlayerInput(threading.Thread): #Thread polls connections for data and pass
                 conn.close()
 
             elif message == 'quit':#User is quitting, we can end this thread
-                _Logged_in.remove(name)
+                _Logged_in.remove(player)
                 logger.write_line('Removing <%s> from _Logged_in' % name)
                 game_engine._Characters_Lock.acquire()
-                if name in game_engine._Characters: #This player has been added to the game
-                    game_engine.remove_player(name) #Remove player existence from gamestate.
+                if player in game_engine._Characters: #This player has been added to the game
+                    game_engine.remove_player(player) #Remove player existence from gamestate.
                 game_engine._Characters_Lock.release()
                 _Player_Loc_Lock.acquire()
-                if _Player_Locations[name] == 'lobby': #This person is in the lobby, tell everyone they quit.
+                if _Player_Locations[player] == 'lobby': #This person is in the lobby, tell everyone they quit.
                     _Player_OQueues_Lock.acquire()
                     for person in _Player_OQueues:
-                        if person != name: #This is not the person quitting, tell them who quit.
-                            _Player_OQueues[person].put("%s quit."%name)
+                        if person != player: #This is not the person quitting, tell them who quit.
+                            _Player_OQueues[person].put("%s quit."%player)
                     _Player_OQueues_Lock.release()
                 _Player_Loc_Lock.release()
                 _Player_Connections_Lock.acquire()
-                del _Player_Connections[name]
+                del _Player_Connections[player]
                 _Player_Connections_Lock.release()
                 _Client_Connections_Lock.acquire()
-                del _Client_Connections[name]
+                del _Client_Connections[player]
                 _Client_Connections_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
-            _User_Pings[name] = time.time()
+            _User_Pings[player] = time.time()
             _User_Pings_Lock.release()
-            logger.write_line("Got a ping from <%s>"%name)
+            logger.write_line("Got a ping from <%s>"%player)
             
 
 class PlayerOutput(threading.Thread): #Thread sends players their messages from queue.
@@ -653,9 +653,9 @@ class PlayerOutput(threading.Thread): #Thread sends players their messages from 
         
         while 1:
             _Client_Connections_Lock.acquire()
-            connection_list = copy(_Client_Connections)
+            connection_list = _Client_Connections
             _Client_Connections_Lock.release()
-            for player in _PlayerOQueues: #For each person in the output queue...
+            for player in _Player_OQueues: #For each person in the output queue...
                 logger.write_line("Attempting to send output to player %s" % player)
                 connection = connection_list[player] #Get this person's connection (outbound)
                 message = ''
