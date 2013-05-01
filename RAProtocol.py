@@ -11,21 +11,33 @@ def sendMessage(message, conn):
     message_str = pickle.dumps(message)
     prefix = encodePrefix(message_str)
     out_message = prefix + message_str
-    conn.sendall(out_message)
-
+    if type(conn) == socket._socketobject:
+        conn.sendall(out_message)
+    else:
+        conn.writeData(out_message)
 
 def receiveMessage(conn):
     """
 
     """
-    prefix = conn.recv(4)
+    if type(conn) == socket._socketobject:
+        prefix = conn.recv(4)
+    else:
+        prefix = conn.readData(4)
     msg_len = decodePrefix(prefix)
     message_str = ""
     while msg_len > 4096:
-        message_str += conn.recv(4096)
+        if type(conn) == socket._socketobject:
+            message_str += conn.recv(4096)
+        else:
+            message_str += conn.readData(4096)
         msg_len -= 4096
 
-    message_str += conn.recv(msg_len)
+    if type(conn) ==  socket._socketobject:
+        message_str += conn.recv(msg_len)
+    else:
+        message_str += conn.readData(msg_len)
+
     message = pickle.loads(message_str)
     return message
 
