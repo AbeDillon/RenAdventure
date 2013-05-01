@@ -31,9 +31,11 @@ def main():
     global _Server_Host
     global _Login_Port
     global _Local_Host
+    logger.write_line("Beginning client operations")
     
     it = InThread() #Start listening on port 8888 for connections
     it.start()
+    logger.write_line("Beginning in port watching thread.")
     
     rank_list = {'Obama':0, 'Kanye':0, 'OReilly':0, 'Gottfried':0, 'Burbiglia':0}
     used_ranks = [5, 4, 3, 2, 1]
@@ -41,19 +43,30 @@ def main():
     #First get whether the user wishes to log in, or register.
     while 1: #Control loop for initial stages of user interaction prior to the actual connection being made
         choice = raw_input("Would you like to register, or login, or quit?\r\n")
+        logger.write_line("Output: Would you like to register, or login, or quit?")
+        logger.write_line("Input: %s" % choice)
         if choice == 'register': #Do registration
             uname = raw_input("Please enter a username you would like to use:\r\n")
+            logger.write_line("Output: Please enter a username you would like to use:")
+            logger.write_line("Input: %s" % uname)
+            
             password = raw_input("Please enter a password you would like to use:\r\n")
+            logger.write_line("Output: Please enter a password you would like to use:")
+            if password != '': #We got one.
+                logger.write_line("Input: User entered a password.")
+                
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
             ssl_sock.connect((_Server_Host, _Login_Port))
-            
+            logger.write_line("Hidden: Connection to server made successfully")
             line = uname+' '+password+' '+'_register_'
             RAProtocol.sendMessage(line, ssl_sock) #Send the command to the server.
+            logger.write_line("Hidden: Sending message to the server: %s" % line)
             response = RAProtocol.receiveMessage(ssl_sock) #Get the response
+            logger.write_line("Hidden: Getting response from the server: %s" % resposne)
             if response == '_affiliation_get_': #They want our affiliation.
-
+            
                 print >>sys.stdout, 'This is a new player, which requires you to rank your affiliation with people.'
                 logger.write_line('Output: This is a new player, which requires you to rank your affiliation with people.')
                 print >>sys.stdout, 'Please rank the following people 1 through 5 in order of preference:'
@@ -78,11 +91,14 @@ def main():
                     line = line+' '+person+' '+str(rank_list[person]) #Add all the people and their ranking to line
                 
                 RAProtocol.sendMessage(line, ssl_sock) #Send our response about the affiliation
-                
+                logger.write_line("Hidden: Sending message to server: %s" % line)
                 resp = RAProtocol.receiveMessage(ssl_sock) #Receive the response from the server.
+                logger.write_line("Hidden: Response from server: %s" % resp)
                 if resp == "_get_ip_": #They want the IP we are at so they can make a connection to us, yay.
                     RAProtocol.sendMessage(_Local_Host, ssl_sock) #Send them our IP
+                    logger.write_line("Hidden: Sending our IP to the server: %s" % _Local_Host)
                     resp = RAProtocol.receiveMessage(ssl_sock) #Get the last message back
+                    logger.write_line("Hidden: Got response from server: %s" % resp)
                     
                     if resp == '_out_conn_made_': #We completed the connection and login process, horray.
                         logger.write_line("Hidden: Incoming connection from server completed, ending inbound processing on this socket")
@@ -95,43 +111,57 @@ def main():
                 
         elif choice == 'login': #Do the login proceedure.  
             uname = raw_input("Please enter a username you would like to use:\r\n")
+            logger.write_line("Input: Attempting to log in with username <%s>" % uname)
             password = raw_input("Please enter a password you would like to use:\r\n")
+            logger.write_line("Input: Got password to try. Testing.")
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
             ssl_sock.connect((_Server_Host, _Login_Port))
-            raw_input("Connecting with server, hit enter to continue.")
+            logger.write_line("Hidden: Connected to the server.")
             
             line = uname+' '+password+' '+'_login_'
+            time.sleep(1.0) #Sleep before sending this one, to ensure they have time to get it?
             RAProtocol.sendMessage(line, ssl_sock) #Send the command to the server.
+            logger.write_line("Hidden: Sending message with uname/pass to server.")
             response = RAProtocol.receiveMessage(ssl_sock) #Get the response
+            logger.write_line("Hidden: Got the following reponse from the server: %s" % response)
             if response == '_invalid_': #They provided a wrong username/password combination.
                 print >>sys.stdout, "Log in failed, incorrect username or password"
+                logger.write_line("Output: Log in failed, incorrect username or password")
             elif response == '_requires_registration_': #They provided a username/password which is not registered
                 print >>sys.stdout, "Log in failed, that is not a registered account"
+                logger.write_line("Output: Log in failed, that is not a registered account")
             elif response == "_get_ip_": #They want our IP to connect to us, this is good.
-                RAProtocol.sendMessage(_Local_host, ssl_sock) #Send them our IP
+                logger.write_line("Hidden: Server is requesting our IP.")
+                RAProtocol.sendMessage(_Local_Host, ssl_sock) #Send them our IP
+                logger.write_line("Hidden: Sending server the following IP: %s" % _Local_Host)
                 response = RAProtocol.receiveMessage(ssl_sock) #Get their response
+                logger.write_line("Hidden: Got the following response from the server: %s" % response)
                 if response == '_out_conn_made_': #We completed the connection and login process.
                     logger.write_line("Hidden: Incoming connection from the server completed, ending inbound processing on this socket")
+                    
+                    ot = OutThread(ssl_sock) #Give it the connection to keep sending outgoing data on.
+                    logger.write_line("Hidden: Beginning run of OutThread.")
+                    ot.start()
+                        
+                    kat = KeepAliveThread()
+                    logger.write_line("Hidden: Beginning run of KeepAliveThread")
+                    kat.start()
+                    
+                    rlt = ReadLineThread()
+                    logger.write_line("Hidden: Beginning ReadLineThread")
+                    rlt.start()
                     break
                 else: #Anything else
-                    print >>sys.stdout, "Sorry, trouble connecting to the server. PLease try again in a moment."
+                    print >>sys.stdout, "Sorry, trouble connecting to the server. Please try again in a moment."
+                    logger.write_line("Sorry, trouble connecting to the server. Please try again in a moment.")
                     
         elif choice == 'quit': #They are quitting the program.
+            logger.write_line("Input: %s" % choice)
+            logger.write_line("Hidden: User Qutting.")
             return True
         
-    ot = OutThread(ssl_sock) #Give it the connection to keep sending outgoing data on.
-    ot.start()
-        
-    kat = KeepAliveThread(ssl_sock)
-    kat.start()
-    
-    rlt = ReadLineThread()
-    rlt.start()
-    
-    
-    
     quit_game = False
     while not quit_game:
         _Quit_Lock.acquire()
@@ -151,6 +181,7 @@ def play_sound(sound):
     
 class KeepAliveThread(threading.Thread):
 
+
     def run(self):
         """
 
@@ -164,6 +195,7 @@ class KeepAliveThread(threading.Thread):
         _Quit_Lock.release()
         while not done:
             if time.time()-start_time >= signal_time: #We send a keepalive signal.
+                logger.write_line("Sending a _ping_ to server.")
                 _CMD_Queue.put('_ping_')
                 start_time = time.time()
                 _Quit_Lock.acquire()
@@ -239,6 +271,7 @@ class InThread(threading.Thread):
             logger.write_line('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
             connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True)
+            logger.write_line("Hidden: Handling new connection")
             thread.start_new_thread(self.handleConnection, (connstream, ))
             time.sleep(0.05)
             _Quit_Lock.acquire()
@@ -252,6 +285,8 @@ class InThread(threading.Thread):
             message = ''
             try:
                 message = RAProtocol.receiveMessage(connection) #Try getting a message from them.
+                logger.write_line("Hidden: Got a message! %s" % message)
+                
             except:
                 pass #When you don't get anything.
                 
@@ -267,6 +302,8 @@ class InThread(threading.Thread):
                 elif not '_play_' in message: #This isn't a playsound message, we can print it.
                     print >>sys.stdout, "\n" + message.strip()
                     logger.write_line('Output: %s' % message)
+                    
+            time.sleep(1.0)
 
         return True
 
@@ -280,7 +317,7 @@ class OutThread(threading.Thread):
         global _Quit
         global _Quit_Lock
         global _CMD_Queue
-        
+        done = False
         while not done:
             message = ""
             # Listen to Output Queue
@@ -300,8 +337,10 @@ class OutThread(threading.Thread):
                     _Quit_Lock.acquire()
                     _Quit = True
                     _Quit_Lock.release()
-
+            _Quit_Lock.acquire()
             done = _Quit
+            _Quit_Lock.release()
+            
             time.sleep(0.05)
         
 
