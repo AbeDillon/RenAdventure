@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RenA.ui'
 #
-# Created: Tue Apr 30 21:13:17 2013
+# Created: Wed May 01 19:49:47 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_mainDialog(object):
     def setupUi(self, mainDialog):
         mainDialog.setObjectName(_fromUtf8("mainDialog"))
-        mainDialog.resize(881, 566)
+        mainDialog.resize(990, 573)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -150,7 +150,7 @@ class Ui_mainDialog(object):
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/app-icon.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         mainDialog.setWindowIcon(icon)
         self.mainDisplay = QtGui.QTextEdit(mainDialog)
-        self.mainDisplay.setGeometry(QtCore.QRect(0, 0, 541, 541))
+        self.mainDisplay.setGeometry(QtCore.QRect(0, 0, 611, 541))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -164,9 +164,11 @@ class Ui_mainDialog(object):
         self.mainDisplay.setPalette(palette)
         self.mainDisplay.setFrameShape(QtGui.QFrame.NoFrame)
         self.mainDisplay.setFrameShadow(QtGui.QFrame.Plain)
+        self.mainDisplay.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.mainDisplay.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.mainDisplay.setObjectName(_fromUtf8("mainDisplay"))
         self.inputBox = QtGui.QLineEdit(mainDialog)
-        self.inputBox.setGeometry(QtCore.QRect(0, 540, 541, 21))
+        self.inputBox.setGeometry(QtCore.QRect(0, 540, 611, 21))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -236,13 +238,13 @@ class Ui_mainDialog(object):
         self.inputBox.setFrame(False)
         self.inputBox.setObjectName(_fromUtf8("inputBox"))
         self.statusBox = QtGui.QTextEdit(mainDialog)
-        self.statusBox.setGeometry(QtCore.QRect(540, 0, 341, 211))
+        self.statusBox.setGeometry(QtCore.QRect(620, 0, 361, 211))
         self.statusBox.setFrameShape(QtGui.QFrame.NoFrame)
         self.statusBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.statusBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.statusBox.setObjectName(_fromUtf8("statusBox"))
         self.artBox = QtGui.QTextEdit(mainDialog)
-        self.artBox.setGeometry(QtCore.QRect(540, 210, 341, 351))
+        self.artBox.setGeometry(QtCore.QRect(620, 210, 361, 351))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
