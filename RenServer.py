@@ -72,7 +72,7 @@ def main():
     # Initialize _Game_State
 
     
-    game_engine.init_game()
+    #game_engine.init_game()
 
     print "Game State initialized"
     logger.write_line('Game State initialized')
@@ -666,42 +666,42 @@ class PlayerOutput(threading.Thread):
             del _OutThreads[self.name] #So we delete the tracker for it.
 
 
-# class ReadLineThread(threading.Thread):
-    # """
+class ReadLineThread(threading.Thread):
+    """
 
-    # """
+    """
 
-    # def run(self):
-        # """
+    def run(self):
+        """
 
-        # """
-        # global _Server_Queue
-        # while True: #What would cause this to stop? Only the program ending.
-            # line = ""
-            # while 1:
-                # char = msvcrt.getche()
-                # if char == "\r": # enter
-                    # break
+        """
+        global _Server_Queue
+        while True: #What would cause this to stop? Only the program ending.
+            line = ""
+            while 1:
+                char = msvcrt.getche()
+                if char == "\r": # enter
+                    break
 
-                # elif char == "\x08": # backspace
-                    # # Remove a character from the screen
-                    # msvcrt.putch(" ")
-                    # msvcrt.putch(char)
+                elif char == "\x08": # backspace
+                    # Remove a character from the screen
+                    msvcrt.putch(" ")
+                    msvcrt.putch(char)
 
-                    # # Remove a character from the string
-                    # line = line[:-1]
+                    # Remove a character from the string
+                    line = line[:-1]
 
-                # elif char in string.printable:
-                    # line += char
+                elif char in string.printable:
+                    line += char
 
-                # time.sleep(0.01)
+                time.sleep(0.01)
 
-            # try:
-                # _Server_Queue.put(line)
-                # if line != '':
-                    # _Logger.debug('Input from server console: %s' % line)
-            # except:
-                # pass
+            try:
+                _Server_Queue.put(line)
+                if line != '':
+                    _Logger.debug('Input from server console: %s' % line)
+            except:
+                pass
 
 class ServerActionThread(threading.Thread):
     """
@@ -714,6 +714,8 @@ class ServerActionThread(threading.Thread):
         global _Server_Queue
         global _CMD_Queue
         global game_engine
+        global _World_list
+        
         done = False
         while not done:
             command = ''
@@ -724,10 +726,60 @@ class ServerActionThread(threading.Thread):
 
             if command != '': #We got something
                 if command.lower() == 'quit':
-                    print 'Got quit, shutting down server.'
+                    print 'Got quit, shutting down server and all engines.'
                     done = True
-                    game_engine.shutdown_game()
+                    for engine in _World_list: #For each engine...
+                        this_engine = _World_list[engine] #Get the engine.
+                        logger.write_line("Shutting down engine %s" % engine)
+                        print "Shutting down engine %s" % engine
+                        this_engine.shutdown_game()
                     break
+                    
+                elif "start" in command.lower(): #command syntax: start engine_name <save_state#>
+                    cmd = command.split() #Split it up
+                    save_state = None
+                    if len(cmd) > 3 or len(cmd) < 2: #We got too much or too few
+                        print "Error, command syntax for start is: start engine_name [save_state]"
+                    else:
+                        if cmd[0].lower() == 'start': #Command is a start command, we will start an engine.
+                            eng_name = cmd[1] #Get engine name.
+                            if len(cmd) == 3: #We got a save state too.
+                                save_state = cmd[2]
+                            if eng_name in _World_list: #This is a valid engine to start up.
+                                engine = _World_list[eng_name] #Get the engine
+                                if not engine._IsRunning: #The engine has not been started yet, we can start it.
+                                    if save_state != None: #We got a value for this, start the engine with this number
+                                        logger.write_line("Starting engine %s with save state number %s" % (eng_name, save_state))
+                                        print "Starting engine %s with save state number %s" % (eng_name, save_state)
+                                        engine.init_game(int(save_state))
+                                    else: #We did not get a save state
+                                        engine.init_game() #Start without save state.
+                                        logger.write_line("Starting engine %s without save state" % eng_name)
+                                        print "Starting engine %s without save state" % eng_name
+                                else: #This engine is already running, we don't want to start it again.
+                                    print "Engine %s is already running, you cannot start it again." % eng_name
+                                    logger.write_line("Starting of engine %s declined, engine already running" % eng_name)
+                                
+                elif "stop" in command.lower() #command syntax: stop engine_name
+                    cmd = command.split()
+                    if len(cmd) > 2 or len(cmd) < 2: #We did not get enough
+                        print "Error, command syntax for stop is: stop engine_name"
+                    else: #Valid
+                        eng_name = cmd[1] #Get the name of it
+                        if eng_name in _World_list: #This is a valid engine we can shut down
+                            engine = _World_list[eng_name]
+                            if engine._IsRunning:
+                                engine.shutdown_game()
+                                logger.write_line("Got command to shutdown %s engine. Proceeding." % eng_name)
+                                print "Shutting down engine <%s>" % eng_name
+                            else: #This engine is already shut down.
+                                print "This engine is already shut down <%s>" % eng_name
+                        else: #This is not an engine we know of.
+                            print "Unrecognized engine name <%s>" % eng_name
+                    
+                    
+                            
+                        else: #This is not an engine we can shut down.
                 else: #No other commands presently.
                     print 'Got command: %s' % command
             time.sleep(0.05)
