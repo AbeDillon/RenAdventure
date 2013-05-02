@@ -11,7 +11,7 @@ class Engine:
     def __init__(self, name):
         self.logger = Q2logging.out_file_instance('logs/engine/RenEngine')
 
-        self._StillAlive = True
+        self._IsRunning = False
         self._CommandQueue = Queue.Queue() # Commands that are waiting to be run
         self._MessageQueue = Queue.Queue() # Messages that are waiting to be sent to the server
 
@@ -40,6 +40,7 @@ class Engine:
 
     def init_game(self, save_state = 0):
         # Initializes the map and starts the command thread
+        self._IsRunning = True
 
         if save_state > 0:
             directory = 'SaveState%d' % save_state
@@ -118,7 +119,7 @@ class Engine:
 
         self.logger.write_line('Shutting down the game.')
 
-        self._StillAlive = False # Causes all of the threads to close
+        self._IsRunning = False # Causes all of the threads to close
 
         for player in self._Characters.values(): # Save all of the player states
             if isinstance(player, Player):
@@ -204,7 +205,7 @@ class Engine:
     def command_thread(self):
         # Runs commands from the command queue
 
-        while self._StillAlive:
+        while self._IsRunning:
             if not self._CommandQueue.empty():
                 command = self._CommandQueue.get()
                 player_name = command[0]
@@ -261,7 +262,7 @@ class Engine:
     def npc_thread(self):
         # Runs the commands for all NPC's in the game
 
-        if self._StillAlive:
+        if self._IsRunning:
             threading.Timer(7.0, self.npc_thread).start()
 
             npcs = {}
@@ -285,7 +286,7 @@ class Engine:
 
     def spawn_npc_thread(self, n):
         # Spawns a new NPC for every 'n' rooms in the game
-        while self._StillAlive:
+        while self._IsRunning:
             npcs = {}
             self._Characters_Lock.acquire()
             for character in self._Characters:
@@ -327,7 +328,7 @@ class Engine:
     def spawn_resources_thread(self):
         # Spawns Likes, Mutagen and Flat Pack Furniture randomly throughout the game world
 
-        if self._StillAlive:
+        if self._IsRunning:
             threading.Timer(900.0, self.spawn_resources_thread).start() # Runs every 15 minutes
 
             coords = self._Rooms.keys()
@@ -364,7 +365,7 @@ class Engine:
 
     def distribute_likes_thread(self):
         likes_distribution = {} #Dictionary of player_name -> likes they get this turn around.
-        while self._StillAlive:
+        while self._IsRunning:
             self.logger.write_line("Running iteration of distribute_likes_thread")
             self._NPC_Bucket_Lock.acquire()
             for npc in self._NPC_Bucket: #For each NPC, tally up likes going to people.
