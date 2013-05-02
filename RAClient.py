@@ -55,6 +55,13 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.tcpServer = QtNetwork.QTcpServer()
         self.tcpServer.listen(self.localHost, self.port)
 
+    def sslSocket(self):
+        socket = QtNetwork.QSslSocket()
+        socket.addCaCertificates('cert.pem')
+        socket.connectToHostEncrypted(self.localHost, self.port)
+
+
+
 
     def handleNewConnection(self):
 
@@ -124,7 +131,8 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
                     loginMessage = RAProtocol.command(tags=['login'], body = self.name +"\n"+self.password)
 
     def sendMessage(self, message):
-        outSocket = QtNetwork.QSslSocket
+
+        outSocket = QtNetwork.QSslSocket.connectToHostEncrypted()
 
 
     def shutDown(self):
@@ -133,26 +141,26 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.iThread.deleteLater()
 
 
-class loginThread(QtCore.QThread):
-        """  Goes through the login process in the Gui Window """
-        def __init__(self, parent=None):
-            super(loginThread, self).__init__(parent)
-            print "arrived at login init"
-            self.loggedin = False
-
-        def run(self):
-
-            #self.start()
-            while self.loggedin == False:
-                form.mainDisplay.append('Please enter your User Name. Or type "new" to create a new player')
-                playerName =  form.outQueue.get()
-                print playerName
-                if playerName in ["n", "N", "new", "New", "NEW"]:
-                    # create a new player
-                    break
-                form.mainDisplay.append('Please Enter Your Password')
-                password = form.outQueue.get()
-                print password
+# class loginThread(QtCore.QThread):
+#         """  Goes through the login process in the Gui Window """
+#         def __init__(self, parent=None):
+#             super(loginThread, self).__init__(parent)
+#             print "arrived at login init"
+#             self.loggedin = False
+#
+#         def run(self):
+#
+#             #self.start()
+#             while self.loggedin == False:
+#                 form.mainDisplay.append('Please enter your User Name. Or type "new" to create a new player')
+#                 playerName =  form.outQueue.get()
+#                 print playerName
+#                 if playerName in ["n", "N", "new", "New", "NEW"]:
+#                     # create a new player
+#                     break
+#                 form.mainDisplay.append('Please Enter Your Password')
+#                 password = form.outQueue.get()
+#                 print password
 
                 #
                 # loginLine= playerName, password
