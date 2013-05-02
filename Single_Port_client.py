@@ -125,7 +125,6 @@ def main():
             logger.write_line("Hidden: Connected to the server.")
             
             line = uname+' '+password+' '+'_login_'
-            time.sleep(1.0) #Sleep before sending this one, to ensure they have time to get it?
             RAProtocol.sendMessage(line, sock) #Send the command to the server.
             logger.write_line("Hidden: Sending message with uname/pass to server.")
             response = RAProtocol.receiveMessage(sock) #Get the response
