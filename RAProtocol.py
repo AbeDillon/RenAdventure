@@ -3,7 +3,7 @@ __author__ = 'ADillon'
 import socket
 import sys
 import pickle
-from PyQt4 import QtNetwork
+from PyQt4 import QtNetwork, QtCore
 
 def sendMessage(message, conn):
     """
@@ -72,9 +72,27 @@ def decodePrefix(prefix):
 
     return msg_len
 
-class command(object):
+class QtCommand(QtCore.QObject):
 
+    def __init__(self, name=None, tags=None, body=None, parent=None):
+        super(QtCommand, self).__init__(parent)
+        self.name = name
+        self.tags = tags
+        self.body = body
+
+    # def __init__(self, commandObj):
+    #     super(QtCommand, self).__init__()
+    #     self.name = commandObj.name
+    #     self.tags = commandObj.tags
+    #     self.body = commandObj.body
+
+class command(object):
     def __init__(self, name=None, tags=None, body=None):
         self.name = name
         self.tags = tags
         self.body = body
+
+    def __init__(self, QtCommandObj):
+        self.name = QtCommandObj.name
+        self.tags = QtCommandObj.tags
+        self.body = QtCommandObj.body
