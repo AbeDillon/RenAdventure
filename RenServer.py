@@ -905,9 +905,16 @@ class LobbyThread(threading.Thread):
                     
                     cmd, world = msg[1].split()
                     if world in _World_list: #This is a world we know about, let's "move" the player here.
-                        _Player_Loc_Lock.acquire()
-                        _Player_Locations[player] = world #Route this players messages to that world
-                        _Player_Loc_Lock.release()
+                        eng = _World_list[world]
+                        if eng._IsRunning:
+                            _Player_Loc_Lock.acquire()
+                            _Player_Locations[player] = world #Route this players messages to that world
+                            _Player_Loc_Lock.release()
+                        else: #This is not a running engine, don't let them access this.
+                            output = "That engine is not up and running right now, you cannot join it."
+                            _Player_OQueues_Lock.acquire()
+                            _Player_OQueues[player].put(output)
+                            _Player_OQueues_Lock.release()
 
                         if affil != {}: #We have this players affiliation, give it.
                             game_engine.make_player(player, location, affil) #Make with given affiliation
