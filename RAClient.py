@@ -6,11 +6,12 @@ import sys
 import RenA
 import Queue
 import RAProtocol
+import pickle
 
 #address = QtNetwork.Q
 _Local_Host = socket.gethostname()
 _Local_Host = socket.gethostbyname(_Local_Host)# replace with actual host address
-_Local_Host = QtNetwork.QHostAddress(_Local_Host)
+#_Local_Host = QtNetwork.QHostAddress(_Local_Host)
 _Server_Host = socket.gethostname() #'54.244.118.196' # replace with actual server address
 _Login_Port = 60005
 
@@ -25,10 +26,13 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         global _Login_Port
         self.localHost = _Local_Host
         self.serverHost = _Server_Host
-        self.port = _Login_Port
+        self.lPort = _Login_Port
+        self.iPort = ""
+        self.oPort = ""
         self.loggedIn = False
-        self.nameGotten = False
+        self.name = ""
 
+        self.oldStyle = True
         self.setupUi(self)
 
         # build input and output objects
@@ -36,7 +40,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.outQueue = Queue.Queue()
 
         # Local Server Build
-        self.initServer()
+        #self.initServer()
 
         # Connections/Signals
         self.connect(self, QtCore.SIGNAL("mainDisplay(QString)"), self.appendDisplay, QtCore.Qt.DirectConnection)
@@ -44,8 +48,11 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.connect(self, QtCore.SIGNAL("artBox(QObject)"), self.appendArt, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("statusBox(QObject)"), self.appendStatus, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("playSound(QObject)"), self.playSound, QtCore.Qt.DirectConnection)
+        #self.connect(self, QtCore.SIGNAL("readySend(QString)"), self.sendMessage, QtCore.Qt.DirectConnection)
+        self.connect(self, QtCore.SIGNAL("sendOld"), self.sendMessage, QtCore.Qt.DirectConnection)
+        self.connect(self, QtCore.SIGNAL("readySend(QString)"), self.sendMessage, QtCore.Qt.DirectConnection)
         self.inputBox.returnPressed.connect(self.getUserInput)
-        self.connect(self.tcpServer, QtCore.SIGNAL("newConnection()"), self.handleNewConnection)
+        #self.connect(self.tcpServer, QtCore.SIGNAL("newConnection()"), self.handleNewConnection)
 
         self.mainDisplay.append('\n'*25+" "*10+'Welcome to the Ren Adventure!!'+'\n'*15)
         self.inputBox.setFocus()
@@ -55,13 +62,17 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.tcpServer = QtNetwork.QTcpServer()
         self.tcpServer.listen(self.localHost, self.port)
 
-    def sslSocket(self):
-        socket = QtNetwork.QSslSocket()
-        socket.addCaCertificates('cert.pem')
-        socket.connectToHostEncrypted(self.localHost, self.port)
+    def outSocket(self):
 
+        if self.loggedIn == False:
+            port = self.lPort
+        else:
+            port = self.oPort
 
-
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
+        ssl_sock.connect((_Server_Host, port))
+        return ssl_sock
 
     def handleNewConnection(self):
 
@@ -92,7 +103,6 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
         self.emit(QtCore.SIGNAL("mainDisplay(QString)"), 'Enter User Name.')
 
-        #self.Login.start()
 
     def appendDisplay(self, message):
 
@@ -113,7 +123,6 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
     def getUserInput(self):
         """Captures and distributes User input from inputBox"""
-
         line = self.inputBox.displayText()
 
         if line != "":
@@ -121,18 +130,72 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
             self.inputBox.clear()
             self.inputBox.setFocus()
             if not self.loggedIn:
-                if not self.nameGotten:
-
-                    self.name= line
-                    self.nameGotten=True
-                    self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "Enter Password" )
+               self.login(line)
+            else:
+                if self.oldStyle == True:
+                    message = (str(self.name), str(line), [])
+                    #self.emit(QtCore.SIGNAL("sendOld"), message)
                 else:
-                    self.password = line
-                    loginMessage = RAProtocol.command(tags=['login'], body = self.name +"\n"+self.password)
+                    message = RAProtocol.command(name= str(self.name), body=str(line))
+                message = pickle.dumps(message)
+                self.emit(QtCore.SIGNAL("readySend(QString)"), message)
 
     def sendMessage(self, message):
 
-        outSocket = QtNetwork.QSslSocket.connectToHostEncrypted()
+        message = str(message)
+        message = pickle.loads(message)
+        outSocket = self.outSocket()
+        if self.oldStyle == False:
+            # convert message object from QObject to regular object so RAP can handle properly
+            message = RAProtocol.command(message)
+        print message
+        RAProtocol.sendMessage(message, outSocket)
+        outSocket.close()
+
+    def login(self, line):
+         if self.name == "":
+            self.name= line
+            self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "Enter Password" )
+         else:
+            self.password = line
+            loginMessage = RAProtocol.QtCommand(tags=['login'], body= self.name + " " + self.password)
+            #self.emit(QtCore.SIGNAL("readySend(QObject)"), loginMessage)  #  Will likely be used in single port build
+            self.connect_to_server(loginMessage)
+
+            # ports = self.connect_to_server(loginMessage)  ##  moving this functionality to connect to server
+            # if ports in ['invalid', 'banned_name', "affiliation_get"]:
+            #     self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "That login is invalid.  Again." )
+            #     self.nameGotten = False
+            #     self.name = None
+            #     self.password = None
+            # else:
+            #     return ports
+
+
+
+    def connect_to_server(self, line):  #  currently used for login purposes only
+
+        outSocket = self.outSocket()
+        loginObject = RAProtocol.command(line)
+        RAProtocol.sendMessage(loginObject, outSocket)
+        #logger.write_line('Hidden: Making connection with remote server')
+        message = RAProtocol.receiveMessage(outSocket)
+        outSocket.close()
+
+        ports = message
+        print ports
+        if ports in ['invalid', 'banned_name', "affiliation_get"]:
+            self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "That login is invalid.  Again." )
+            self.name = ""
+            self.password = ""
+        else:
+            ports = ports.split()
+            print ports
+            self.iPort = int(ports[1])
+            self.oPort = int(ports[0])
+            print "oPort = %d, iPort = %d" % (self.oPort, self.iPort)
+            self.loggedIn = True
+            self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "You are now logged in...." )
 
 
     def shutDown(self):
@@ -175,35 +238,35 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
 
 
-# class inThread(QtCore.QThread):
-#     """ Primary thread listens for incoming messages, gets message and puts them
-#      on the inQueue to be processed by the main app.
-#     """
-#
-#     def __init__(self, localHost, port, parent=None):
-#         super(inThread, self).__init__(parent)
-#         self.host = localHost
-#         self.port = port
-#         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#         self.sock.bind((self.host, self.port))
-#         self.start()
-#         print "IN THREAD STARTED"
-#
-#     def run(self):
-#         # Establish Socket & Listen
-#         print "i am here"
-#
-#         self.sock.listen(2)
-#         while 1:
-#             #  Accept Connection from server
-#             print "I am here 2"
-#             conn, addr = self.sock.accept()
-#             print "I am here 3"
-#             connStream = ssl.wrap_socket(self.conn, certfile = 'cert.pem', server_side = True)
-#             message = RAProtocol.receiveMessage(conn)
-#             self.emit(QtCore.SIGNAL("connReceived(QObject)"), message)
-#
-#             #exec()  # runs thread in it's own proper QEvent Loop allowing proper shutdown
+class inThread(QtCore.QThread):
+    """ Primary thread listens for incoming messages, gets message and puts them
+     on the inQueue to be processed by the main app.
+    """
+
+    def __init__(self, parent=None):
+        super(inThread, self).__init__(parent)
+        host = host.localHost
+        self.port = port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((self.host, self.port))
+        self.start()
+        print "IN THREAD STARTED"
+
+    def run(self):
+        # Establish Socket & Listen
+        print "i am here"
+
+        self.sock.listen(2)
+        while 1:
+            #  Accept Connection from server
+            print "I am here 2"
+            conn, addr = self.sock.accept()
+            print "I am here 3"
+            connStream = ssl.wrap_socket(self.conn, certfile = 'cert.pem', server_side = True)
+            message = RAProtocol.receiveMessage(conn)
+            self.emit(QtCore.SIGNAL("connReceived(QObject)"), message)
+
+            #exec()  # runs thread in it's own proper QEvent Loop allowing proper shutdown
 
 # class outThread(QtCore.QThread):
 #     def __init__(self, parent=None):
