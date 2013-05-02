@@ -3,6 +3,7 @@ __author__ = 'ADillon'
 import socket
 import sys
 import pickle
+from PyQt4 import QtNetwork
 
 def sendMessage(message, conn):
     """
@@ -11,7 +12,7 @@ def sendMessage(message, conn):
     message_str = pickle.dumps(message)
     prefix = encodePrefix(message_str)
     out_message = prefix + message_str
-    if type(conn) == socket._socketobject:
+    if isinstance(conn, socket.socket):
         conn.sendall(out_message)
     else:
         conn.writeData(out_message)
@@ -20,20 +21,20 @@ def receiveMessage(conn):
     """
 
     """
-    if type(conn) == socket._socketobject:
+    if isinstance(conn, socket.socket):
         prefix = conn.recv(4)
     else:
         prefix = conn.readData(4)
     msg_len = decodePrefix(prefix)
     message_str = ""
     while msg_len > 4096:
-        if type(conn) == socket._socketobject:
+        if isinstance(conn, socket.socket):
             message_str += conn.recv(4096)
         else:
             message_str += conn.readData(4096)
         msg_len -= 4096
 
-    if type(conn) ==  socket._socketobject:
+    if isinstance(conn, socket.socket):
         message_str += conn.recv(msg_len)
     else:
         message_str += conn.readData(msg_len)
