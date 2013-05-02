@@ -57,14 +57,14 @@ def main():
                 
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
-            ssl_sock.connect((_Server_Host, _Login_Port))
+            #ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
+            sock.connect((_Server_Host, _Login_Port))
             logger.write_line("Hidden: Connection to server made successfully")
             line = uname+' '+password+' '+'_register_'
-            RAProtocol.sendMessage(line, ssl_sock) #Send the command to the server.
+            RAProtocol.sendMessage(line, sock) #Send the command to the server.
             logger.write_line("Hidden: Sending message to the server: %s" % line)
-            response = RAProtocol.receiveMessage(ssl_sock) #Get the response
-            logger.write_line("Hidden: Getting response from the server: %s" % resposne)
+            response = RAProtocol.receiveMessage(sock) #Get the response
+            logger.write_line("Hidden: Getting response from the server: %s" % response)
             if response == '_affiliation_get_': #They want our affiliation.
             
                 print >>sys.stdout, 'This is a new player, which requires you to rank your affiliation with people.'
@@ -74,6 +74,7 @@ def main():
                 for person in rank_list:
                     print >>sys.stdout, '\t'+person
                     logger.write_line(person)
+                line = ''
                 for person in rank_list:
                     while 1:
                         rank = raw_input('On a scale of 1 to 5, where would you rank %s?\r\n'%person)
@@ -90,14 +91,14 @@ def main():
                 for person in rank_list:
                     line = line+' '+person+' '+str(rank_list[person]) #Add all the people and their ranking to line
                 
-                RAProtocol.sendMessage(line, ssl_sock) #Send our response about the affiliation
+                RAProtocol.sendMessage(line, sock) #Send our response about the affiliation
                 logger.write_line("Hidden: Sending message to server: %s" % line)
-                resp = RAProtocol.receiveMessage(ssl_sock) #Receive the response from the server.
+                resp = RAProtocol.receiveMessage(sock) #Receive the response from the server.
                 logger.write_line("Hidden: Response from server: %s" % resp)
                 if resp == "_get_ip_": #They want the IP we are at so they can make a connection to us, yay.
-                    RAProtocol.sendMessage(_Local_Host, ssl_sock) #Send them our IP
+                    RAProtocol.sendMessage(_Local_Host, sock) #Send them our IP
                     logger.write_line("Hidden: Sending our IP to the server: %s" % _Local_Host)
-                    resp = RAProtocol.receiveMessage(ssl_sock) #Get the last message back
+                    resp = RAProtocol.receiveMessage(sock) #Get the last message back
                     logger.write_line("Hidden: Got response from server: %s" % resp)
                     
                     if resp == '_out_conn_made_': #We completed the connection and login process, horray.
@@ -105,6 +106,9 @@ def main():
                         break
                     else: #There was an error!
                         print >>sys.stdout, "Sorry, trouble connecting to the server. Please try again in a moment."
+                        
+                else: #They don't want our IP, failed attempt:
+                    print >>sys.stdout, "Sorry, trouble connecting to the server. Please try again?"
                     
             elif response != '_affiliation_get_': #We picked register and they don't want our affiliation? We were probably rejected then.
                 print >>sys.stdout, "Registration failed: %s" % response
@@ -116,15 +120,15 @@ def main():
             logger.write_line("Input: Got password to try. Testing.")
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
-            ssl_sock.connect((_Server_Host, _Login_Port))
+            #ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
+            sock.connect((_Server_Host, _Login_Port))
             logger.write_line("Hidden: Connected to the server.")
             
             line = uname+' '+password+' '+'_login_'
             time.sleep(1.0) #Sleep before sending this one, to ensure they have time to get it?
-            RAProtocol.sendMessage(line, ssl_sock) #Send the command to the server.
+            RAProtocol.sendMessage(line, sock) #Send the command to the server.
             logger.write_line("Hidden: Sending message with uname/pass to server.")
-            response = RAProtocol.receiveMessage(ssl_sock) #Get the response
+            response = RAProtocol.receiveMessage(sock) #Get the response
             logger.write_line("Hidden: Got the following reponse from the server: %s" % response)
             if response == '_invalid_': #They provided a wrong username/password combination.
                 print >>sys.stdout, "Log in failed, incorrect username or password"
@@ -134,17 +138,13 @@ def main():
                 logger.write_line("Output: Log in failed, that is not a registered account")
             elif response == "_get_ip_": #They want our IP to connect to us, this is good.
                 logger.write_line("Hidden: Server is requesting our IP.")
-                RAProtocol.sendMessage(_Local_Host, ssl_sock) #Send them our IP
+                RAProtocol.sendMessage(_Local_Host, sock) #Send them our IP
                 logger.write_line("Hidden: Sending server the following IP: %s" % _Local_Host)
-                response = RAProtocol.receiveMessage(ssl_sock) #Get their response
+                response = RAProtocol.receiveMessage(sock) #Get their response
                 logger.write_line("Hidden: Got the following response from the server: %s" % response)
                 if response == '_out_conn_made_': #We completed the connection and login process.
                     logger.write_line("Hidden: Incoming connection from the server completed, ending inbound processing on this socket")
                     
-                    ot = OutThread(ssl_sock) #Give it the connection to keep sending outgoing data on.
-                    logger.write_line("Hidden: Beginning run of OutThread.")
-                    ot.start()
-                        
                     kat = KeepAliveThread()
                     logger.write_line("Hidden: Beginning run of KeepAliveThread")
                     kat.start()
@@ -152,6 +152,11 @@ def main():
                     rlt = ReadLineThread()
                     logger.write_line("Hidden: Beginning ReadLineThread")
                     rlt.start()
+                    
+                    ot = OutThread(sock) #Give it the connection to keep sending outgoing data on.
+                    logger.write_line("Hidden: Beginning run of OutThread.")
+                    ot.start()
+                        
                     break
                 else: #Anything else
                     print >>sys.stdout, "Sorry, trouble connecting to the server. Please try again in a moment."
@@ -193,6 +198,7 @@ class KeepAliveThread(threading.Thread):
         _Quit_Lock.acquire()
         done = _Quit
         _Quit_Lock.release()
+        logger.write_line("Beginning keepaliveThread looping")
         while not done:
             if time.time()-start_time >= signal_time: #We send a keepalive signal.
                 logger.write_line("Sending a _ping_ to server.")
@@ -217,6 +223,7 @@ class ReadLineThread(threading.Thread):
         _Quit_Lock.acquire()
         done = _Quit
         _Quit_Lock.release()
+        logger.write_line("Beginning Read Line Thread loop")
         while not done:
             line = ""
             while 1:
@@ -270,9 +277,9 @@ class InThread(threading.Thread):
             conn, addr = sock.accept()
             logger.write_line('Hidden: Got connection from %s' % str(addr))
             #print 'got input from ' + self.name
-            connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True)
+            #connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True)
             logger.write_line("Hidden: Handling new connection")
-            thread.start_new_thread(self.handleConnection, (connstream, ))
+            thread.start_new_thread(self.handleConnection, (conn, ))
             time.sleep(0.05)
             _Quit_Lock.acquire()
             done = _Quit
@@ -318,13 +325,14 @@ class OutThread(threading.Thread):
         global _Quit_Lock
         global _CMD_Queue
         done = False
+        logger.write_line("Beginning looping of OutThread")
         while not done:
             message = ""
             # Listen to Output Queue
             try:
                 # get message
                 message = _CMD_Queue.get()
-
+                logger.write_line("Found something in the command queue: %s" % message)
             except:
                 pass
 
