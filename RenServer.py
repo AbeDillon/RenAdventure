@@ -760,7 +760,7 @@ class ServerActionThread(threading.Thread):
                                     print "Engine %s is already running, you cannot start it again." % eng_name
                                     logger.write_line("Starting of engine %s declined, engine already running" % eng_name)
                                 
-                elif "stop" in command.lower() #command syntax: stop engine_name
+                elif "stop" in command.lower(): #command syntax: stop engine_name
                     cmd = command.split()
                     if len(cmd) > 2 or len(cmd) < 2: #We did not get enough
                         print "Error, command syntax for stop is: stop engine_name"
@@ -777,9 +777,7 @@ class ServerActionThread(threading.Thread):
                         else: #This is not an engine we know of.
                             print "Unrecognized engine name <%s>" % eng_name
                     
-                    
-                            
-                        else: #This is not an engine we can shut down.
+             
                 else: #No other commands presently.
                     print 'Got command: %s' % command
             time.sleep(0.05)
