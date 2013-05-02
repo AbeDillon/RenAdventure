@@ -253,7 +253,11 @@ class Login(threading.Thread):
         # receive message
         logged_in = False
         input_data = RAProtocol.receiveMessage(conn)
-        a_string = input_data.split() #Split on space
+        if isinstance(input_data, RAProtocol.command):
+            a_string = str(input_data.body)
+        else:
+            a_string = input_data
+        a_string = a_string.split() #Split on space
         player_name = a_string[0]
         player_pass = a_string[1]
         player_affil = {} #Current player's affiliation data.
