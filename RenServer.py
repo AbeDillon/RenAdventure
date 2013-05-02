@@ -356,7 +356,9 @@ class Login(threading.Thread):
                 oqueue = Queue.Queue()
                 line = "\r\n"
                 for world in _World_list:
-                    line += "\t"+world+"\r\n"
+                    eng = _World_list[world]
+                    if eng._IsRunning:
+                        line += "\t"+world+"\r\n"
                 
                 oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
                 line = "The following people are in the lobby: \r\n"

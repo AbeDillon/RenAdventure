@@ -148,8 +148,11 @@ def main():
             logger.write_line("Got messages from the server")
             distribute(messages)
             
-        else: 
-            logger.write_line("Did not get any messages, see you next time.")
+        else:  #Try one more time?
+            logger.write_line("Did not get any messages, Trying one more time.")
+            messages = game_engine.get_messages()
+            if messages != []:
+                distribute(messages)
 
         #print "loop count = " + str(loop_cnt)
         #loop_cnt += 1
