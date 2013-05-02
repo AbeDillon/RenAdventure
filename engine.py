@@ -71,7 +71,7 @@ class Engine:
         affiliation = {'Obama': 1, 'Gottfried': 2, 'OReilly': 3, 'Kanye': 4, 'Burbiglia': 5}
         kanye = NPC('@mr_kanyewest', (-3,3,1,0), affiliation)
         
-        affiliation = {'Obama': 1, 'Gottfried': 1, 'OReilly': 1, 'Kanye': 1, 'Burbiglia': 1}
+        affiliation = {'Obama': 0, 'Gottfried': 0, 'OReilly': 0, 'Kanye': 0, 'Burbiglia': 0}
         ermah = NPC('ermahgerd', (-3,3,1,0), affiliation)
         pr = NPC('philosoraptor', (-3,3,1,0), affiliation)
         lolcat = NPC('lolcat', (-3,3,1,0), affiliation)
