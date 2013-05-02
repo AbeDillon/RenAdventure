@@ -6,7 +6,7 @@ import time, random
 import RAProtocol
 import engine_classes
 import os
-#import msvcrt
+import msvcrt
 import string
 import loader
 import ssl
@@ -102,11 +102,11 @@ def main():
     print "Log-in thread spawned"
     logger.write_line('Log-in thread spawned')
 
-    #rlt = ReadLineThread()
-    #rlt.start()
+    rlt = ReadLineThread()
+    rlt.start()
 
-    #print "Server console input thread spawned"
-    #logger.write_line('Server console input thread spawned')
+    print "Server console input thread spawned"
+    logger.write_line('Server console input thread spawned')
 
     sat = ServerActionThread()
     sat.start()
@@ -727,6 +727,7 @@ class ServerActionThread(threading.Thread):
                 pass
 
             if command != '': #We got something
+                logger.write_line("Got server command: %s" % command)
                 if command.lower() == 'quit':
                     print 'Got quit, shutting down server and all engines.'
                     done = True
