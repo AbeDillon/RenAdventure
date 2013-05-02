@@ -666,42 +666,42 @@ class PlayerOutput(threading.Thread):
             del _OutThreads[self.name] #So we delete the tracker for it.
 
 
-# class ReadLineThread(threading.Thread):
-    # """
+class ReadLineThread(threading.Thread):
+    """
 
-    # """
+    """
 
-    # def run(self):
-        # """
+    def run(self):
+        """
 
-        # """
-        # global _Server_Queue
-        # while True: #What would cause this to stop? Only the program ending.
-            # line = ""
-            # while 1:
-                # char = msvcrt.getche()
-                # if char == "\r": # enter
-                    # break
+        """
+        global _Server_Queue
+        while True: #What would cause this to stop? Only the program ending.
+            line = ""
+            while 1:
+                char = msvcrt.getche()
+                if char == "\r": # enter
+                    break
 
-                # elif char == "\x08": # backspace
-                    # # Remove a character from the screen
-                    # msvcrt.putch(" ")
-                    # msvcrt.putch(char)
+                elif char == "\x08": # backspace
+                    # Remove a character from the screen
+                    msvcrt.putch(" ")
+                    msvcrt.putch(char)
 
-                    # # Remove a character from the string
-                    # line = line[:-1]
+                    # Remove a character from the string
+                    line = line[:-1]
 
-                # elif char in string.printable:
-                    # line += char
+                elif char in string.printable:
+                    line += char
 
-                # time.sleep(0.01)
+                time.sleep(0.01)
 
-            # try:
-                # _Server_Queue.put(line)
-                # if line != '':
-                    # _Logger.debug('Input from server console: %s' % line)
-            # except:
-                # pass
+            try:
+                _Server_Queue.put(line)
+                if line != '':
+                    _Logger.debug('Input from server console: %s' % line)
+            except:
+                pass
 
 class ServerActionThread(threading.Thread):
     """

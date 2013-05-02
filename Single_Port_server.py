@@ -549,13 +549,11 @@ class PlayerInput(threading.Thread): #Thread polls connections for data and pass
             _Player_Connections_Lock.release() #Now we have a list to work with.
             for player in conn_temp: #For each player, we want to try and receive on their connection then put that data in the cmd queue.
                 connection = conn_temp[player] #Get the connection
-                logger.write_line("Attempting to get data from connection associated with <%s>" % player)
                 try:
                     input_data = RAProtocol.receiveMessage(connection)
                     logger.write_line("Got the following from the client: %s" % input_data)
                 except:
                     input_data = ''
-                    logger.write_line("Did not get any data for the client this time.")
                     
                 if input_data != '': #We got something, yay
                     logger.write_line("Handling data from client")
@@ -652,20 +650,17 @@ class PlayerOutput(threading.Thread): #Thread sends players their messages from 
         
         
         while 1:
-            _Client_Connections_Lock.acquire()
-            connection_list = _Client_Connections
-            _Client_Connections_Lock.release()
             for player in _Player_OQueues: #For each person in the output queue...
-                logger.write_line("Attempting to send output to player %s" % player)
-                connection = connection_list[player] #Get this person's connection (outbound)
+                _Client_Connections_Lock.acquire()
+                connection = _Client_Connections[player] #Get this person's connection (outbound)
+                _Client_Connections_Lock.release()
                 message = ''
                 try:
                     _Player_OQueues_Lock.acquire()
                     message = _Player_OQueues[player].get()
                     _Player_OQueues_Lock.release()
-                    logger.write_line("Got a message for the player")
+                    logger.write_line("Got a message for the player %s: %s" % (player, message))
                 except:
-                    logger.write_line("Did not get a message for the player.")
                     pass
                 
                 if message != "" and message != 'Error, it appears this person has timed out.':
