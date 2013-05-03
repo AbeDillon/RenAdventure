@@ -155,6 +155,7 @@ def main():
 
 
         if messages != []:
+            logger.write_line("Got the following messages from the server: %s" % messages)
             distribute(messages)
             
         _Shutdown_Lock.acquire()
