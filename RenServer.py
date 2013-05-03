@@ -1024,7 +1024,7 @@ class LobbyThread(threading.Thread):
                         _CMD_Queue.put((player, 'look'))
                         
                     else: #This is a world we don't know about, tell the player they cannot join that world.
-                        output = "The world <%s> is not available, please try another." world
+                        output = "The world <%s> is not available, please try another." % world
                         _Player_OQueues_Lock.acquire()
                         _Player_OQueues[player].put(output)
                         _Player_OQueues_Lock.release()

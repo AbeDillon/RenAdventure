@@ -1142,7 +1142,7 @@ class BuilderThread(threading.Thread):
                             else:
                                 i()
                     else:
-                         dispatcher[ans]()
+                         dispatcher[ans]() ####FLAG NoneType object is not callable FOR ANDY
                 else:
                     deny = '\n' + textwrap.fill('%s is not part of the %s''s prototype.  Try again.' % (ans, self.type), width= 100).strip() 
             if ans == 'submit':
