@@ -31,7 +31,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.oPort = ""
         self.loggedIn = False
         self.name = ""
-        self.ping_timer = QtCore.QTimer()
+        self.pingTimer = QtCore.QTimer()
 
         self.oldStyle = True
         self.setupUi(self)
@@ -44,15 +44,15 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         self.iThread = inThread(self.iPort, self.localHost)
 
         # Connections/Signals
-        self.connect(self.ping_timer, QtCore.SIGNAL("timeout(QString)"), self.pingServer)
+        self.connect(self.pingTimer, QtCore.SIGNAL("timeout()"), self.pingServer)
         self.connect(self, QtCore.SIGNAL("mainDisplay(QString)"), self.appendDisplay, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("inputBox(QObject)"), self.fillTabs, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("artBox(QObject)"), self.appendArt, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("statusBox(QObject)"), self.appendStatus, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("playSound(QObject)"), self.playSound, QtCore.Qt.DirectConnection)
-        #self.connect(self, QtCore.SIGNAL("readySend(QString)"), self.sendMessage, QtCore.Qt.DirectConnection)
-        self.connect(self, QtCore.SIGNAL("sendOld"), self.sendMessage, QtCore.Qt.DirectConnection)
         self.connect(self, QtCore.SIGNAL("readySend(QString)"), self.sendMessage, QtCore.Qt.DirectConnection)
+        self.connect(self, QtCore.SIGNAL("sendOld"), self.sendMessage, QtCore.Qt.DirectConnection)
+        #self.connect(self, QtCore.SIGNAL("readySend(QString)"), self.sendMessage, QtCore.Qt.DirectConnection)
         self.inputBox.returnPressed.connect(self.getUserInput)
         self.connect(self.iThread, QtCore.SIGNAL("messageReceived(QString)"),  self.handleMessageReceived, QtCore.Qt.DirectConnection)
 
@@ -77,7 +77,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         return ssl_sock
 
     def handleMessageReceived(self, message):
-
+        print type(message)
         if self.oldStyle == True:
             if type(message) == 'tuple':
                 message = message[1]
@@ -139,12 +139,13 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
                self.login(line)
             else:
                 if self.oldStyle == True:
-                    message = (str(self.name), str(line), [])
+                    message = str(line)
+                    self.emit(QtCore.SIGNAL("readySend(QString)"), message)
                     #self.emit(QtCore.SIGNAL("sendOld"), message)
                 else:
-                    message = RAProtocol.command(name= str(self.name), body=str(line))
-                message = pickle.dumps(message)
-                self.emit(QtCore.SIGNAL("readySend(QString)"), message)
+                    message = RAProtocol.QtCommand(name= str(self.name), body=str(line))
+                #message = pickle.dumps(message)
+
 
     def sendMessage(self, message):
 
@@ -155,19 +156,20 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
             # convert message object from QObject to regular object so RAP can handle properly
             message = RAProtocol.command(message)
         RAProtocol.sendMessage(message, outSocket)
+
         outSocket.close()
-        self.ping_timer.start(4000)
+        self.pingTimer.start(4000)
 
     def pingServer(self):
 
         if self.oldStyle == True:
-            message = (str(self.name), '_Ping_', [])
+            message = '_ping_'
         else:
-            message = (str(self.name), '_Ping_', [])
+            message = '_ping_'
         outSocket= self.outSocket()
         RAProtocol.sendMessage(message, outSocket)
         outSocket.close()
-        self.ping_timer.start(4000)
+        self.pingTimer.start(4000)
 
     def login(self, line):
          if self.name == "":
@@ -204,7 +206,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
             self.iThread.port = self.iPort
             self.iThread.host = self.localHost
             self.iThread.start()
-            self.ping_timer.start(4000)
+            self.pingTimer.start(4000)
             self.loggedIn = True
             self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "You are now logged in...." )
 
