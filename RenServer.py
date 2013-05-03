@@ -771,6 +771,11 @@ class ServerActionThread(threading.Thread):
         global _World_list
         global _Shutdown_Lock
         global _Shutdown
+        global _Player_Loc_Lock
+        global _Player_Locations
+        global _Player_OQueues_Lock
+        global _Player_OQueues
+        
         _Shutdown_Lock.acquire()
         done = _Shutdown
         _Shutdown_Lock.release()
@@ -793,6 +798,12 @@ class ServerActionThread(threading.Thread):
                         logger.write_line("Shutting down engine %s" % engine)
                         print "Shutting down engine %s" % engine
                         this_engine.shutdown_game()
+                        text = "Shutting down game server, please close your client as it will no longer be able to reach the game."
+                        for person in _Player_OQueues:
+                            _Player_OQueues_Lock.acquire()
+                            _Player_OQueues[person].put(text)
+                            _Player_OQueue_Lock.release()
+                        
                     break
                     
                 elif "start" in command.lower(): #command syntax: start engine_name <save_state#>
@@ -832,6 +843,15 @@ class ServerActionThread(threading.Thread):
                                 engine.shutdown_game()
                                 logger.write_line("Got command to shutdown %s engine. Proceeding." % eng_name)
                                 print "Shutting down engine <%s>" % eng_name
+                                for person in _Player_Locations:
+                                    _Player_Loc_Lock.acquire()
+                                    location = _Player_Locations[person]
+                                    _Player_Loc_Lock.release()
+                                    
+                                    if location == eng_name: #This is the same name as the engine that is shutting down, tell them to close their client.
+                                        _Player_OQueues_Lock.acquire()
+                                        _Player_OQueues[person].put("The engine %s is going to shut down, please close your client as it will no longer connect to this engine." % eng_name)
+                                        _Player_OQueues_Lock.release()
                             else: #This engine is already shut down.
                                 print "This engine is already shut down <%s>" % eng_name
                         else: #This is not an engine we know of.
