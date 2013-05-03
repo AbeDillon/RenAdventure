@@ -131,14 +131,19 @@ class Engine:
             directory = 'SaveState%d' % save_num
             if not os.path.exists(directory):
                 os.makedirs(directory)
+                os.makedirs(directory + '/objects')
+                os.makedirs(directory + '/rooms')
 
                 objects = []
+                self._Objects_Lock.acquire()
                 for object in self._Objects.values():
                     objects.append(object)
+                self._Objects_Lock.release()
+
                 loader.save_objects(objects, directory) # Save all objects in the game
 
                 for coords in self._Rooms: # Save the rooms to the save state directory
-                    path = directory + 'rooms/%d_%d_%d_%d.xml' % coords
+                    path = directory + '/rooms/%d_%d_%d_%d.xml' % coords
                     loader.save_room(self._Rooms[coords], path)
 
                 self.logger.write_line("Saved game state to '%s'" % directory)
