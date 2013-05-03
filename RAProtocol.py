@@ -74,11 +74,15 @@ def decodePrefix(prefix):
 
 class QtCommand(QtCore.QObject):
 
-    def __init__(self, name=None, tags=None, body=None, parent=None):
+    def __init__(self, name=None, tags=None, body=None, art=None, status=None, tabs=None, sound=None, parent=None):
         super(QtCommand, self).__init__(parent)
         self.name = name
         self.tags = tags
         self.body = body
+        self.art = art
+        self.status = status
+        self.tabs = tabs
+        self.sound = sound
 
     # def __init__(self, commandObj):
     #     super(QtCommand, self).__init__()
