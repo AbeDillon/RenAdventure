@@ -571,7 +571,7 @@ class PlayerInput(threading.Thread):
                     _Player_OQueues_Lock.release()
                 _Player_Loc_Lock.release()
                 _User_Pings_Lock.acquire()
-                del _User_Pings[player] #This player quit, remove them from pings.
+                del _User_Pings[self.name] #This player quit, remove them from pings.
                 _User_Pings_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
