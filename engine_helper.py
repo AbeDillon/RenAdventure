@@ -536,7 +536,8 @@ def go(room, player, object, noun, tags, engine):
         new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
-        if player.items['flat pack furniture'] < 10 or 'flat pack furniture' not in player.items: #Not enough furniture
+        cnt = player.items.get('flat pack furniture', 0)
+        if cnt < 10 : #Not enough furniture
             messages.append((player.name, "You do not have enough flat pack furniture to make a room, so you can't go in to an unbuilt room."))
         else:
             room.players.remove(player.name)    # Remove player from the room
