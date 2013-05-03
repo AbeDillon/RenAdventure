@@ -205,7 +205,10 @@ def parse_command(command, tags):
                           'w': 'go west',
                           'e': 'go east',
                           'u': 'go up',
-                          'd': 'go down'}
+                          'd': 'go down',
+                          'goninjago': 'goninjago',
+                          'youmustconstructadditionalpylons': 'youmustconstructadditionalpylons',
+                          'soyouresayingtheresachance': 'soyouresayingtheresachance'}
 
     translate_verb = {'look': 'look',
                       'l': 'look',
@@ -533,7 +536,8 @@ def go(room, player, object, noun, tags, engine):
         new_room = engine._Rooms.get(object.coords, "Build")
 
     if new_room == "Build": # Room does not exist, spin off builder thread
-        if player.items['flat pack furniture'] < 10 or 'flat pack furniture' not in player.items: #Not enough furniture
+        cnt = player.items.get('flat pack furniture', 0)
+        if cnt < 10 : #Not enough furniture
             messages.append((player.name, "You do not have enough flat pack furniture to make a room, so you can't go in to an unbuilt room."))
         else:
             room.players.remove(player.name)    # Remove player from the room
@@ -930,7 +934,6 @@ def shop(room, player, object, noun, tags, engine):
         
     return messages
     
-    
 def give(room, player, object, noun, tags, engine):
     messages = []
     nouns = noun.split() # name, item, qty / name, qty, item
@@ -1016,7 +1019,43 @@ def give(room, player, object, noun, tags, engine):
             
     
     return messages
-        
+
+def goninjago(room, player, object, noun, tags, engine):
+    # Gives the player 9999 Mutagen
+    if 'mutagen' in player.items:
+        player.items['mutagen'] += 9999
+    else:
+        player.items['mutagen'] = 9999
+
+    messages = []
+    messages.append((player.name, 'GO NINJA GO - Cheat code activated'))
+
+    return messages
+
+def youmustconstructadditionalpylons(room, player, object, noun, tags, engine):
+    # Gives the player 9999 Flat Pack Furniture
+    if 'flat pack furniture' in player.items:
+        player.items['flat pack furniture'] += 9999
+    else:
+        player.items['flat pack furniture'] = 9999
+
+    messages = []
+    messages.append((player.name, 'ADDITIONAL PYLONS CONSTRUCTED - Cheat code activated'))
+
+    return messages
+
+def soyouresayingtheresachance(room, player, object, noun, tags, engine):
+    # Gives the player 9999 Likes
+    if 'like' in player.items:
+        player.items['like'] += 9999
+    else:
+        player.items['like'] = 9999
+
+    messages = []
+    messages.append((player.name, 'ABOUT ONE IN A MILLION - Cheat code activated'))
+
+    return messages
+
 ############# SCRIPT METHODS ##########
 def script_delay(player, script, engine):
     # Runs the remainder of a script after a delay

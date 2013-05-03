@@ -1,9 +1,10 @@
 __author__ = 'AYeager'
 
 from PyQt4 import QtGui, QtCore
-import sys, threading, thread, Queue
+import sys, Queue
 import socket, RAProtocol, ssl
 import Q2logging
+import RenA_UI
 
 logger = Q2logging.out_file_instance('logs/client/RenClient')
 
@@ -16,41 +17,23 @@ _In_Queue = Queue.Queue()
 
 
 
-#+++++++++++++++++++++UI OBJECTS+++++++++++++++++++++++++++
-
-class RenConsole(QtGui.QDialog):
-
-    def __init__(self, parent=None):
-        super(RenConsole, self).__init__(parent)
-        self.setWindowTitle("A Ren Adventure")
-        self.setGeometry(200,50,640,480)
-
-        #self.pallette = QtGui.QPalette("fg=green, bg = black")
-        # Main Display area
-        self.mainDisplay = QtGui.QTextEdit()
-        self.mainDisplay.setAcceptRichText(False)
-        self.mainDisplay.setAcceptDrops(False)
-        self.mainDisplay.setFontFamily('consolas')
-
-        # input area
-        self.inputBox = QtGui.QLineEdit()
-        #self.inputBox.setPalette(self.pallette)
-        #self.connect(self.inputBox, QtCore.SIGNAL("returnPressed()"), self.sendInput )
-
-        # Build Layout
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.mainDisplay)
-        layout.addWidget(self.inputBox)
-        self.setLayout(layout)
+#+++++++++++++++++++++UI OBJECT+++++++++++++++++++++++++++
+class renConsole(QtGui.QMainWindow, RenA.Ui_MainWindow):
+    def __int__(self, parent=None):
+        super(renConsole, self).__init__(parent)
+        self.setupUi()
 
 
 
 #++++++++LOGIC OBJECTS+++++++++++++++++++++++++++++++
-class InThread(threading.Thread):
-    def __init__(self):
+class inThread(QtCore.QThread):
+    def __init__(self, parent=None):
+        super(inThread, self).__init__(parent)
+
+    def run(self):
         pass
 
-class OutThread(threading.Thread):
+class OutThread(QtCore.QThread):
     def __init__(self):
         pass
 
@@ -158,7 +141,7 @@ def main():
 
 
     ports = login()
-    console.mainDisplay.append(str(ports))
+    #console.mainDisplay.append(str(ports))
 
 
 
@@ -168,19 +151,19 @@ def main():
 if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
-    console = RenConsole()
-    console.mainDisplay.append('\n'*15+'Welcome to the Ren Adventure!!'+ '\n'*15)
+    console = renConsole()
+    #console.self.mainDisplay.append('\n'*15+'Welcome to the Ren Adventure!!'+ '\n'*15)
     timer = QtCore.QTimer(console)
     timer.start(35)
-
+    #console.mainDisplay.append('blah blah')
     #Signal Connections
     timer.timeout.connect(printMessage)
-    console.inputBox.returnPressed.connect(playerInput)
+    #console.inputBox.returnPressed.connect(playerInput)
 
     console.show()
-    console.inputBox.setFocus()
-    while 1:
-        main()
+    #console.self.inputBox.setFocus()
+    #while 1:
+        #main()
 
     sys.exit(app.exec_())
 

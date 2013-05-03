@@ -1,4 +1,5 @@
 __author__ = 'ADillon, MNutter'
+#Large singleport server is designed to use the single input port however it will use more threads for data send/receive
 
 import socket, sys
 import thread, threading, Queue
@@ -6,13 +7,14 @@ import time, random
 import RAProtocol
 import engine_classes
 import os
-#import msvcrt
+import msvcrt
 import string
 import loader
 import ssl
 import Q2logging
 import sense_effect_filters
 import engine
+import copy
 
 logger = Q2logging.out_file_instance('logs/server/RenServer')
 
@@ -47,16 +49,15 @@ _Threads_Lock = threading.RLock()
 _InThreads = {}
 _OutThreads = {}
 
-_Player_Connections = {} #player_name -> conn #Incoming
-_Player_Connections_Lock = threading.RLock()
-
-_Client_Connections = {} #Outgoing
-_Client_Connections_Lock = threading.RLock() 
+_Shutdown = False #Used to run server until shutdown.
+_Shutdown_Lock = threading.RLock() 
 
 #Tracking players logged in
 _Logged_in = [] #List with player names
 
 _Banned_names = []
+
+_Server_Queue = Queue.Queue() #Set up a queue for commands to the server.
 
 _User_Pings = {}
 _User_Pings_Lock = threading.RLock()
@@ -93,6 +94,9 @@ def main():
 
     global _Player_States
     global _Player_States_Lock
+    
+    global _Shutdown
+    global _Shutdown_Lock
 
     login_thread = Login_Thread()
 
@@ -116,21 +120,28 @@ def main():
     print "Lobby message thread spawned"
     logger.write_line("Lobby message thread spawned")
     
-    pi = PlayerInput()
-    logger.write_line("Player input thread spawned.")
-    pi.start()
     
-    po = PlayerOutput()
-    logger.write_line("Player output thread spawned.")
-    po.start()
+    rlt = ReadLineThread()
+    rlt.start()
+    print "Read Line thread for server spawned"
+    logger.write_line("Read line thread for server spawned")
+    
+    sat = ServerActionThread()
+    sat.start()
+    print "Server Action thread spawned"
+    logger.write_line("Server Action thread spawned")
+    
+       
     
     print "Entering main loop..."
     logger.write_line('Entering main loop...')
-    #loop_cnt = 0
-    while 1:
+    _Shutdown_Lock.acquire()
+    done = _Shutdown
+    _Shutdown_Lock.release()
+    while not done:
         command = None
         try:
-            command = _CMD_Queue.get_nowait()
+            command = _CMD_Queue.get()
             print "player: " + command[0] + " command: " + command[1]
             line = '<player>: '+command[0]+' <command>: '+command[1]
             logger.write_line('Processing Command from Queue: %s' % line)
@@ -139,14 +150,17 @@ def main():
 
         if command != None:
             game_engine.put_commands([command])
-
+        time.sleep(0.50) #Wait between putting command in engine and getting message?
         messages = game_engine.get_messages()
 
-        if messages != []:
-            distribute(messages)
 
-        #print "loop count = " + str(loop_cnt)
-        #loop_cnt += 1
+        if messages != []:
+            logger.write_line("Got the following messages from the server: %s" % messages)
+            distribute(messages)
+            
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
         time.sleep(0.05)
 
     
@@ -154,11 +168,15 @@ def distribute(messages):
     """
 
     """
-    _Player_OQueues_Lock.acquire()
+    global _Player_OQueues_Lock
+    global _Player_OQueues
+    global _Player_Loc_Lock
+    global _Player_Locations
+    logger.write_line("Got %d messages from the engine." % len(messages))
     for message in messages:
+        
         player = message[0]
         text = message[1]
-        
         if player in _Player_OQueues:
             _Player_Loc_Lock.acquire()
             if _Player_Locations[player] != 'lobby':
@@ -166,10 +184,6 @@ def distribute(messages):
             else:
                 pass
             _Player_Loc_Lock.release()
-        else:
-            pass
-
-    _Player_OQueues_Lock.release()
     
     
     
@@ -200,6 +214,10 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         global _Player_Data_Lock
         global _Player_Connections
         global _Player_Connections_Lock
+        global _Threads_Lock
+        global _Threads
+        global _Shutdown
+        global _Shutdown_Lock
         
         # Create a socket to listen for new connections
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -214,13 +232,16 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         sock.listen(1000)
         print "Login socket listening"
         logger.write_line('Login socket listening')
-        while 1:
             # wait to accept a connection
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done:
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             logger.write_line('Connected with '+str(addr[0])+':'+str(addr[1]))
-            connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) 
-            start_dialogue = RAProtocol.receiveMessage(connstream)
+            #connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) 
+            start_dialogue = RAProtocol.receiveMessage(conn)
             logger.write_line("Got start_dialogue: %s" % start_dialogue) ###DEBUG
             a_string = start_dialogue.split() #Split on space
             player_name = a_string[0]
@@ -229,20 +250,31 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             if flag == '_login_': #Try and log them in
                 print "Player wishes to log in as <%s>, verifying.." % player_name
                 logger.write_line("Player wishes to log in as <%s>, verifying..." % player_name)
-                proceed = self.verify_player(player_name, player_pass, connstream)
-                if proceed: #This is a valid player, we have a registration for them.
-                    _Player_Connections_Lock.acquire()
-                    _Player_Connections[player_name] = connstream
-                    _Player_Connections_Lock.release() #We now have this player in the game.
+                proceed = self.verify_player(player_name, player_pass, conn)
+                if proceed: #Valid player, with registration data
+                    it = PlayerInput(player_name, conn) #Input reading thread for player_name using conn.
+                    it.start() #Begin execution of in thread.
+                    
+                    _Threads_Lock.acquire()
+                    _Threads.append(it)
+                    _Threads_Lock.release()
+
                     
             elif flag == '_register_': #Attempt to register them based on the data
                 print "Player wishes to register as <%s>, proceeding.." % player_name
                 logger.write_line("Player wishes to register as <%s>, proceeding..." % player_name)
                 proceed = self.register_player(player_name, player_pass, conn)
                 if proceed: #Valid player, we have their registration now.
-                    _Player_Connections_Lock.acquire()
-                    _Player_Connections[name] = connstream
-                    _Player_Connections_Lock.release()
+                    it = PlayerInput(player_name, conn) #Input reading thread for player_name using conn.
+                    it.start() #Begin execution of in thread.
+                    
+                    _Threads_Lock.acquire()
+                    _Threads.append(it)
+                    _Threads_Lock.release()
+                    
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
                 
             time.sleep(0.05)
             
@@ -257,8 +289,9 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         global _World_list
         global _Player_Data
         global _Player_Data_Lock
-        global _Client_Connections
-        global _Client_Connections_Lock
+        global _Threads_Lock
+        global _Threads
+        
         path = 'login_file/%s.txt' % name 
         logger.write_line("Verifying player credentials")
         player_affil = {} #Current player's affiliation data.
@@ -295,6 +328,7 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
                         items = person.items
                         fih = person.fih
                         vote_history = person.vote_history
+
                     except:
                         logger.write_line("Error loading player file %s, file does not exist" % player_path)
                         print "Error loading player file %s, file does not exist" % player_path
@@ -342,6 +376,9 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
                     line += "\t"+world+"\r\n"
                 
                 oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
+                _Player_OQueues_Lock.acquire()
+                _Player_OQueues[name] = oqueue
+                _Player_OQueues_Lock.release()
                 line = "The following people are in the lobby: \r\n"
                 _Player_Loc_Lock.acquire()
                 for person in _Player_Locations:
@@ -361,18 +398,16 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
                 ip = RAProtocol.receiveMessage(connection) # Get their IP from the client and make an outgoing connection with it.
                 logger.write_line("Received the following IP from the client: %s" % ip)
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
                 try:
-                    ssl_sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
+                    sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
                     logger.write_line("Connected to socket.")
                     RAProtocol.sendMessage("_out_conn_made_", connection)
-                    logger.write_line("Sent connection_made response to client.")
-                    _Client_Connections_Lock.acquire()
-                    logger.write_line("Acquired _Client_Connections_Lock")
-                    _Client_Connections[name] = ssl_sock #Add the outbound socket to the outbound connections list.
-                    logger.write_line("Stored the ssl_socket connection in the dictionary under %s" % name)
-                    _Client_Connections_Lock.release()
-                    logger.write_line("Released _Client_Connections_Lock")
+                    ot = PlayerOutput(name, sock) #Output thread for this player
+                    ot.start()
+                    
+                    _Threads_Lock.acquire()
+                    _Threads.append(ot)
+                    _Threads_Lock.release()
                     
                 except: 
                     RAProtocol.sendMessage("_connection_fail_", connection)
@@ -380,9 +415,10 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
                     
                 
                 
-                _Player_OQueues_Lock.acquire()
-                _Player_OQueues[name] = oqueue
-                _Player_Loc_Lock.acquire()
+                _Players_Lock.acquire()
+                _Players.append(name)
+                _Players_Lock.release()
+                
                 
                 
                 return True #Player has been logged in, et cetera if they made it this far.
@@ -408,7 +444,10 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         global _Player_Data
         global _User_Pings_Lock
         global _User_Pings
-        global _Client_Connections_Lock
+        global _Threads_Lock
+        global _Threads
+        global _Players_Lock
+        global _Players
         
     
         path = 'login_file/%s.txt' % name
@@ -427,7 +466,7 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         temp_affil = RAProtocol.receiveMessage(connection) #Get their affiliation
         a_string = temp_affil.split()
         if len(a_string) == 10: #Affiliation data
-            logger.write_line("Received a user affiliation.")
+            logger.write_line("Received a user affiliation, confirmed.")
             cur_person = ''
             for i in range(0, len(a_string)):
                 if i % 2 == 1: #This is an odd numbered cell, and as such is an affinity.
@@ -439,6 +478,7 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             fin = open(path, 'w')
             fin.write(password) #Save the player file
             fin.close()
+            logger.write_line("Player login file created")
             
             logged_in = True
             _Logged_in.append(name)
@@ -451,6 +491,9 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             _Player_Data_Lock.release()
             person = engine_classes.Player(name, (0,0,1,0), (0,0,1,0), player_affil) #Make this person
             
+            loader.save_player(person)
+            logger.write_line("Saving newly created player %s" % name)
+            
         else:
             RAProtocol.sendMessage("_reject_", connection)
             logger.write_line("User login attempt rejected")
@@ -459,6 +502,7 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
         if logged_in:
             _User_Pings_Lock.acquire()
             _User_Pings[name] = time.time()
+            logger.write_line("Putting user into _User_Pings")
             _User_Pings_Lock.release()
             _Player_Data_Lock.acquire()
             _Player_Data[name].append(player_affil) #This may be {}, but we check for that later.
@@ -467,16 +511,22 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             _Player_Data[name].append(fih) #30 if not loaded as otherwise.
             _Player_Data[name].append(vote_history) #{} if not loaded as otherwise.
             _Player_Data_Lock.release()
+            logger.write_line("Finished adding additional data to _Player_Data[%s]" % name)
             
             
             # *create player state and add to _Player_States (to be added)
             # add new player I/O queues
             oqueue = Queue.Queue()
+            _Player_OQueues_Lock.acquire()
+            _Player_OQueues[name] = oqueue
+            _Player_OQueues_Lock.release()
+            
             line = "\r\n"
             for world in _World_list:
                 line += "\t"+world+"\r\n"
             
             oqueue.put("Welcome to the RenAdventure lobby!\r\nThe following worlds are available (type: join name_of_world):"+line) ###TEST
+            logger.write_line("Sending welcome message")
             line = "The following people are in the lobby: \r\n"
             _Player_Loc_Lock.acquire()
             for person in _Player_Locations:
@@ -495,23 +545,21 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             ip = RAProtocol.receiveMessage(connection) # Get their IP from the client and make an outgoing connection with it.
             logger.write_line("Received the following IP: %s" % ip)
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem') 
             
             try:
                 
-                ssl_sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
+                sock.connect((ip, 8888)) #Connect to client on port 8888 for sending messages
                 logger.write_line("Connection to socket on port 8888 made.")
-                RAProtocol.sendMessage("_out_conn_made_", ssl_sock)
-                _Client_Connections_Lock.acquire()
-                _Client_Connections[name] = ssl_sock #Add the outbound socket to the outbound connections list.
-                _Client_Connections_Lock.release()
+                RAProtocol.sendMessage("_out_conn_made_", connection)
+                ot = PlayerOutput(name, sock)
+                ot.start()
                 
-                _Player_OQueues_Lock.acquire()
-                _Player_OQueues[name] = oqueue
-                _Player_Loc_Lock.acquire()
+                _Threads_Lock.acquire()
+                _Threads.append(ot)
+                _Threads_Lock.release()
                 
             except:
-                RAProtocol.sendMessage("_conn_failure_", ssl_sock)
+                RAProtocol.sendMessage("_conn_failure_", connection)
                 logger.write_line("Failed to connect.")
             
             return True 
@@ -524,42 +572,33 @@ class Login_Thread(threading.Thread): #Thread handles getting client connections
             return False
             
             
-class PlayerInput(threading.Thread): #Thread polls connections for data and passes it to engine. FAILED. Need new one for each?
-    def __init__(self):
+class PlayerInput(threading.Thread): #Thread polls connections for data and passes it to engine.
+    def __init__(self, name, connection):
         threading.Thread.__init__(self)
-        
+        self.name = name
+        self.connection = connection
         
     def run(self):
-        global _Player_Connections
-        global _Player_Connections_Lock
-        global _CMD_Queue
-        global _Logged_in
-        global _InThreads
-        global _OutThreads
-        global _Logger
-        global _User_Pings
-        global game_engine
-        global _Player_Loc_Lock
-        global _Player_Locations
-        global _Lobby_Queue
-        
-        while 1:
-            _Player_Connections_Lock.acquire()
-            conn_temp = _Player_Connections
-            _Player_Connections_Lock.release() #Now we have a list to work with.
-            for player in conn_temp: #For each player, we want to try and receive on their connection then put that data in the cmd queue.
-                connection = conn_temp[player] #Get the connection
-                logger.write_line("Attempting to get data from connection associated with <%s>" % player)
-                try:
-                    input_data = RAProtocol.receiveMessage(connection)
-                    logger.write_line("Got the following from the client: %s" % input_data)
-                except:
-                    input_data = ''
-                    logger.write_line("Did not get any data for the client this time.")
-                    
-                if input_data != '': #We got something, yay
-                    logger.write_line("Handling data from client")
-                    self.handle_input(player, input_data)
+        global _Shutdown
+        global _Shutdown_Lock
+        logger.write_line("Beginning input thread for %s" % self.name)
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done:
+
+            try:
+                input_data = RAProtocol.receiveMessage(self.connection)
+                logger.write_line("Got the following from the client %s: %s" % (self.name, input_data))
+            except:
+                input_data = ''
+                
+            if input_data != '': #We got something, yay
+                self.handle_input(self.name, input_data)
+                
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
                     
             time.sleep(0.05)
                     
@@ -579,8 +618,9 @@ class PlayerInput(threading.Thread): #Thread polls connections for data and pass
         global _Lobby_Queue
         global _Client_Connections_Lock
         global _Client_Connections
+        global _Player_OQueues
+        global _Player_OQueues_Lock
         
-        logger.write_line("Handling message: %s" % message)
         if message != '_ping_':
 
             # add it to the queue
@@ -603,29 +643,26 @@ class PlayerInput(threading.Thread): #Thread polls connections for data and pass
                         pass
                         
 
-                conn.close()
-
             elif message == 'quit':#User is quitting, we can end this thread
                 _Logged_in.remove(player)
-                logger.write_line('Removing <%s> from _Logged_in' % name)
+                logger.write_line('Removing <%s> from _Logged_in' % player)
+                print "Player <%s> quitting." % player
                 game_engine._Characters_Lock.acquire()
                 if player in game_engine._Characters: #This player has been added to the game
                     game_engine.remove_player(player) #Remove player existence from gamestate.
                 game_engine._Characters_Lock.release()
                 _Player_Loc_Lock.acquire()
-                if _Player_Locations[player] == 'lobby': #This person is in the lobby, tell everyone they quit.
-                    _Player_OQueues_Lock.acquire()
+                loc = _Player_Locations[player]
+                _Player_Loc_Lock.release()
+                if loc == 'lobby': #This person is in the lobby, tell everyone they quit.
                     for person in _Player_OQueues:
                         if person != player: #This is not the person quitting, tell them who quit.
+                            _Player_OQueues_Lock.acquire()
                             _Player_OQueues[person].put("%s quit."%player)
-                    _Player_OQueues_Lock.release()
-                _Player_Loc_Lock.release()
-                _Player_Connections_Lock.acquire()
-                del _Player_Connections[player]
-                _Player_Connections_Lock.release()
-                _Client_Connections_Lock.acquire()
-                del _Client_Connections[player]
-                _Client_Connections_Lock.release()
+                            _Player_OQueues_Lock.release()
+                _User_Pings_Lock.acquire()
+                del _User_Pings[player] #This player quit, remove them from pings.
+                _User_Pings_Lock.release()
 
         elif message == '_ping_': #Keepalive ping
             _User_Pings_Lock.acquire()
@@ -635,47 +672,52 @@ class PlayerInput(threading.Thread): #Thread polls connections for data and pass
             
 
 class PlayerOutput(threading.Thread): #Thread sends players their messages from queue.
-    def __init__(self):
+    def __init__(self, name, connection):
         """
         queue:  The queue of messages to be sent to the player
         port:   The port that the player is listening on
         name:   The name of the player
         """
         threading.Thread.__init__(self)
+        self.name = name
+        self.connection = connection
 
         
     def run(self):
-        global _Client_Connections_Lock
-        global _Client_Connections
+
         global _Player_OQueues
         global _Player_OQueues_Lock
+        global _Shutdown
+        global _Shutdown_Lock
         
-        
-        while 1:
-            _Client_Connections_Lock.acquire()
-            connection_list = _Client_Connections
-            _Client_Connections_Lock.release()
-            for player in _Player_OQueues: #For each person in the output queue...
-                logger.write_line("Attempting to send output to player %s" % player)
-                connection = connection_list[player] #Get this person's connection (outbound)
-                message = ''
-                try:
-                    _Player_OQueues_Lock.acquire()
-                    message = _Player_OQueues[player].get()
-                    _Player_OQueues_Lock.release()
-                    logger.write_line("Got a message for the player")
-                except:
-                    logger.write_line("Did not get a message for the player.")
-                    pass
+        logger.write_line("Beginning output thread for <%s>" % self.name)
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done:
+
+            try:
+                _Player_OQueues_Lock.acquire()
+                message = _Player_OQueues[self.name].get()
+                _Player_OQueues_Lock.release()
+                logger.write_line("Got a message for the player %s: %s" % (self.name, message))
+            except:
+                logger.write_line("No messages for %s found in queue" % self.name)
+                pass
+            
+            if message != "" and message != 'Error, it appears this person has timed out.':
+                print message
+                logger.write_line('Sending message to <%s>: "%s"'%(self.name, message))
+                RAProtocol.sendMessage(message, self.connection)
                 
-                if message != "" and message != 'Error, it appears this person has timed out.':
-                    print message
-                    logger.write_line('Sending message to <%s>: "%s"'%(player, message))
-                    RAProtocol.sendMessage(message, connection)
-                    
-                elif message == 'Error, it appears this person has timed out.':
-                    logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%player)
-                    RAProtocol.sendMessage(message, connection)
+            elif message == 'Error, it appears this person has timed out.':
+                logger.write_line('Failed to either connect or send a message to <%s> after timeout.'%player)
+                RAProtocol.sendMessage(message, self.connection)
+                
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
+
             time.sleep(0.05)
             
 
@@ -690,11 +732,17 @@ class PlayerTimeout(threading.Thread): #Thread for checking if and handling when
         global _Player_OQueues_Lock
         global _Player_OQueues
         global game_engine
+        global _Shutdown
+        global _Shutdown_Lock
         
         timeout = 15
         to_rem = []
         
-        while 1:
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        
+        while not done:
             _User_Pings_Lock.acquire()
             for person in to_rem:
                 del _User_Pings[person]
@@ -740,9 +788,129 @@ class PlayerTimeout(threading.Thread): #Thread for checking if and handling when
                         pass
                     _Player_OQueues_Lock.release()
             _User_Pings_Lock.release()
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
             time.sleep(0.05)
 
+class ReadLineThread(threading.Thread):
+    """
 
+    """
+
+    def run(self):
+        """
+
+        """
+        global _Server_Queue
+        while True: #What would cause this to stop? Only the program ending.
+            line = ""
+            while 1:
+                char = msvcrt.getche()
+                if char == "\r": # enter
+                    break
+
+                elif char == "\x08": # backspace
+                    # Remove a character from the screen
+                    msvcrt.putch(" ")
+                    msvcrt.putch(char)
+
+                    # Remove a character from the string
+                    line = line[:-1]
+
+                elif char in string.printable:
+                    line += char
+
+                time.sleep(0.01)
+
+            try:
+                _Server_Queue.put(line)
+                if line != '':
+                    _Logger.debug('Input from server console: %s' % line)
+            except:
+                pass
+
+class ServerActionThread(threading.Thread):
+    """
+
+    """
+    def run(self):
+        """
+
+        """
+        global _Server_Queue
+        global _CMD_Queue
+        global game_engine
+        global _World_list
+        
+        done = False
+        while not done:
+            command = ''
+            try:
+                command = _Server_Queue.get()
+            except:
+                pass
+
+            if command != '': #We got something
+                logger.write_line("Got server command: %s" % command)
+                if command.lower() == 'quit':
+                    print 'Got quit, shutting down server and all engines.'
+                    done = True
+                    for engine in _World_list: #For each engine...
+                        this_engine = _World_list[engine] #Get the engine.
+                        logger.write_line("Shutting down engine %s" % engine)
+                        print "Shutting down engine %s" % engine
+                        this_engine.shutdown_game()
+                    break
+                    
+                elif "start" in command.lower(): #command syntax: start engine_name <save_state#>
+                    cmd = command.split() #Split it up
+                    save_state = None
+                    if len(cmd) > 3 or len(cmd) < 2: #We got too much or too few
+                        print "Error, command syntax for start is: start engine_name [save_state]"
+                    else:
+                        if cmd[0].lower() == 'start': #Command is a start command, we will start an engine.
+                            eng_name = cmd[1] #Get engine name.
+                            if len(cmd) == 3: #We got a save state too.
+                                save_state = cmd[2]
+                            if eng_name in _World_list: #This is a valid engine to start up.
+                                engine = _World_list[eng_name] #Get the engine
+                                if not engine._IsRunning: #The engine has not been started yet, we can start it.
+                                    if save_state != None: #We got a value for this, start the engine with this number
+                                        logger.write_line("Starting engine %s with save state number %s" % (eng_name, save_state))
+                                        print "Starting engine %s with save state number %s" % (eng_name, save_state)
+                                        engine.init_game(int(save_state))
+                                    else: #We did not get a save state
+                                        engine.init_game() #Start without save state.
+                                        logger.write_line("Starting engine %s without save state" % eng_name)
+                                        print "Starting engine %s without save state" % eng_name
+                                else: #This engine is already running, we don't want to start it again.
+                                    print "Engine %s is already running, you cannot start it again." % eng_name
+                                    logger.write_line("Starting of engine %s declined, engine already running" % eng_name)
+                                
+                elif "stop" in command.lower(): #command syntax: stop engine_name
+                    cmd = command.split()
+                    if len(cmd) > 2 or len(cmd) < 2: #We did not get enough
+                        print "Error, command syntax for stop is: stop engine_name"
+                    else: #Valid
+                        eng_name = cmd[1] #Get the name of it
+                        if eng_name in _World_list: #This is a valid engine we can shut down
+                            engine = _World_list[eng_name]
+                            if engine._IsRunning:
+                                engine.shutdown_game()
+                                logger.write_line("Got command to shutdown %s engine. Proceeding." % eng_name)
+                                print "Shutting down engine <%s>" % eng_name
+                            else: #This engine is already shut down.
+                                print "This engine is already shut down <%s>" % eng_name
+                        else: #This is not an engine we know of.
+                            print "Unrecognized engine name <%s>" % eng_name
+                    
+             
+                else: #No other commands presently.
+                    print 'Got command: %s' % command
+            time.sleep(0.05)
+        return True
+                
 class NPCSpawnThread(threading.Thread):
     """
     This thread spawns NPCs on the map every X-seconds based on some NPC-spawning rules
@@ -844,8 +1012,14 @@ class LobbyThread(threading.Thread):
         global _Player_Data
         global _Player_Data_Lock
         global _CMD_Queue
+        global _Shutdown_Lock
+        global _Shutdown
         
-        while 1:
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        
+        while not done:
             if not _Lobby_Queue.empty():
                 msg = _Lobby_Queue.get()
                 if "join" in msg[1]: #Syntax format: <player>: join (worldname)
@@ -919,11 +1093,18 @@ class LobbyThread(threading.Thread):
                             
                     _Player_OQueues_Lock.release()
                     
+                _Shutdown_Lock.acquire()
+                done = _Shutdown
+                _Shutdown_Lock.release()
+                    
                 time.sleep(0.05)
                 
             else:
+                _Shutdown_Lock.acquire()
+                doen = _Shutdown
+                _Shutdown_Lock.release()
                 time.sleep(0.05)
             
-
+            
 if __name__ == "__main__":
     main()
