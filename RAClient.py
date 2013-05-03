@@ -78,32 +78,27 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
     def handleMessageReceived(self, message):
 
-        # Message is Pickeled - Unpickle
-        print message
-        #message = pickle.dumps(message)
-       # print "unpickled message\n", message
-
         if self.oldStyle == True:
-            print message
+            if type(message) == 'tuple':
+                message = message[1]
             self.emit(QtCore.SIGNAL("mainDisplay(QString)"), message )
         else:
-
             if hasattr(message, "tags"):
                 if "mainDisplay" in message.tags:
                     self.emit(QtCore.SIGNAL("mainDisplay(QString)"), message.body )
                 if "inputBox" in message.tags:
                     self.emit(QtCore.SIGNAL("inputBox(RAProtocol.command)"), message)
                 if "artBox" in message.tags:
-                    self.emit(QtCore.SIGNAL("artBox(RAProtocol.command)"), message)
+                    self.emit(QtCore.SIGNAL("artBox(QString)"), message.art)
                 if "statusBox" in message.tags:
-                    self.emit(QtCore.SIGNAL("statusBox(RAProtocol.command)"), message)
+                    self.emit(QtCore.SIGNAL("statusBox(QString)"), message.status)
                 if "playSound" in message.tags:
-                    self.emit(QtCore.SIGNAL("playSound(RAProtocol.command)"), message)
-                if "login" in message.tags:
-                    if message.body == "accepted":
-                        self.loggedIn = True
-                    else:
-                        self.emit(QtCore.SIGNAL("mainDisplay(QString)"), 'Log-in failed.\nEnter User Name.')
+                    self.emit(QtCore.SIGNAL("playSound"), message.sound)
+                # if "login" in message.tags:
+                #     if message.body == "accepted":
+                #         self.loggedIn = True
+                #     else:
+                #         self.emit(QtCore.SIGNAL("mainDisplay(QString)"), 'Log-in failed.\nEnter User Name.')
 
 
 
@@ -115,6 +110,9 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
     def appendDisplay(self, message):
 
         self.mainDisplay.append(message)
+        self.mainDisplay.moveCursor(QtGui.QTextCursor.End)
+        self.inputBox.setFocus()
+
 
     def fillTabs(self):
         pass
@@ -124,7 +122,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
     def appendArt(self, message):
         self.artBox.clear()
-        self.artBox.append(message.body)
+        self.artBox.append(message.art)
 
     def playSound(self):
         pass
@@ -151,7 +149,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
     def sendMessage(self, message):
 
         message = str(message)
-        message = pickle.loads(message)
+        #message = pickle.loads(message)
         outSocket = self.outSocket()
         if self.oldStyle == False:
             # convert message object from QObject to regular object so RAP can handle properly

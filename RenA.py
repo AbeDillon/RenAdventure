@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RenA.ui'
 #
-# Created: Wed May 01 19:49:47 2013
+# Created: Fri May 03 10:45:16 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -150,7 +150,7 @@ class Ui_mainDialog(object):
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/icons/app-icon.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         mainDialog.setWindowIcon(icon)
         self.mainDisplay = QtGui.QTextEdit(mainDialog)
-        self.mainDisplay.setGeometry(QtCore.QRect(0, 0, 611, 541))
+        self.mainDisplay.setGeometry(QtCore.QRect(0, 0, 611, 531))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
