@@ -21,6 +21,9 @@ _Player_Loc_Lock = threading.RLock() #Lock for player locations dict. ###IP
 
 _Host = socket.gethostbyname(socket.gethostname()) # replace with actual host address
 
+_Shutdown = False
+_Shutdown_Lock = threading.RLock()
+
 _CMD_Queue = Queue.Queue() # Queue of NPC and Player commands
 
 _Lobby_Queue = Queue.Queue() #Queue of Player chatting/commands for lobby? ###IP
@@ -90,6 +93,8 @@ def main():
 
     global _Player_States
     global _Player_States_Lock
+    global _Shutdown
+    global _Shutdown_Lock
 
     login_thread = Login()
 
@@ -133,7 +138,10 @@ def main():
     print "Entering main loop..."
     logger.write_line('Entering main loop...')
     #loop_cnt = 0
-    while 1:
+    _Shutdown_Lock.acquire()
+    done = _Shutdown
+    _Shutdown_Lock.release()
+    while not done:
         command = None
         try:
             command = _CMD_Queue.get_nowait()
@@ -153,6 +161,10 @@ def main():
 
         #print "loop count = " + str(loop_cnt)
         #loop_cnt += 1
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        
         time.sleep(0.05)
 
 def distribute(messages):
@@ -213,7 +225,8 @@ class Login(threading.Thread):
         waits for new connections, then
         handles new connections
         """
-        global _Logger
+        global _Shutdown
+        global _Shutdown_Lock
         # Create a socket to listen for new connections
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print "Login Socket created"
@@ -227,13 +240,19 @@ class Login(threading.Thread):
         sock.listen(10)
         print "Login socket listening"
         logger.write_line('Login socket listening')
-        while 1:
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done:
             # wait to accept a connection
             conn, addr = sock.accept()
             print 'Connected with ' + addr[0] + ':' + str(addr[1])
             logger.write_line('Connected with '+str(addr[0])+':'+str(addr[1]))
             connstream = ssl.wrap_socket(conn, certfile = 'cert.pem', server_side = True) 
             thread.start_new_thread(self.addPlayer, (connstream, addr))
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
             time.sleep(0.05)
 
     def addPlayer(self, conn, addr):
@@ -457,7 +476,8 @@ class PlayerInput(threading.Thread):
         Listen for player input and push it onto the queue
         """
         global _InThreads
-        global _Logger
+        global _Shutdown
+        global _Shutdown_Lock
         # Create Socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -465,8 +485,12 @@ class PlayerInput(threading.Thread):
 
         # Listen for connection
         sock.listen(10)
+        
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
 
-        while 1:
+        while not done:
             if not _InThreads[self.name]: #This input thread no longer needs to run
                 break
             else:
@@ -477,6 +501,10 @@ class PlayerInput(threading.Thread):
                 
                 connstream = ssl.wrap_socket(conn, certfile='cert.pem', server_side=True)
                 thread.start_new_thread(self.handleInput, (connstream, ))
+                _Shutdown_Lock.acquire()
+                done = _Shutdown
+                _Shutdown_Lock.release()
+                
                 time.sleep(0.05)
         if not _InThreads[self.name]: #We stopped the loop..
             print 'Input thread for player <%s> ending' % self.name
@@ -564,10 +592,15 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
         global _Player_OQueues_Lock
         global _Player_OQueues
         global game_engine
+        global _Shutdown
+        global _Shutdown_Lock
 
         timeout = 15
         to_rem = []
-        while 1:
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done:
             _User_Pings_Lock.acquire()
             for person in to_rem:
                 del _User_Pings[person]
@@ -599,6 +632,9 @@ class PlayerTimeout(threading.Thread): #Thread to handle players who time-out
                     _Player_OQueues[player].put('Error, it appears this person has timed out.')
                     _Player_OQueues_Lock.release()
             _User_Pings_Lock.release()
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
             time.sleep(0.05)
 
 class PlayerOutput(threading.Thread):
@@ -685,7 +721,12 @@ class ReadLineThread(threading.Thread):
 
         """
         global _Server_Queue
-        while True: #What would cause this to stop? Only the program ending.
+        global _Shutdown_Lock
+        global _Shutdown
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        while not done: #What would cause this to stop? Only the program ending.
             line = ""
             while 1:
                 char = msvcrt.getche()
@@ -711,6 +752,10 @@ class ReadLineThread(threading.Thread):
                     _Logger.debug('Input from server console: %s' % line)
             except:
                 pass
+                
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
 
 class ServerActionThread(threading.Thread):
     """
@@ -724,8 +769,11 @@ class ServerActionThread(threading.Thread):
         global _CMD_Queue
         global game_engine
         global _World_list
-        
-        done = False
+        global _Shutdown_Lock
+        global _Shutdown
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
         while not done:
             command = ''
             try:
@@ -737,7 +785,9 @@ class ServerActionThread(threading.Thread):
                 logger.write_line("Got server command: %s" % command)
                 if command.lower() == 'quit':
                     print 'Got quit, shutting down server and all engines.'
-                    done = True
+                    _Shutdown_Lock.acquire()
+                    _Shutdown = True
+                    _Shutdown_Lock.release()
                     for engine in _World_list: #For each engine...
                         this_engine = _World_list[engine] #Get the engine.
                         logger.write_line("Shutting down engine %s" % engine)
@@ -790,6 +840,9 @@ class ServerActionThread(threading.Thread):
              
                 else: #No other commands presently.
                     print 'Got command: %s' % command
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
             time.sleep(0.05)
         return True
 
@@ -894,8 +947,14 @@ class LobbyThread(threading.Thread):
         global _Player_Data
         global _Player_Data_Lock
         global _CMD_Queue
+        global _Shutdown_Lock
+        global _Shutdown
         
-        while 1:
+        _Shutdown_Lock.acquire()
+        done = _Shutdown
+        _Shutdown_Lock.release()
+        
+        while not done:
             if not _Lobby_Queue.empty():
                 msg = _Lobby_Queue.get()
                 if "join" in msg[1]: #Syntax format: <player>: join (worldname)
@@ -976,12 +1035,14 @@ class LobbyThread(threading.Thread):
                             
                     _Player_OQueues_Lock.release()
                     
-                time.sleep(0.05)
-                
-            else:
-                time.sleep(0.05)
+            _Shutdown_Lock.acquire()
+            done = _Shutdown
+            _Shutdown_Lock.release()
+           
+            time.sleep(0.05)
             
 
 if __name__ == "__main__":
     main()
+    raw_input("Game shutdown, please close the program.")
 
