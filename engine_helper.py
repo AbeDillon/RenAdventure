@@ -7,7 +7,7 @@ import Queue
 import shopThread
 
 
-valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect', 'lol', 'boo', 'shop', 'give']
+valid_verbs = ['take', 'open', 'go', 'drop', 'unlock', 'lock', 'hide', 'reveal', 'add_status_effect', 'lose_status_effect', 'lol', 'boo', 'shop', 'give', 'goninjago', 'youmustconstructadditionalpylons', 'soyouresayingtheresachance']
 
 def do_command(player_name, command, tags, engine):
     action_map = {'look': look,
@@ -29,7 +29,10 @@ def do_command(player_name, command, tags, engine):
                   'hide': hide,
                   'add_status_effect': add_status_effect,
                   'lose_status_effect': lose_status_effect,
-                  'give' : give}
+                  'give' : give,
+                  'goninjago': goninjago,
+                  'youmustconstructadditionalpylons': youmustconstructadditionalpylons,
+                  'soyouresayingtheresachance': soyouresayingtheresachance}
 
     player = engine._Characters[player_name]
     room = engine._Rooms[player.coords]
@@ -235,7 +238,10 @@ def parse_command(command, tags):
                       'boo': 'boo',
                       'shop':'shop',
                       'send':'give',
-                      'give':'give'}
+                      'give':'give',
+                      'goninjago': 'goninjago',
+                      'youmustconstructadditionalpylons': 'youmustconstructadditionalpylons',
+                      'soyouresayingtheresachance': 'soyouresayingtheresachance'}
 
     translate_noun = {'n': 'north',
                       's': 'south',
@@ -1022,6 +1028,7 @@ def give(room, player, object, noun, tags, engine):
 
 def goninjago(room, player, object, noun, tags, engine):
     # Gives the player 9999 Mutagen
+    print 'test'
     if 'mutagen' in player.items:
         player.items['mutagen'] += 9999
     else:
