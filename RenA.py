@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RenA.ui'
 #
-# Created: Fri May 03 20:23:15 2013
+# Created: Sat May 04 15:57:20 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -164,7 +164,7 @@ class Ui_mainDialog(object):
         self.mainDisplay.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Consolas"))
-        font.setPointSize(10)
+        font.setPointSize(11)
         self.mainDisplay.setFont(font)
         self.mainDisplay.setFrameShape(QtGui.QFrame.NoFrame)
         self.mainDisplay.setFrameShadow(QtGui.QFrame.Plain)
@@ -245,7 +245,7 @@ class Ui_mainDialog(object):
         self.statusBox.setGeometry(QtCore.QRect(620, 0, 361, 211))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Consolas"))
-        font.setPointSize(8)
+        font.setPointSize(12)
         self.statusBox.setFont(font)
         self.statusBox.setFrameShape(QtGui.QFrame.NoFrame)
         self.statusBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -274,6 +274,8 @@ class Ui_mainDialog(object):
         self.artBox.setFrameShape(QtGui.QFrame.NoFrame)
         self.artBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.artBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.artBox.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+        self.artBox.setLineWrapColumnOrWidth(0)
         self.artBox.setObjectName(_fromUtf8("artBox"))
 
         self.retranslateUi(mainDialog)
