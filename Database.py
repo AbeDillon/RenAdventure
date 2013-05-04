@@ -41,6 +41,14 @@ class dbManager(object):
         self.query.execute('''INSERT INTO globalObject(dateAdded, name, objectType, creator, dateCreated, dateModified, dateUsed, upVotes, downVotes)
         VALUES (?,?,?,?,?,?,?,?,?)''', (dateAdded, name, objectType, creator, dateCreated, dateModified, dateUsed, upVotes, downVotes))
 
+        ##  TODO -  Items/Ideas that could be done
+
+        # We need a XML field where objects can be packed to and unpacked from an XML file that would contain all its attributes.
+        # this currently only contains place for information regarding objects not any storage of the actual object.  We need this to be
+        # a toy box where objects can be put in for storage and taken out to be played with at a later time.
+
+        # Also need a field for users with editing privileges field so we know who has permission to edit objects before they are
+        # "taken out" (unpacked from xml) to be edited.
 
 def main():
 
