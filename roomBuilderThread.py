@@ -9,6 +9,10 @@ import twitter
 import os
 import requests # a http lib.  Used to verify webiste exisits
 
+##  TODO ## ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##  1)  Make Dict editor for attributes stored as a dictionary  Like scripts....
+##  2)  Edit and Change Print out style for object review
+
 class BuilderThread(threading.Thread):
     """
     Room builder thread
