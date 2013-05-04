@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RenA.ui'
 #
-# Created: Fri May 03 10:45:16 2013
+# Created: Fri May 03 15:04:42 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -162,6 +162,10 @@ class Ui_mainDialog(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
         self.mainDisplay.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Consolas"))
+        font.setPointSize(10)
+        self.mainDisplay.setFont(font)
         self.mainDisplay.setFrameShape(QtGui.QFrame.NoFrame)
         self.mainDisplay.setFrameShadow(QtGui.QFrame.Plain)
         self.mainDisplay.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -239,9 +243,16 @@ class Ui_mainDialog(object):
         self.inputBox.setObjectName(_fromUtf8("inputBox"))
         self.statusBox = QtGui.QTextEdit(mainDialog)
         self.statusBox.setGeometry(QtCore.QRect(620, 0, 361, 211))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Consolas"))
+        font.setPointSize(8)
+        self.statusBox.setFont(font)
         self.statusBox.setFrameShape(QtGui.QFrame.NoFrame)
         self.statusBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.statusBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.statusBox.setLineWrapColumnOrWidth(0)
+        self.statusBox.setAcceptRichText(False)
+        self.statusBox.setTextInteractionFlags(QtCore.Qt.TextEditorInteraction)
         self.statusBox.setObjectName(_fromUtf8("statusBox"))
         self.artBox = QtGui.QTextEdit(mainDialog)
         self.artBox.setGeometry(QtCore.QRect(620, 210, 361, 351))
@@ -256,6 +267,10 @@ class Ui_mainDialog(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
         self.artBox.setPalette(palette)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Courier"))
+        font.setPointSize(8)
+        self.artBox.setFont(font)
         self.artBox.setFrameShape(QtGui.QFrame.NoFrame)
         self.artBox.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.artBox.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)

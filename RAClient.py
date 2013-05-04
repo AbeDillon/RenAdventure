@@ -6,7 +6,7 @@ import sys
 import RenA
 import Queue
 import RAProtocol
-import pickle
+import winsound, time
 
 #address = QtNetwork.Q
 _Local_Host = socket.gethostname()
@@ -35,12 +35,8 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
 
         self.oldStyle = True
         self.setupUi(self)
+        self.appendArt()
 
-        # build input and output objects
-        self.inQueue = Queue.Queue()
-        self.outQueue = Queue.Queue()
-
-        # Local Server Build
         self.iThread = inThread(self.iPort, self.localHost)
 
         # Connections/Signals
@@ -81,7 +77,14 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         if self.oldStyle == True:
             if type(message) == 'tuple':
                 message = message[1]
-            self.emit(QtCore.SIGNAL("mainDisplay(QString)"), message )
+            if '_play_' in message:
+                sound = str(message).split()
+                sound = sound[1]
+                self.playSound(sound)
+                # else:
+                #     self.emit(QtCore.SIGNAL("mainDisplay(QString)"), message )
+            else:
+                self.emit(QtCore.SIGNAL("mainDisplay(QString)"), message )
         else:
             if hasattr(message, "tags"):
                 if "mainDisplay" in message.tags:
@@ -120,12 +123,22 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
     def appendStatus(self, message):
         pass
 
-    def appendArt(self, message):
+    def appendArt(self):
         self.artBox.clear()
-        self.artBox.append(message.art)
+        #self.artBox.append(message.art)
+        file = open('ASCII_art/Kanye1020.txt')
+        #line = '@@@@@@@@@@@@@@@@@@@@@@@@@@@P^*L_^?[Jwryrj**v*wJ3F?%KM@@@@@'
+        picString= ""
 
-    def playSound(self):
-        pass
+        for line in file:
+            picString += line.rstrip()[-4]
+        self.artBox.append(picString)
+
+
+    def playSound(self, sound):
+
+        path = 'sounds/%s.wav' % sound
+        winsound.PlaySound(path, winsound.SND_FILENAME)
 
     def getUserInput(self):
         """Captures and distributes User input from inputBox"""
@@ -135,7 +148,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
             self.emit(QtCore.SIGNAL("mainDisplay(QString)"), line )
             self.inputBox.clear()
             self.inputBox.setFocus()
-            if not self.loggedIn:
+            if self.loggedIn == False:
                self.login(line)
             else:
                 if self.oldStyle == True:
@@ -158,7 +171,7 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
         RAProtocol.sendMessage(message, outSocket)
 
         outSocket.close()
-        self.pingTimer.start(4000)
+        #self.pingTimer.start(4000)
 
     def pingServer(self):
 
@@ -177,7 +190,10 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
             self.emit(QtCore.SIGNAL("mainDisplay(QString)"), "Enter Password" )
          else:
             self.password = line
-            loginMessage = RAProtocol.QtCommand(tags=['login'], body= self.name + " " + self.password)
+            if self.oldStyle == True:
+                loginMessage = str(self.name + ' ' + self.password)
+            else:
+                loginMessage = RAProtocol.QtCommand(tags=['login'], body= str(self.name + " " + self.password))
             #self.emit(QtCore.SIGNAL("readySend(QObject)"), loginMessage)  #  Will likely be used in single port build
             self.connect_to_server(loginMessage)
 
@@ -185,8 +201,9 @@ class MainDialog(QtGui.QDialog, RenA.Ui_mainDialog):
     def connect_to_server(self, line):  #  currently used for login purposes only
 
         outSocket = self.outSocket()
-        loginObject = RAProtocol.command(line)
-        RAProtocol.sendMessage(loginObject, outSocket)
+        if self.oldStyle == False:
+            line = RAProtocol.command(line)
+        RAProtocol.sendMessage(line, outSocket)
         #logger.write_line('Hidden: Making connection with remote server')
         message = RAProtocol.receiveMessage(outSocket)
         outSocket.close()
@@ -247,8 +264,21 @@ class inThread(QtCore.QThread):
         ssl_sock = ssl.wrap_socket(sock, certfile = 'cert.pem')
         return ssl_sock
 
+class soundThread(QtCore.QThread):
 
+    def __init__(self, sound, parent=None):
+        super(soundThread, self).__init__(parent)
+        self.sound = sound
+        print 'entered sound Thread'
 
+    def run(self):
+
+        path = 'sounds/%s.wav' % self.sound
+        winsound.PlaySound(path, winsound.SND_FILENAME)
+        time.sleep(2)
+
+        #self.quit()
+        self.deleteLater()
 
 
 app = QtGui.QApplication(sys.argv)
