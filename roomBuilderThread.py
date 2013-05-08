@@ -1109,7 +1109,11 @@ class BuilderThread(threading.Thread):
         # add the items to the prototype
         self.prototype['items'] = items
         self.logger.write_line('type restored to temp_type ('+str(temp_type)+'), items written to prototype[items] ='+str(self.prototype['items']) )
-        
+
+    def dontBreak(self):
+        self.send_message_to_player('Sorry we are working on this functionality but Hey it didn''t break.....')
+        pass
+
     def reviewObject(self):
         """
         function to display the object created and allow for the player to make edits.
@@ -1122,8 +1126,8 @@ class BuilderThread(threading.Thread):
                     'locked', 'key', 'items', 'scripts', 'npc', 'textID', 'affiliation', 'editors' ]
         #  keyword : function to run
         dispatcher = {'name': self.addName, 'description': self.addDescription, 'inspection description': self.addInspectionDescription, 'direction': [self.getDirection, self.assignCoords],
-                       'coordinates': None, 'portable':self.isPortable, 'hidden':self.isHidden, 'container':self.isContainer,'locked':self.isLocked, 'key':self.addKey, 
-                       'items':None, 'scripts':None, 'npc':None, 'textID': self.getTextID, 'affiliation':self.getAffiliation, 'editors':self.getEditors}
+                       'coordinates': self.dontBreak, 'portable':self.isPortable, 'hidden':self.isHidden, 'container':self.isContainer,'locked':self.isLocked, 'key':self.addKey,
+                       'items':self.dontBreak, 'scripts':self.dontBreak, 'npc':self.dontBreak, 'textID': self.getTextID, 'affiliation':self.getAffiliation, 'editors':self.getEditors}
         
         while True:
             # display prototype
