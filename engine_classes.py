@@ -78,7 +78,7 @@ class Item:
     - Key
     - Items
     '''
-    def __init__(self, name, desc, inspect_desc, scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = {}, editors = []):
+    def __init__(self, name="", desc="", inspect_desc="", scripts = {}, portable = True, hidden = False, container = False, locked = False, key = '', items = {}, editors = []):
         self.name = name.lower()
         self.desc = desc
         self.inspect_desc = inspect_desc
